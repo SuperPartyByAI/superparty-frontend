@@ -1,6 +1,6 @@
 // API CLIENT
 
-const API_URL = 'YOUR_APPS_SCRIPT_URL_HERE'; // Update this!
+const API_URL = 'https://script.google.com/macros/s/AKfycbwoOj_KfueJtDqHrwHUAornkQrNJAHIBpf78BI4YUndw-yAgWqXA5x7e4Yimn8y4R5K/exec';
 
 class APIClient {
   constructor() {
@@ -93,3 +93,12 @@ class APIClient {
 }
 
 const api = new APIClient();
+```
+
+---
+
+## 🎯 **ACUM FAĂ ASTA:**
+
+**1. Deschide:**
+```
+https://github.com/SuperPartyByAI/superparty-frontend/blob/main/api-client.js
