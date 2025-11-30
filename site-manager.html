@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Site Manager - SuperParty</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="site-manager">
+    <div class="header">
+      <h1>Site Manager</h1>
+      <button onclick="window.location='dashboard.html'">← Back to Dashboard</button>
+    </div>
+    
+    <div class="site-info">
+      <h2 id="siteName">Loading...</h2>
+      <p id="siteUrl"></p>
+      <span class="status" id="siteStatus"></span>
+    </div>
+    
+    <div class="tabs">
+      <button class="tab active" data-tab="overview">Overview</button>
+      <button class="tab" data-tab="seo">SEO</button>
+      <button class="tab" data-tab="ads">Ads</button>
+      <button class="tab" data-tab="leads">Leads</button>
+      <button class="tab" data-tab="performance">Performance</button>
+      <button class="tab" data-tab="recommendations">Recommendations</button>
+    </div>
+    
+    <div class="tab-content">
+      <div id="overview" class="tab-pane active">
+        <h3>Overview</h3>
+        <div id="overviewContent"></div>
+      </div>
+      
+      <div id="seo" class="tab-pane">
+        <h3>SEO</h3>
+        <div id="seoContent"></div>
+      </div>
+      
+      <div id="ads" class="tab-pane">
+        <h3>Ads</h3>
+        <div id="adsContent"></div>
+      </div>
+      
+      <div id="leads" class="tab-pane">
+        <h3>Leads</h3>
+        <div id="leadsContent"></div>
+      </div>
+      
+      <div id="performance" class="tab-pane">
+        <h3>Performance</h3>
+        <div id="performanceContent"></div>
+      </div>
+      
+      <div id="recommendations" class="tab-pane">
+        <h3>Recommendations</h3>
+        <div id="recommendationsContent"></div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="api-client.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

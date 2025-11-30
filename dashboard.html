@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - SuperParty</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="dashboard">
+    <div class="sidebar">
+      <h2>SuperParty</h2>
+      <nav>
+        <a href="#sites">📊 Site-uri</a>
+        <a href="#seo">🔍 SEO</a>
+        <a href="#ads">📢 Ads</a>
+        <a href="#leads">👥 Leads</a>
+        <a href="#analytics">📈 Analytics</a>
+        <a href="#settings">⚙️ Settings</a>
+      </nav>
+      <button id="logoutBtn">Logout</button>
+    </div>
+    
+    <div class="main-content">
+      <div class="header">
+        <h1>Dashboard</h1>
+        <div class="user-info">
+          <span id="userName"></span>
+          <span id="userRole"></span>
+        </div>
+      </div>
+      
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h3>Total Site-uri</h3>
+          <p id="totalSites">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Total Leads</h3>
+          <p id="totalLeads">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Conversion Rate</h3>
+          <p id="conversionRate">0%</p>
+        </div>
+        <div class="stat-card">
+          <h3>Budget Spent</h3>
+          <p id="budgetSpent">0 RON</p>
+        </div>
+      </div>
+      
+      <div class="sites-list">
+        <h2>Site-uri Active</h2>
+        <div id="sitesList"></div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="api-client.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
