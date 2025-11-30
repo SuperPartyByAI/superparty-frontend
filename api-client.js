@@ -93,12 +93,3 @@ class APIClient {
 }
 
 const api = new APIClient();
-```
-
----
-
-## 🎯 **ACUM FAĂ ASTA:**
-
-**1. Deschide:**
-```
-https://github.com/SuperPartyByAI/superparty-frontend/blob/main/api-client.js
