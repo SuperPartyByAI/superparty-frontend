@@ -1,90 +1,163 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SuperParty Backend - Login</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .login-container {
-      background: white;
-      padding: 40px;
-      border-radius: 10px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-      width: 400px;
-      max-width: 90%;
-    }
-    h1 { text-align: center; margin-bottom: 10px; color: #667eea; }
-    p { text-align: center; color: #666; margin-bottom: 30px; }
-    form { display: flex; flex-direction: column; gap: 15px; }
-    input {
-      padding: 12px;
-      border: 2px solid #e0e0e0;
-      border-radius: 5px;
-      font-size: 16px;
-    }
-    button {
-      padding: 12px;
-      background: #667eea;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    button:hover { background: #764ba2; }
-    .error { color: red; margin-top: 10px; text-align: center; display: none; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuperParty - Login</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="frontend/shared/css/reset.css">
+    <link rel="stylesheet" href="frontend/shared/css/variables.css">
+    <link rel="stylesheet" href="frontend/shared/css/common.css">
+    <link rel="stylesheet" href="frontend/shared/css/login.css">
 </head>
 <body>
-  <div class="login-container">
-    <h1>🎉 SuperParty Backend</h1>
-    <p>Enterprise v3.5</p>
-    <form id="loginForm">
-      <input type="email" id="email" placeholder="Email" required value="andrei@superparty.ro">
-      <input type="password" id="password" placeholder="Password" required value="andrei123">
-      <button type="submit">Login</button>
-    </form>
-    <div id="error" class="error"></div>
-  </div>
-  <script>
-    const tkn = localStorage.getItem('token');
-    if (tkn && tkn !== 'null') window.location.href = 'dashboard.html';
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" onclick="ThemeSystem.toggle()" title="Schimbă tema">
+        <span id="theme-icon">🌙</span>
+    </button>
     
-    document.getElementById('loginForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-      const errorDiv = document.getElementById('error');
-      
-      try {
-        const res = await fetch('https://script.google.com/macros/s/AKfycbwoOj_KfueJtDqHrwHUAornkQrNJAHIBpf78BI4YUndw-yAgWqXA5x7e4Yimn8y4R5K/exec', {
-          method: 'POST',
-          body: JSON.stringify({action: 'login', email, password})
-        });
-        const data = await res.json();
+    <!-- Login Container -->
+    <div class="login-wrapper">
+        <div class="login-container">
+            <!-- Header -->
+            <div class="login-header">
+                <div class="login-logo">🎉</div>
+                <h1>SuperParty</h1>
+                <p>Sistem Management Evenimente</p>
+            </div>
+            
+            <!-- Form -->
+            <form class="login-form" id="loginForm">
+                <!-- Error Message -->
+                <div class="login-error" id="loginError"></div>
+                
+                <!-- Email -->
+                <div class="form-group">
+                    <label class="form-label" for="email">Email</label>
+                    <input 
+                        type="email" 
+                        class="form-input" 
+                        id="email" 
+                        placeholder="ion@superparty.ro"
+                        required
+                        autocomplete="email"
+                    >
+                </div>
+                
+                <!-- Password -->
+                <div class="form-group">
+                    <label class="form-label" for="password">Parolă</label>
+                    <div class="password-wrapper">
+                        <input 
+                            type="password" 
+                            class="form-input" 
+                            id="password" 
+                            placeholder="••••••••"
+                            required
+                            autocomplete="current-password"
+                        >
+                        <button 
+                            type="button" 
+                            class="password-toggle" 
+                            onclick="togglePassword()"
+                            title="Arată parola"
+                        >
+                            👁️
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Remember Me -->
+                <div class="remember-me">
+                    <input type="checkbox" id="rememberMe">
+                    <label for="rememberMe">Ține-mă minte</label>
+                </div>
+                
+                <!-- Submit Button -->
+                <button type="submit" class="btn-login" id="loginBtn">
+                    Intră în Cont
+                </button>
+            </form>
+            
+            <!-- Footer -->
+            <div class="login-footer">
+                <p>SuperParty v7.0 &copy; 2025</p>
+                <p>Ai uitat parola? <a href="#" onclick="alert('Contactează administratorul!'); return false;">Contactează un admin</a></p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="frontend/shared/js/config.js"></script>
+    <script src="frontend/shared/js/utils/format.js"></script>
+    <script src="frontend/shared/js/utils/validation.js"></script>
+    <script src="frontend/shared/js/utils/dom.js"></script>
+    <script src="frontend/shared/js/utils/storage.js"></script>
+    <script src="frontend/shared/js/core/api.js"></script>
+    <script src="frontend/shared/js/core/auth.js"></script>
+    <script src="frontend/shared/js/core/toast.js"></script>
+    <script src="frontend/shared/js/core/loading.js"></script>
+    <script src="frontend/shared/js/core/theme.js"></script>
+    
+    <script>
+        // Check auto login
+        AuthSystem.checkAutoLogin();
         
-        if (data.success && data.data && data.data.token) {
-          localStorage.setItem('token', data.data.token);
-          localStorage.setItem('user', JSON.stringify(data.data.user));
-          window.location.href = 'dashboard.html';
-        } else {
-          errorDiv.textContent = data.error || 'Login failed';
-          errorDiv.style.display = 'block';
+        // Theme icon update
+        window.addEventListener('themeChanged', (e) => {
+            document.getElementById('theme-icon').textContent = 
+                e.detail.theme === 'dark' ? '☀️' : '🌙';
+        });
+        
+        // Set initial theme icon
+        document.getElementById('theme-icon').textContent = 
+            ThemeSystem.isDark() ? '☀️' : '🌙';
+        
+        // Toggle password visibility
+        function togglePassword() {
+            const input = document.getElementById('password');
+            input.type = input.type === 'password' ? 'text' : 'password';
         }
-      } catch(err) {
-        errorDiv.textContent = 'Error: ' + err.message;
-        errorDiv.style.display = 'block';
-      }
-    });
-  </script>
+        
+        // Login form submit
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('loginBtn');
+            const errorDiv = document.getElementById('loginError');
+            
+            // Hide previous errors
+            errorDiv.classList.remove('show');
+            
+            // Validate
+            if (!ValidationUtils.isValidEmail(email)) {
+                errorDiv.textContent = 'Email invalid!';
+                errorDiv.classList.add('show');
+                return;
+            }
+            
+            if (password.length < 6) {
+                errorDiv.textContent = 'Parola trebuie să aibă minim 6 caractere!';
+                errorDiv.classList.add('show');
+                return;
+            }
+            
+            // Loading state
+            LoadingSystem.buttonStart(loginBtn, 'Se autentifică...');
+            
+            try {
+                await AuthSystem.login(email, password);
+                // Redirect automat în AuthSystem.login()
+                
+            } catch (error) {
+                errorDiv.textContent = error.message || 'Autentificare eșuată!';
+                errorDiv.classList.add('show');
+                LoadingSystem.buttonEnd(loginBtn);
+            }
+        });
+    </script>
 </body>
 </html>

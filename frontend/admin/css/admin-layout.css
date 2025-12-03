@@ -1,0 +1,301 @@
+/* ═══════════════════════════════════════════════════════════
+   SUPERPARTY v7.0 - ADMIN LAYOUT
+   Layout pentru aplicația admin
+   ═══════════════════════════════════════════════════════════ */
+
+/* Main Container */
+.admin-container {
+    display: flex;
+    min-height: 100vh;
+    background: var(--bg);
+}
+
+/* Sidebar */
+.admin-sidebar {
+    width: 260px;
+    background: linear-gradient(180deg, #3b82f6 0%, #1e40af 100%);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    z-index: var(--z-side-menu);
+    transition: transform var(--transition-normal);
+}
+
+.admin-sidebar-header {
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    color: white;
+}
+
+.admin-logo-icon {
+    font-size: 32px;
+}
+
+.admin-user-info {
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+}
+
+.admin-user-name {
+    font-weight: var(--font-semibold);
+    color: white;
+    margin-bottom: 4px;
+}
+
+.admin-user-role {
+    font-size: var(--text-sm);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Navigation */
+.admin-nav {
+    flex: 1;
+    padding: var(--spacing-md) 0;
+}
+
+.admin-nav-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md) var(--spacing-lg);
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    cursor: pointer;
+    border-left: 3px solid transparent;
+}
+
+.admin-nav-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.admin-nav-item.active {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    border-left-color: white;
+    font-weight: var(--font-semibold);
+}
+
+.admin-nav-icon {
+    font-size: 20px;
+    min-width: 24px;
+}
+
+.admin-nav-text {
+    flex: 1;
+}
+
+.admin-nav-badge {
+    background: var(--error);
+    color: white;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    font-size: var(--text-xs);
+    font-weight: var(--font-semibold);
+}
+
+/* Sidebar Footer */
+.admin-sidebar-footer {
+    padding: var(--spacing-lg);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin-btn-logout {
+    width: 100%;
+    padding: var(--spacing-sm);
+    background: rgba(239, 68, 68, 0.9);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.admin-btn-logout:hover {
+    background: var(--error);
+    transform: translateY(-1px);
+}
+
+/* Main Content */
+.admin-main {
+    flex: 1;
+    margin-left: 260px;
+    padding: var(--spacing-lg);
+    padding-bottom: calc(var(--spacing-lg) + 80px);
+}
+
+/* Top Bar (Mobile) */
+.admin-topbar {
+    display: none;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    padding: var(--spacing-md);
+    position: sticky;
+    top: 0;
+    z-index: var(--z-top-bar);
+}
+
+.admin-topbar-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.admin-menu-toggle {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--text);
+}
+
+.admin-topbar-title {
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    color: var(--text);
+}
+
+/* Bottom Navigation (Mobile) */
+.admin-bottom-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border);
+    padding: var(--spacing-xs) 0;
+    z-index: var(--z-bottom-nav);
+}
+
+.admin-bottom-nav-items {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.admin-bottom-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: var(--spacing-xs);
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+    cursor: pointer;
+    min-height: var(--touch-target);
+}
+
+.admin-bottom-nav-item.active {
+    color: var(--info);
+}
+
+.admin-bottom-nav-icon {
+    font-size: 24px;
+}
+
+.admin-bottom-nav-text {
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+}
+
+/* Content Area */
+.admin-page {
+    display: none;
+}
+
+.admin-page.active {
+    display: block;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Page Header */
+.admin-page-header {
+    margin-bottom: var(--spacing-xl);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.admin-page-title {
+    font-size: var(--text-3xl);
+    font-weight: var(--font-bold);
+    color: var(--text);
+}
+
+.admin-page-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+/* Responsive - Mobile */
+@media (max-width: 768px) {
+    .admin-sidebar {
+        transform: translateX(-100%);
+    }
+    
+    .admin-sidebar.open {
+        transform: translateX(0);
+    }
+    
+    .admin-topbar {
+        display: block;
+    }
+    
+    .admin-bottom-nav {
+        display: block;
+    }
+    
+    .admin-main {
+        margin-left: 0;
+        padding: var(--spacing-md);
+        padding-bottom: calc(var(--spacing-md) + 70px);
+    }
+    
+    .admin-page-title {
+        font-size: var(--text-2xl);
+    }
+    
+    .admin-page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* Overlay */
+.admin-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: calc(var(--z-side-menu) - 1);
+}
+
+.admin-overlay.show {
+    display: block;
+}
