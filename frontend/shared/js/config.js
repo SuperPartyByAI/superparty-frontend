@@ -1,17 +1,35 @@
-/**
- * SUPERPARTY CONFIG
- * Modifică doar URL-ul aici când faci deployment nou
- */
+// ═══════════════════════════════════════════════════════════
+// SUPERPARTY FRONTEND CONFIG - FIXED
+// ═══════════════════════════════════════════════════════════
 
+// Backend URL (from Apps Script deployment)
+const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxpV3NKZJLzNe5tTGX5TlUVnAQc1j6z82kPz7QkzartJpFfdPgvvg0T84ay1Ljlrxk/exec';
+
+// Main config object
 const SUPERPARTY_CONFIG = {
-    BACKEND_URL: 'https://script.google.com/macros/s/AKfycbzhOP0u8a6jBJEpFMth7fltpC069IeUKn1OMJKHI8tA2Rg5VWuNTpI7oJRy5Lv6SZFr/exec',
+    BACKEND_URL: BACKEND_URL,
+    API_URL: BACKEND_URL,  // alias
     
-    // Parole admin/GM
-    ADMIN_PASSWORD: 'Adminandrei209512!',
-    GM_PASSWORD: 'Gmandrei209512!',
+    APP_NAME: 'SuperParty',
+    VERSION: '7.0',
     
-    // Versiune
-    VERSION: '5.0'
+    // Debug mode as function (code expects this)
+    isDebug: function() {
+        return true;  // set to false in production
+    },
+    
+    // Settings
+    DEBUG: true,
+    LOG_API_CALLS: true,
+    LOG_ERRORS: true
 };
 
-console.log('✅ SuperParty Config loaded - Backend:', SUPERPARTY_CONFIG.BACKEND_URL);
+// Legacy support - global variable
+const CONFIG = SUPERPARTY_CONFIG;
+
+// Export for modules
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = SUPERPARTY_CONFIG;
+}
+
+console.log('✅ SuperParty Config loaded - Backend:', BACKEND_URL);
