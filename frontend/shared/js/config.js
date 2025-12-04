@@ -1,26 +1,17 @@
-// ═══════════════════════════════════════════════════════════
-// SUPERPARTY v7.0 - BACKEND CONFIGURATION
-// ═══════════════════════════════════════════════════════════
+/**
+ * SUPERPARTY CONFIG
+ * Modifică doar URL-ul aici când faci deployment nou
+ */
 
 const SUPERPARTY_CONFIG = {
-  isDebug() {
-    return window.location.hostname === 'localhost' || 
-           window.location.hostname === '127.0.0.1' ||
-           window.location.hostname === '';
-  }
+    BACKEND_URL: 'https://script.google.com/macros/s/AKfycbzhOP0u8a6jBJEpFMth7fltpC069IeUKn1OMJKHI8tA2Rg5VWuNTpI7oJRy5Lv6SZFr/exec',
+    
+    // Parole admin/GM
+    ADMIN_PASSWORD: 'Adminandrei209512!',
+    GM_PASSWORD: 'Gmandrei209512!',
+    
+    // Versiune
+    VERSION: '5.0'
 };
 
-// Backend URL - Apps Script Deployment
-const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxpV3NKZJLzNe5tTGX5TlUVnAQc1j6z82kPz7QkzartJpFfdPgvvg0T84ay1Ljlrxk/exec';
-
-// Debug logging
-if (SUPERPARTY_CONFIG.isDebug()) {
-  console.log('🔧 SuperParty Debug Mode: ON');
-  console.log('🌐 Backend URL:', BACKEND_URL);
-}
-
-// Export pentru a fi folosit în alte fișiere
-if (typeof window !== 'undefined') {
-  window.BACKEND_URL = BACKEND_URL;
-  window.SUPERPARTY_CONFIG = SUPERPARTY_CONFIG;
-}
+console.log('✅ SuperParty Config loaded - Backend:', SUPERPARTY_CONFIG.BACKEND_URL);
