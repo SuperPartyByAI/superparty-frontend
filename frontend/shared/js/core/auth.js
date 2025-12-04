@@ -18,8 +18,8 @@ const AuthSystem = {
                 password: password
             });
             
-            if (response.error || !response.user) {
-                throw new Error(response.message || 'Login failed');
+            if (!response.success || !response.user) {
+                throw new Error(response.error || 'Login failed');
             }
             
             // Salvează user
