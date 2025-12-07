@@ -1,453 +1,496 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>SuperParty - Autentificare</title>
-<style>
-/* SUPERPARTY AUTH CSS */
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.login-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    max-width: 1200px;
-    width: 100%;
-    background: white;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-}
-
-.login-brand {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 60px 40px;
-    position: relative;
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 30px;
-}
-
-.logo-icon {
-    font-size: 3rem;
-    animation: bounce 2s infinite;
-}
-
-.login-brand h1 {
-    font-size: 2.2rem;
-}
-
-.login-brand p {
-    margin-top: 10px;
-    line-height: 1.5;
-    max-width: 360px;
-}
-
-@keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-}
-
-.login-form-container {
-    padding: 60px 50px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.form-header h2 {
-    font-size: 1.8rem;
-    margin-bottom: 5px;
-}
-
-.form-header p {
-    color: #666;
-    margin-bottom: 25px;
-}
-
-.form-group {
-    margin-bottom: 18px;
-}
-
-label {
-    display: block;
-    margin-bottom: 6px;
-    font-size: 0.95rem;
-    color: #444;
-}
-
-input {
-    width: 100%;
-    padding: 12px 14px;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    font-size: 1rem;
-    transition: border 0.3s ease, box-shadow 0.3s ease;
-}
-
-input:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
-    outline: none;
-}
-
-.btn-primary {
-    width: 100%;
-    padding: 14px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-size: 1.05rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-top: 5px;
-}
-
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-}
-
-.btn-primary:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.link-button {
-    background: none;
-    border: none;
-    padding: 0;
-    margin: 0;
-    font: inherit;
-    color: #667eea;
-    cursor: pointer;
-    text-decoration: underline;
-}
-
-.form-footer {
-    margin-top: 16px;
-    font-size: 0.9rem;
-    color: #555;
-}
-
-.form-footer p {
-    margin-bottom: 6px;
-}
-
-.small-link {
-    font-size: 0.85rem;
-}
-
-.hidden {
-    display: none;
-}
-
-.alert {
-    padding: 12px 16px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    font-size: 0.9rem;
-}
-
-.alert-error {
-    background: #fee;
-    border: 1px solid #fcc;
-    color: #c33;
-}
-
-.alert-success {
-    background: #d4edda;
-    border: 1px solid #c3e6cb;
-    color: #155724;
-}
-
-/* Responsive */
-@media (max-width: 900px) {
-    .login-container {
-        grid-template-columns: 1fr;
-        max-width: 500px;
-    }
-
-    .login-brand {
-        padding: 40px 30px;
-        text-align: center;
-    }
-
-    .login-brand p {
-        max-width: 100%;
-        margin: 10px auto 0;
-    }
-
-    .login-form-container {
-        padding: 40px 30px 30px;
-    }
-}
-
-@media (max-width: 500px) {
-    .login-container {
-        border-radius: 0;
-        box-shadow: none;
-    }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuperParty 🎉 - Login</title>
+    
+    <!-- Supabase Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Animated background particles */
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: particlesMove 20s linear infinite;
+            z-index: 1;
+        }
+        
+        @keyframes particlesMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 450px;
+            width: 100%;
+            padding: 50px 40px;
+            position: relative;
+            z-index: 2;
+            animation: slideUp 0.5s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .logo h1 {
+            font-size: 42px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            animation: glow 2s ease-in-out infinite;
+        }
+        
+        @keyframes glow {
+            0%, 100% { 
+                filter: drop-shadow(0 0 10px rgba(102, 126, 234, 0.3));
+            }
+            50% { 
+                filter: drop-shadow(0 0 20px rgba(102, 126, 234, 0.6));
+            }
+        }
+        
+        .logo p {
+            color: #6b7280;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            color: #374151;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-group input::placeholder {
+            color: #9ca3af;
+        }
+        
+        .btn-login {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.6);
+        }
+        
+        .btn-login:active {
+            transform: translateY(0);
+        }
+        
+        .btn-login:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn-login:hover::before {
+            left: 100%;
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 30px 0;
+            position: relative;
+        }
+        
+        .divider::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 100%;
+            height: 1px;
+            background: #e5e7eb;
+        }
+        
+        .divider span {
+            background: white;
+            padding: 0 15px;
+            color: #9ca3af;
+            font-size: 14px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .links {
+            text-align: center;
+            margin-top: 25px;
+        }
+        
+        .links a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+        
+        .links a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            background: #fef2f2;
+            border: 2px solid #fecaca;
+            color: #991b1b;
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: none;
+            animation: shake 0.5s ease;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .success-message {
+            background: #f0fdf4;
+            border: 2px solid #bbf7d0;
+            color: #166534;
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: none;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 20px;
+            color: #9ca3af;
+            user-select: none;
+        }
+        
+        .password-wrapper {
+            position: relative;
+        }
+        
+        .attempts-warning {
+            background: #fef3c7;
+            border: 2px solid #fde68a;
+            color: #78350f;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            display: none;
+            text-align: center;
+        }
+        
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 40px 30px;
+            }
+            
+            .logo h1 {
+                font-size: 36px;
+            }
+        }
+    </style>
 </head>
 <body>
-
-<div class="login-container">
-    <div class="login-brand">
+    <div class="login-container">
         <div class="logo">
-            <div class="logo-icon">🎉</div>
-            <h1>SuperParty</h1>
+            <h1>SuperParty 🎉</h1>
+            <p>Bine ai revenit!</p>
         </div>
-        <p>Bine ai venit în panoul SuperParty! Aici gestionezi petreceri, rezervări și distracția micilor invitați.</p>
-    </div>
-
-    <div class="login-form-container">
-        <div class="form-header">
-            <h2 id="form-title">Autentificare</h2>
-            <p id="form-subtitle">Intră în contul tău SuperParty.</p>
-        </div>
-
-        <div id="alert-container"></div>
-
-        <!-- LOGIN FORM -->
-        <form id="login-form">
-            <div class="form-group">
-                <label for="login-email">Email</label>
-                <input type="email" id="login-email" placeholder="exemplu@email.com" required />
-            </div>
-            <div class="form-group">
-                <label for="login-password">Parolă</label>
-                <input type="password" id="login-password" placeholder="Introdu parola" required />
-            </div>
-            <div class="form-footer small-link">
-                <button type="button" class="link-button" data-target="forgot">Ți-ai uitat parola?</button>
-            </div>
-            <button type="submit" class="btn-primary">Autentifică-te</button>
-            <div class="form-footer">
-                <p>Test rapid: <button type="button" class="link-button" onclick="quickLogin()">Login GM Test</button></p>
-            </div>
-        </form>
-
-        <!-- REGISTER FORM -->
-        <form id="register-form" class="hidden">
-            <div class="form-group">
-                <label for="register-name">Nume complet</label>
-                <input type="text" id="register-name" placeholder="Nume și prenume" required />
-            </div>
-            <div class="form-group">
-                <label for="register-email">Email</label>
-                <input type="email" id="register-email" placeholder="exemplu@email.com" required />
-            </div>
-            <div class="form-group">
-                <label for="register-password">Parolă</label>
-                <input type="password" id="register-password" placeholder="Alege o parolă" required />
-            </div>
-            <div class="form-group">
-                <label for="register-password-confirm">Confirmă parola</label>
-                <input type="password" id="register-password-confirm" placeholder="Reintrodu parola" required />
-            </div>
-            <button type="submit" class="btn-primary">Creează cont</button>
-            <div class="form-footer">
-                <p>Ai deja cont? <button type="button" class="link-button" data-target="login">Autentifică-te</button></p>
-            </div>
-        </form>
-
-        <!-- FORGOT PASSWORD FORM -->
-        <form id="forgot-form" class="hidden">
-            <div class="form-group">
-                <label for="forgot-email">Email</label>
-                <input type="email" id="forgot-email" placeholder="Introdu emailul tău" required />
-            </div>
-            <p class="small-link" style="margin-bottom: 12px; color:#666;">Îți vom trimite instrucțiuni de resetare a parolei.</p>
-            <button type="submit" class="btn-primary">Trimite link</button>
-            <div class="form-footer">
-                <p><button type="button" class="link-button" data-target="login">Înapoi la autentificare</button></p>
-            </div>
-        </form>
-    </div>
-</div>
-
-<script>
-// =============== CONFIG ==================
-const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxpV3NKZJLzNe5tTGX5TlUVnAQc1j6z82kPz7QkzartJpFfdPgvvg0T84ay1Ljlrxk/exec';
-
-// ================== HELPERE =================
-async function callApi(action, payload) {
-    const params = new URLSearchParams({ action, ...payload });
-    const response = await fetch(`${BACKEND_URL}?${params}`);
-    
-    if (!response.ok) {
-        throw new Error('Eroare la server.');
-    }
-    
-    return response.json();
-}
-
-function showAlert(message, type = 'error') {
-    const container = document.getElementById('alert-container');
-    const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
-    container.innerHTML = `<div class="alert ${alertClass}">${message}</div>`;
-    
-    setTimeout(() => {
-        container.innerHTML = '';
-    }, 5000);
-}
-
-// =============== SCHIMBARE FORMULARE ===============
-const loginForm = document.getElementById('login-form');
-const registerForm = document.getElementById('register-form');
-const forgotForm = document.getElementById('forgot-form');
-const formTitle = document.getElementById('form-title');
-const formSubtitle = document.getElementById('form-subtitle');
-
-function showForm(type) {
-    loginForm.classList.add('hidden');
-    registerForm.classList.add('hidden');
-    forgotForm.classList.add('hidden');
-    document.getElementById('alert-container').innerHTML = '';
-
-    if (type === 'login') {
-        loginForm.classList.remove('hidden');
-        formTitle.textContent = 'Autentificare';
-        formSubtitle.textContent = 'Intră în contul tău SuperParty.';
-    } else if (type === 'register') {
-        registerForm.classList.remove('hidden');
-        formTitle.textContent = 'Creează cont';
-        formSubtitle.textContent = 'Creează un cont nou.';
-    } else if (type === 'forgot') {
-        forgotForm.classList.remove('hidden');
-        formTitle.textContent = 'Recuperare parolă';
-        formSubtitle.textContent = 'Recuperează-ți parola.';
-    }
-}
-
-document.querySelectorAll('.link-button[data-target]').forEach(btn => {
-    btn.addEventListener('click', () => {
-        showForm(btn.getAttribute('data-target'));
-    });
-});
-
-// ================== LOGIN ==================
-loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const email = document.getElementById('login-email').value.trim();
-    const password = document.getElementById('login-password').value;
-    
-    if (!email || !password) {
-        showAlert('Te rog introdu emailul și parola.');
-        return;
-    }
-    
-    try {
-        const result = await callApi('login', { email, password });
         
-        if (result.success && result.user) {
-            showAlert('✅ Autentificare reușită!', 'success');
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+        <div id="attemptsWarning" class="attempts-warning"></div>
+        
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label for="email">📧 Email</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    placeholder="exemplu@email.com" 
+                    required
+                    autocomplete="email"
+                >
+            </div>
             
-            // Save user to localStorage
-            localStorage.setItem('superparty_user', JSON.stringify(result.user));
+            <div class="form-group">
+                <label for="password">🔒 Parolă</label>
+                <div class="password-wrapper">
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        placeholder="••••••••" 
+                        required
+                        autocomplete="current-password"
+                    >
+                    <span class="toggle-password" onclick="togglePassword()">👁️</span>
+                </div>
+            </div>
             
-            // Redirect based on role
-            setTimeout(() => {
-                const role = result.user.role;
-                if (role === 'gm') {
-                    window.location.href = 'gm/gm-core.html';
-                } else if (role === 'angajat') {
-                    window.location.href = 'angajat/angajat-evenimente.html';
-                } else {
-                    window.location.href = 'dashboard.html';
-                }
-            }, 1000);
+            <button type="submit" class="btn-login" id="loginBtn">
+                🚀 Intră în Dashboard
+            </button>
+        </form>
+        
+        <div class="divider">
+            <span>sau</span>
+        </div>
+        
+        <div class="links">
+            <a href="#" onclick="showForgotPassword(); return false;">Am uitat parola</a>
+        </div>
+    </div>
+    
+    <!-- Load auth scripts -->
+    <script src="auth-config.js"></script>
+    <script src="auth.js"></script>
+    
+    <script>
+        let passwordVisible = false;
+        
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.querySelector('.toggle-password');
             
-        } else {
-            showAlert(result.error || 'Email sau parolă incorectă.');
+            passwordVisible = !passwordVisible;
+            passwordInput.type = passwordVisible ? 'text' : 'password';
+            toggleIcon.textContent = passwordVisible ? '🙈' : '👁️';
         }
-    } catch (err) {
-        console.error(err);
-        showAlert('A apărut o eroare. Încearcă din nou.');
-    }
-});
-
-// ================== QUICK LOGIN ==================
-function quickLogin() {
-    document.getElementById('login-email').value = 'admin@test.ro';
-    document.getElementById('login-password').value = 'admin123';
-    loginForm.dispatchEvent(new Event('submit'));
-}
-
-// ================== REGISTER ==================
-registerForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const name = document.getElementById('register-name').value.trim();
-    const email = document.getElementById('register-email').value.trim();
-    const password = document.getElementById('register-password').value;
-    const passwordConfirm = document.getElementById('register-password-confirm').value;
-    
-    if (!name || !email || !password) {
-        showAlert('Te rog completează toate câmpurile.');
-        return;
-    }
-    
-    if (password !== passwordConfirm) {
-        showAlert('Parolele nu coincid.');
-        return;
-    }
-    
-    try {
-        const result = await callApi('createUser', { 
-            newName: name, 
-            newEmail: email, 
-            newPassword: password,
-            newRole: 'angajat'
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = '❌ ' + message;
+            errorDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+        
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = '✅ ' + message;
+            successDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 5000);
+        }
+        
+        function showAttemptsWarning(attemptsLeft) {
+            const warningDiv = document.getElementById('attemptsWarning');
+            warningDiv.textContent = `⚠️ Mai ai ${attemptsLeft} încercări înainte de blocarea contului`;
+            warningDiv.style.display = 'block';
+        }
+        
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('loginBtn');
+            
+            // Disable button and show loading
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<span class="loading"></span> Se încarcă...';
+            
+            try {
+                const result = await loginUser(email, password);
+                
+                if (result.success) {
+                    showSuccess('Autentificare reușită! Redirecționare...');
+                    
+                    // Redirect after short delay
+                    setTimeout(() => {
+                        // Check if there's an intended destination
+                        const intendedUrl = sessionStorage.getItem('intended_url');
+                        if (intendedUrl) {
+                            sessionStorage.removeItem('intended_url');
+                            window.location.href = intendedUrl;
+                        } else {
+                            window.location.href = 'dashboard.html';
+                        }
+                    }, 1000);
+                } else {
+                    showError(result.error);
+                    
+                    // Show attempts warning if applicable
+                    if (result.attemptsLeft && result.attemptsLeft <= 3) {
+                        showAttemptsWarning(result.attemptsLeft);
+                    }
+                    
+                    // Re-enable button
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = '🚀 Intră în Dashboard';
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showError('Eroare neașteptată. Te rog încearcă din nou.');
+                
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '🚀 Intră în Dashboard';
+            }
+        }
+        
+        async function showForgotPassword() {
+            const email = document.getElementById('email').value.trim();
+            
+            if (!email) {
+                alert('Te rog introdu email-ul tău în câmpul de mai sus.');
+                document.getElementById('email').focus();
+                return;
+            }
+            
+            if (!validateEmail(email)) {
+                alert('Te rog introdu un email valid.');
+                return;
+            }
+            
+            const confirmed = confirm(`Trimitem instrucțiuni de resetare parolă la: ${email}?`);
+            
+            if (confirmed) {
+                const result = await requestPasswordReset(email);
+                
+                if (result.success) {
+                    showSuccess(result.message);
+                } else {
+                    showError(result.error);
+                }
+            }
+        }
+        
+        // Check if already logged in
+        window.addEventListener('DOMContentLoaded', async function() {
+            const authenticated = await isAuthenticated();
+            
+            if (authenticated) {
+                window.location.href = 'dashboard.html';
+            }
         });
         
-        if (result.success) {
-            showAlert('✅ Cont creat! Te poți autentifica acum.', 'success');
-            setTimeout(() => showForm('login'), 2000);
-        } else {
-            showAlert(result.error || 'Nu am putut crea contul.');
-        }
-    } catch (err) {
-        console.error(err);
-        showAlert('A apărut o eroare la crearea contului.');
-    }
-});
-
-// ================== FORGOT PASSWORD ==================
-forgotForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const email = document.getElementById('forgot-email').value.trim();
-    
-    if (!email) {
-        showAlert('Te rog introdu emailul.');
-        return;
-    }
-    
-    showAlert('Dacă există un cont cu acest email, vei primi instrucțiuni.', 'success');
-    setTimeout(() => showForm('login'), 2000);
-});
-
-console.log('🔐 SuperParty Auth loaded!');
-</script>
-
+        // Auto-focus email field
+        document.getElementById('email').focus();
+    </script>
 </body>
 </html>
