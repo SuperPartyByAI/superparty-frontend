@@ -81,7 +81,6 @@
             </div>
         </div>
     </div>
-
     <div id="register" class="page register-page">
         <div class="register-card">
             <div style="text-align: center; margin-bottom: 40px;">
@@ -109,7 +108,6 @@
             </div>
         </div>
     </div>
-
     <div id="kyc" class="page kyc-page">
         <div class="kyc-container">
             <h1 style="font-size: 42px; margin-bottom: 40px;">🪪 KYC Onboarding</h1>
@@ -165,7 +163,6 @@
             <button class="btn" onclick="completeKYC()" style="margin-top: 20px;">🚀 Finalizează Onboarding</button>
         </div>
     </div>
-
     <div id="dashboard" class="page dashboard-page">
         <button class="logout-btn" onclick="logout()">🚪 Logout</button>
         <div class="dashboard-container">
@@ -192,7 +189,6 @@
             </div>
         </div>
     </div>
-
     <div id="admin" class="page admin-page">
         <button class="logout-btn" onclick="logout()">🚪 Logout</button>
         <div style="max-width: 1600px; margin: 0 auto; width: 100%;">
@@ -208,7 +204,6 @@
             </div>
         </div>
     </div>
-
     <div id="gm" class="page gm-page">
         <button class="logout-btn" onclick="logout()">🚪 Logout</button>
         <div style="max-width: 1600px; margin: 0 auto; width: 100%;">
@@ -218,52 +213,25 @@
             </div>
         </div>
     </div>
-
     <script>
-        const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxrDcyKQfGgfpQrNm4opWsbce_mR1a-w7EbCLYtrrMEc-gFQKQAH7TQiY_ivxf9wZCj/exec';
+        const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbwpScVyziDaoVeuxcqdBQ3qx6j-QHy5FYoWtvlqMSsu15eXGI_l5fmo1Bg8zqP1BLyJ/exec';
         let currentUser = null;
-
-        function jsonp(url) {
-            return new Promise((resolve, reject) => {
-                const callbackName = 'callback_' + Date.now();
-                const script = document.createElement('script');
-                const timeout = setTimeout(() => reject(new Error('Timeout')), 30000);
-                window[callbackName] = (data) => {
-                    clearTimeout(timeout);
-                    document.body.removeChild(script);
-                    delete window[callbackName];
-                    resolve(data);
-                };
-                script.onerror = () => {
-                    clearTimeout(timeout);
-                    document.body.removeChild(script);
-                    delete window[callbackName];
-                    reject(new Error('Network error'));
-                };
-                script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + callbackName;
-                document.body.appendChild(script);
-            });
-        }
-
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             const el = document.getElementById(pageId);
             if (el) el.classList.add('active');
         }
-
         function toggleDriverSection() {
             const driverDocs = document.getElementById('driverDocs');
             const driverCheck = document.getElementById('driverCheck');
             if (driverCheck.checked) driverDocs.classList.add('show');
             else driverDocs.classList.remove('show');
         }
-
         function logout() {
             currentUser = null;
             localStorage.removeItem('superparty_user');
             showPage('login');
         }
-
         async function completeKYC() {
             if (!currentUser) return;
             currentUser.kyc_status = true;
@@ -271,7 +239,6 @@
             showPage('dashboard');
             document.getElementById('welcomeText').textContent = currentUser.name || currentUser.email;
         }
-
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value.trim();
@@ -282,18 +249,21 @@
             btn.textContent = 'Se încarcă...';
             err.style.display = 'none';
             try {
-                const result = await jsonp(`${BACKEND_URL}?action=login&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
+                const url = `${BACKEND_URL}?action=login&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
+                const response = await fetch(url);
+                const result = await response.json();
                 if (result.success) {
                     currentUser = result;
                     localStorage.setItem('superparty_user', JSON.stringify(result));
                     document.getElementById('welcomeText').textContent = result.name || result.email;
-                    if (!result.kyc_status && result.role.toLowerCase() !== 'admin' && result.role.toLowerCase() !== 'gm') {
-                        showPage('kyc');
-                    } else if (result.role.toLowerCase() === 'admin') {
+                    const role = (result.role || '').toLowerCase();
+                    if (role === 'admin') {
                         showPage('admin');
                         loadAdminData();
-                    } else if (result.role.toLowerCase() === 'gm') {
+                    } else if (role === 'gm') {
                         showPage('gm');
+                    } else if (!result.kyc_status) {
+                        showPage('kyc');
                     } else {
                         showPage('dashboard');
                     }
@@ -302,13 +272,12 @@
                     err.style.display = 'block';
                 }
             } catch (error) {
-                err.textContent = '⚠️ Eroare de conexiune';
+                err.textContent = '⚠️ Eroare de conexiune: ' + error.message;
                 err.style.display = 'block';
             }
             btn.disabled = false;
             btn.textContent = '🔓 Intră în aplicație';
         });
-
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const username = document.getElementById('registerUsername').value.trim();
@@ -320,7 +289,9 @@
             btn.textContent = 'Se creează...';
             err.style.display = 'none';
             try {
-                const result = await jsonp(`${BACKEND_URL}?action=register&name=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}&phone=0700000000&password=${encodeURIComponent(password)}`);
+                const url = `${BACKEND_URL}?action=register&name=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}&phone=0700000000&password=${encodeURIComponent(password)}`;
+                const response = await fetch(url);
+                const result = await response.json();
                 if (result.success) {
                     alert('✅ Cont creat! Așteaptă aprobarea administratorului.');
                     showPage('login');
@@ -329,18 +300,19 @@
                     err.style.display = 'block';
                 }
             } catch (error) {
-                err.textContent = '⚠️ Eroare de conexiune';
+                err.textContent = '⚠️ Eroare de conexiune: ' + error.message;
                 err.style.display = 'block';
             }
             btn.disabled = false;
             btn.textContent = '✨ Creează cont';
         });
-
         async function loadAdminData() {
             const tbody = document.getElementById('adminBody');
             tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Se încarcă...</td></tr>';
             try {
-                const result = await jsonp(`${BACKEND_URL}?action=getAllUsers`);
+                const url = `${BACKEND_URL}?action=getAllUsers`;
+                const response = await fetch(url);
+                const result = await response.json();
                 if (result.success && result.users) {
                     tbody.innerHTML = result.users.map(u => `
                         <tr>
@@ -355,17 +327,17 @@
                 tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Eroare la încărcare</td></tr>';
             }
         }
-
         window.addEventListener('DOMContentLoaded', () => {
             const saved = localStorage.getItem('superparty_user');
             if (saved) {
                 try {
                     currentUser = JSON.parse(saved);
                     document.getElementById('welcomeText').textContent = currentUser.name || currentUser.email;
-                    if (currentUser.role.toLowerCase() === 'admin') {
+                    const role = (currentUser.role || '').toLowerCase();
+                    if (role === 'admin') {
                         showPage('admin');
                         loadAdminData();
-                    } else if (currentUser.role.toLowerCase() === 'gm') {
+                    } else if (role === 'gm') {
                         showPage('gm');
                     } else if (!currentUser.kyc_status) {
                         showPage('kyc');
