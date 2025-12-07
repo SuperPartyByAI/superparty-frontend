@@ -249,9 +249,15 @@
             btn.textContent = 'Se încarcă...';
             err.style.display = 'none';
             try {
+                console.log('🔍 LOGIN - Email:', email);
+                console.log('🔍 LOGIN - Backend URL:', BACKEND_URL);
+                console.log('🔍 LOGIN - Request URL:', url);
                 const url = `${BACKEND_URL}?action=login&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
                 const response = await fetch(url);
+                console.log('🔍 LOGIN - Response status:', response.status);
+                console.log('🔍 LOGIN - Response headers:', response.headers);
                 const result = await response.json();
+                console.log('🔍 LOGIN - Backend result:', result);
                 if (result.success) {
                     currentUser = result;
                     localStorage.setItem('superparty_user', JSON.stringify(result));
@@ -272,6 +278,8 @@
                     err.style.display = 'block';
                 }
             } catch (error) {
+                console.error('🔴 LOGIN - Error:', error);
+                console.error('🔴 LOGIN - Error stack:', error.stack);
                 err.textContent = '⚠️ Eroare de conexiune: ' + error.message;
                 err.style.display = 'block';
             }
@@ -289,9 +297,15 @@
             btn.textContent = 'Se creează...';
             err.style.display = 'none';
             try {
+                console.log('🔍 LOGIN - Email:', email);
+                console.log('🔍 LOGIN - Backend URL:', BACKEND_URL);
+                console.log('🔍 LOGIN - Request URL:', url);
                 const url = `${BACKEND_URL}?action=register&name=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}&phone=0700000000&password=${encodeURIComponent(password)}`;
                 const response = await fetch(url);
+                console.log('🔍 LOGIN - Response status:', response.status);
+                console.log('🔍 LOGIN - Response headers:', response.headers);
                 const result = await response.json();
+                console.log('🔍 LOGIN - Backend result:', result);
                 if (result.success) {
                     alert('✅ Cont creat! Așteaptă aprobarea administratorului.');
                     showPage('login');
@@ -300,6 +314,8 @@
                     err.style.display = 'block';
                 }
             } catch (error) {
+                console.error('🔴 LOGIN - Error:', error);
+                console.error('🔴 LOGIN - Error stack:', error.stack);
                 err.textContent = '⚠️ Eroare de conexiune: ' + error.message;
                 err.style.display = 'block';
             }
@@ -310,9 +326,15 @@
             const tbody = document.getElementById('adminBody');
             tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Se încarcă...</td></tr>';
             try {
+                console.log('🔍 LOGIN - Email:', email);
+                console.log('🔍 LOGIN - Backend URL:', BACKEND_URL);
+                console.log('🔍 LOGIN - Request URL:', url);
                 const url = `${BACKEND_URL}?action=getAllUsers`;
                 const response = await fetch(url);
+                console.log('🔍 LOGIN - Response status:', response.status);
+                console.log('🔍 LOGIN - Response headers:', response.headers);
                 const result = await response.json();
+                console.log('🔍 LOGIN - Backend result:', result);
                 if (result.success && result.users) {
                     tbody.innerHTML = result.users.map(u => `
                         <tr>
@@ -324,6 +346,8 @@
                     `).join('');
                 }
             } catch (error) {
+                console.error('🔴 LOGIN - Error:', error);
+                console.error('🔴 LOGIN - Error stack:', error.stack);
                 tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Eroare la încărcare</td></tr>';
             }
         }
@@ -331,6 +355,8 @@
             const saved = localStorage.getItem('superparty_user');
             if (saved) {
                 try {
+                console.log('🔍 LOGIN - Email:', email);
+                console.log('🔍 LOGIN - Backend URL:', BACKEND_URL);
                     currentUser = JSON.parse(saved);
                     document.getElementById('welcomeText').textContent = currentUser.name || currentUser.email;
                     const role = (currentUser.role || '').toLowerCase();
