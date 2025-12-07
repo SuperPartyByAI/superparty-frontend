@@ -287,12 +287,12 @@
                     currentUser = result;
                     localStorage.setItem('superparty_user', JSON.stringify(result));
                     document.getElementById('welcomeText').textContent = result.name || result.email;
-                    if (!result.kyc_status && result.role !== 'admin' && result.role !== 'gm') {
+                    if (!result.kyc_status && result.role.toLowerCase() !== 'admin' && result.role.toLowerCase() !== 'gm') {
                         showPage('kyc');
-                    } else if (result.role === 'admin') {
+                    } else if (result.role.toLowerCase() === 'admin') {
                         showPage('admin');
                         loadAdminData();
-                    } else if (result.role === 'gm') {
+                    } else if (result.role.toLowerCase() === 'gm') {
                         showPage('gm');
                     } else {
                         showPage('dashboard');
@@ -362,10 +362,10 @@
                 try {
                     currentUser = JSON.parse(saved);
                     document.getElementById('welcomeText').textContent = currentUser.name || currentUser.email;
-                    if (currentUser.role === 'admin') {
+                    if (currentUser.role.toLowerCase() === 'admin') {
                         showPage('admin');
                         loadAdminData();
-                    } else if (currentUser.role === 'gm') {
+                    } else if (currentUser.role.toLowerCase() === 'gm') {
                         showPage('gm');
                     } else if (!currentUser.kyc_status) {
                         showPage('kyc');
