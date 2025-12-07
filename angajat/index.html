@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuperParty - Dashboard Angajat</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            color: white;
+            padding: 2rem;
+        }
+        .container {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            padding: 3rem;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        p {
+            font-size: 1.125rem;
+            color: #cbd5e1;
+            margin-bottom: 2rem;
+        }
+        .btn {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 9999px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 Bine ai venit, Angajat!</h1>
+        <p>Dashboard-ul tău SuperParty</p>
+        <p id="user-info" style="color: #94a3b8; font-size: 0.875rem;"></p>
+        <button class="btn" onclick="handleLogout()">🚪 Logout</button>
+    </div>
+
+    <script>
+        // Display user info
+        const userData = localStorage.getItem('superparty_user');
+        if (userData) {
+            try {
+                const user = JSON.parse(userData);
+                document.getElementById('user-info').textContent = 
+                    `Logat ca: ${user.name || user.email}`;
+            } catch (e) {
+                console.error('Error parsing user data:', e);
+            }
+        }
+
+        // Logout
+        function handleLogout() {
+            localStorage.removeItem('superparty_user');
+            window.location.href = '/index.html';
+        }
+    </script>
+</body>
+</html>
