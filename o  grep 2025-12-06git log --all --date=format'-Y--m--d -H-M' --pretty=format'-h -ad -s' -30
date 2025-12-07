@@ -1,0 +1,24 @@
+8492d5c 2025-12-07 Add full evenimente app with purple theme
+676118d 2025-12-07 Add SuperParty: login6 + KYC contract + angajat dashboard (chat + secret admin cmd) + admin panel (approve/block users)
+a7e4e35 2025-12-07 Update login.html
+b37ed06 2025-12-07 Update login.html
+456c4e7 2025-12-07 Update login.html
+b22a82a 2025-12-07 Add KYC redirect
+82ada7e 2025-12-07 Add KYC redirect in login
+433261e 2025-12-07 Update backend URL in KYC files
+8930e26 2025-12-07 Add KYC system (onboarding + pending + admin panel)
+70c2dbb 2025-12-04 Updated login page with register and forgot password
+4af9f0e 2025-12-04 Added login page
+ad1a6af 2025-12-04 Fixed config.js - added BACKEND_URL and isDebug function
+f769130 2025-12-04 Added config.js with API URL
+4514827 2025-12-04 Added angajat pages: evenimente, salariu, ai-rating-chat
+43d00d9 2025-12-04 Add files via upload
+5ec11ba 2025-12-03 🎉 Update: SuperParty v7.0 - ALL 5 BATCHES COMPLETE!
+32d80f0 2025-11-30 Update dashboard.html
+1500a96 2025-11-30 Update index.html
+51b0f39 2025-11-30 Update api-client.js
+e731c94 2025-11-30 Update api-client.js
+71cbea1 2025-11-30 Update api-client.js
+c7282cf 2025-11-30 Delete index
+69f6823 2025-11-30 Add files via upload
+16b0b46 2025-11-30 Create index
