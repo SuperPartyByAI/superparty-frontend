@@ -330,11 +330,11 @@
                     
                     // Redirect based on role
                     if (result.role === 'admin') {
-                        window.location.href = 'frontend/admin/index.html';
+                        window.location.href = 'admin/index.html';
                     } else if (result.role === 'gm') {
-                        window.location.href = 'frontend/gm/index.html';
+                        window.location.href = 'gm/index.html';
                     } else {
-                        window.location.href = 'frontend/angajat/index.html';
+                        window.location.href = 'angajat/index.html';
                     }
                 } else {
                     showError(result.error || 'Email sau parolă incorectă');
@@ -361,11 +361,11 @@
                     
                     // Redirect to appropriate page
                     if (user.role === 'admin') {
-                        window.location.href = 'frontend/admin/index.html';
+                        window.location.href = 'admin/index.html';
                     } else if (user.role === 'gm') {
-                        window.location.href = 'frontend/gm/index.html';
+                        window.location.href = 'gm/index.html';
                     } else {
-                        window.location.href = 'frontend/angajat/index.html';
+                        window.location.href = 'angajat/index.html';
                     }
                 } catch (e) {
                     // Invalid data, clear it
