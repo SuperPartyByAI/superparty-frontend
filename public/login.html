@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <title>SuperParty Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <h2>SuperParty Login</h2>
+
+  <form id="loginForm">
+    <label>Email:</label><br>
+    <input id="email" type="email" required><br><br>
+
+    <label>Parola:</label><br>
+    <input id="password" type="password" required><br><br>
+
+    <button type="submit" id="loginBtn">Autentificare</button>
+  </form>
+
+  <p id="error" style="color:red; display:none;"></p>
+
+  <script>
+    var BACKEND_URL = "https://script.google.com/macros/s/AKfycbwpScVyziDaoVeuxcqdBQ3qx6j-QHy5FYoWtvlqMSsu15eXGI_l5fmo1Bg8zqP1BLyJ/exec";
+
+    function showError(msg) {
+      var e = document.getElementById("error");
+      e.textContent = msg || "Eroare.";
+      e.style.display = "block";
+    }
+
+    document.getElementById("loginForm").addEventListener("submit", function (ev) {
+      ev.preventDefault();
+
+      var email = document.getElementById("email").value.trim();
+      var password = document.getElementById("password").value.trim();
+      var btn = document.getElementById("loginBtn");
+
+      document.getElementById("error").style.display = "none";
+
+      if (!email || !password) {
+        showError("Completează email și parolă.");
+        return;
+      }
+
+      btn.disabled = true;
+
+      var cbName = "spLoginCb_" + Date.now();
+      var script = document.createElement("script");
+
+      window[cbName] = function (resp) {
+        if (!resp || !resp.success) {
+          var msg = resp && resp.error ? resp.error : "Login eșuat.";
+          showError(msg);
+          btn.disabled = false;
+        } else {
+          var user = resp.user || {};
+          try {
+            localStorage.setItem("sp_user", JSON.stringify(user));
+          } catch (e) {}
+          window.location.href = "/superparty-frontend/admin/index.html";
+        }
+
+        delete window[cbName];
+        if (script && script.parentNode) {
+          script.parentNode.removeChild(script);
+        }
+      };
+
+      var url = BACKEND_URL
+        + "?action=login"
+        + "&email=" + encodeURIComponent(email)
+        + "&password=" + encodeURIComponent(password)
+        + "&callback=" + encodeURIComponent(cbName)
+        + "&t=" + Date.now();
+
+      script.src = url;
+      script.onerror = function () {
+        btn.disabled = false;
+        showError("Server indisponibil.");
+        delete window[cbName];
+      };
+
+      document.body.appendChild(script);
+    });
+  </script>
+</body>
+</html>
