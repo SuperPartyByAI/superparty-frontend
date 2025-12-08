@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="ro">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
 
@@ -24,40 +24,47 @@
 <script>
 const BACKEND_URL = "https://script.google.com/macros/s/AKfycbwpScVyziDaoVeuxcqdBQ3qx6j-QHy5FYoWtvlqMSsu15eXGI_l5fmo1Bg8zqP1BLyJ/exec";
 
-document.getElementById("loginForm").addEventListener("submit", function(e) {
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("loginForm");
+  const emailInput = document.getElementById("email");
+  const passInput = document.getElementById("password");
+  const errorBox = document.getElementById("error");
+
+  form.addEventListener("submit", function (e) {
     e.preventDefault();
 
-    const email = document.getElementById("email").value.trim();
-    const pass  = document.getElementById("password").value.trim();
+    errorBox.style.display = "none";
+    errorBox.textContent = "";
 
-    const cb = "cb_" + Date.now();
+    const email = emailInput.value.trim();
+    const pass  = passInput.value.trim();
 
-    window[cb] = function(res) {
-        if (res.success) {
-            localStorage.setItem("user", JSON.stringify(res.user));
-            window.location.href = "/superparty-frontend/admin/index.html";
-        } else {
-            const err = document.getElementById("error");
-            err.textContent = res.error || "Eroare login.";
-            err.style.display = "block";
-        }
-        delete window[cb];
+    const cbName = "cb_" + Date.now();
+
+    window[cbName] = function (res) {
+      if (res && res.success) {
+        try { localStorage.setItem("superparty_user", JSON.stringify(res.user)); } catch(e){}
+        window.location.href = "/superparty-frontend/admin/index.html";
+      } else {
+        errorBox.textContent = (res && res.error) ? res.error : "Eroare.";
+        errorBox.style.display = "block";
+      }
+      delete window[cbName];
     };
 
-    const url = BACKEND_URL +
-        "?action=login" +
-        "&email=" + encodeURIComponent(email) +
-        "&password=" + encodeURIComponent(pass) +
-        "&callback=" + cb;
+    const url =
+      BACKEND_URL +
+      "?action=login" +
+      "&email=" + encodeURIComponent(email) +
+      "&password=" + encodeURIComponent(pass) +
+      "&callback=" + cbName +
+      "&t=" + Date.now();
 
     const s = document.createElement("script");
     s.src = url;
-    s.onerror = () => {
-        const err = document.getElementById("error");
-        err.textContent = "Nu mă pot conecta la server.";
-        err.style.display = "block";
-    };
+    s.onerror = function(){ errorBox.textContent = "Server indisponibil."; errorBox.style.display="block"; };
     document.body.appendChild(s);
+  });
 });
 </script>
 
