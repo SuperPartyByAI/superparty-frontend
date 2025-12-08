@@ -1,3 +1,10 @@
+#!/bin/bash
+
+echo "🔧 Generez fișierul src/pages/Dashboard.tsx ..."
+
+mkdir -p src/pages
+
+cat > src/pages/Dashboard.tsx << 'EOF'
 // ═══════════════════════════════════════════════════════════
 // Dashboard.tsx – Pagina principală după Autentificare
 // ═══════════════════════════════════════════════════════════
@@ -66,3 +73,6 @@ const Dashboard: React.FC = () => {
 };
 
 export default Dashboard;
+EOF
+
+echo "✅ Dashboard.tsx a fost generat cu succes!"

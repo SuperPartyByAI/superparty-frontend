@@ -1,3 +1,8 @@
+#!/bin/bash
+
+echo "🔧 Generez fișierul src/App.tsx ..."
+
+cat > src/App.tsx << 'EOF'
 // ═══════════════════════════════════════════════════════════
 // App.tsx – Routing + Protected Routes SuperParty (FINAL)
 // ═══════════════════════════════════════════════════════════
@@ -46,3 +51,7 @@ function App() {
 }
 
 export default App;
+EOF
+
+echo "✅ App.tsx a fost generat cu succes!"
+

@@ -1,3 +1,10 @@
+#!/bin/bash
+
+echo "🔧 Generez fișierul src/context/AuthContext.tsx ..."
+
+mkdir -p src/context
+
+cat > src/context/AuthContext.tsx << 'EOF'
 // ═══════════════════════════════════════════════════════════
 // AuthContext.tsx – Sistem Autentificare SuperParty (FINAL)
 // ═══════════════════════════════════════════════════════════
@@ -66,3 +73,6 @@ export const useAuth = () => {
   }
   return ctx;
 };
+EOF
+
+echo "✅ AuthContext.tsx a fost generat cu succes!"

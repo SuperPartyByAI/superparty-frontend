@@ -1,3 +1,10 @@
+#!/bin/bash
+
+echo "🔧 Generez fișierul src/pages/Login.tsx ..."
+
+mkdir -p src/pages
+
+cat > src/pages/Login.tsx << 'EOF'
 // ═══════════════════════════════════════════════════════════
 // Login.tsx – Pagina de autentificare SuperParty (FINAL)
 // ═══════════════════════════════════════════════════════════
@@ -170,3 +177,6 @@ const Login: React.FC = () => {
 };
 
 export default Login;
+EOF
+
+echo "✅ Login.tsx a fost generat cu succes!"
