@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <title>SuperParty - Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 380px;
+      padding: 24px 24px 28px;
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.35);
+    }
+
+    .login-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 4px;
+      text-align: center;
+    }
+
+    .login-subtitle {
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    label {
+      font-size: 13px;
+      color: #0f172a;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    input {
+      width: 100%;
+      padding: 9px 10px;
+      border-radius: 9px;
+      border: 1px solid #cbd5f5;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.15s ease;
+      margin-bottom: 12px;
+    }
+
+    input:focus {
+      border-color: #6366f1;
+      box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.25);
+    }
+
+    .login-button {
+      width: 100%;
+      margin-top: 6px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      color: white;
+      box-shadow: 0 10px 20px rgba(55, 48, 163, 0.55);
+      transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+    }
+
+    .login-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 28px rgba(55, 48, 163, 0.6);
+      filter: brightness(1.05);
+    }
+
+    .login-button:active {
+      transform: translateY(0px);
+      box-shadow: 0 6px 14px rgba(55, 48, 163, 0.55);
+      filter: brightness(0.96);
+    }
+
+    .login-footer {
+      margin-top: 14px;
+      font-size: 11px;
+      color: #94a3b8;
+      text-align: center;
+    }
+
+    .login-footer strong {
+      color: #6366f1;
+    }
+
+    .error-msg {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #b91c1c;
+      text-align: center;
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="login-card">
+    <div class="login-title">SuperParty</div>
+    <div class="login-subtitle">Autentificare operator / angajat</div>
+
+    <form id="loginForm">
+      <label for="loginEmail">Email</label>
+      <input id="loginEmail" type="email" placeholder="ex: nume@superparty.ro" required autocomplete="email" />
+
+      <label for="loginPassword">Parolă</label>
+      <input id="loginPassword" type="password" placeholder="Introdu parola" required autocomplete="current-password" />
+
+      <button type="submit" class="login-button">Intră în aplicație</button>
+
+      <div id="loginError" class="error-msg"></div>
+    </form>
+
+    <div class="login-footer">
+      <span>Versiune <strong>Login JSONP</strong> · conectat la Apps Script</span>
+    </div>
+  </div>
+
+  <script>
+    // 👉 URL-ul backend-ului Apps Script (web app /exec)
+    // Dacă l-ai redeploy-uit și s-a schimbat, înlocuiește aici cu noul URL.
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbwpScVyziDaoVeuxcqdBQ3qx6j-QHy5FYoWtvlqMSsu15eXGI_l5fmo1Bg8zqP1BLyJ/exec";
+
+    console.log("🔧 LOGIN.JS LOADED");
+    console.log("🔧 BACKEND_URL =", BACKEND_URL);
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const form = document.getElementById("loginForm");
+      const emailInput = document.getElementById("loginEmail");
+      const passwordInput = document.getElementById("loginPassword");
+      const errorBox = document.getElementById("loginError");
+
+      if (!form || !emailInput || !passwordInput) {
+        console.error("❌ Nu găsesc loginForm / loginEmail / loginPassword în HTML.");
+        return;
+      }
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        errorBox.style.display = "none";
+        errorBox.textContent = "";
+
+        const email = emailInput.value.trim();
+        const password = passwordInput.value.trim();
+
+        console.log("🔍 LOGIN - Email:", email);
+        console.log("🔍 LOGIN - Backend URL:", BACKEND_URL);
+
+        if (!email || !password) {
+          errorBox.textContent = "Te rog completează email și parola.";
+          errorBox.style.display = "block";
+          return;
+        }
+
+        // nume unic pentru callback-ul JSONP
+        const callbackName = "superpartyLoginCallback_" + Date.now();
+
+        // definim callback-ul global pe window
+        window[callbackName] = function (response) {
+          console.log("🟢 JSONP RESPONSE:", response);
+
+          if (response && response.success) {
+            console.log("✅ LOGIN REUȘIT pentru:", response.user && response.user.email);
+
+            try {
+              localStorage.setItem("superparty_user", JSON.stringify(response.user));
+            } catch (e) {
+              console.warn("⚠️ Nu pot salva userul în localStorage:", e);
+            }
+
+            // schimbă aici ruta unde vrei să meargă după login
+            window.location.href = "/superparty-frontend/admin/index.html";
+          } else {
+            const msg = (response && response.error) ? response.error : "Autentificare eșuată.";
+            console.error("❌ LOGIN EȘUAT:", msg);
+            errorBox.textContent = msg;
+            errorBox.style.display = "block";
+          }
+
+          // cleanup callback
+          try {
+            delete window[callbackName];
+          } catch (e) {
+            window[callbackName] = undefined;
+          }
+        };
+
+        // construim URL JSONP
+        const url =
+          BACKEND_URL +
+          "?action=login" +
+          "&email=" + encodeURIComponent(email) +
+          "&password=" + encodeURIComponent(password) +
+          "&callback=" + encodeURIComponent(callbackName) +
+          "&_ts=" + Date.now();
+
+        console.log("🔍 LOGIN - Request URL:", url);
+
+        // creăm <script> pentru JSONP
+        const script = document.createElement("script");
+        script.src = url;
+        script.onerror = function () {
+          console.error("❌ Eroare la încărcarea scriptului JSONP.");
+          errorBox.textContent = "Nu mă pot conecta la server. Încearcă din nou.";
+          errorBox.style.display = "block";
+        };
+
+        document.body.appendChild(script);
+      });
+    });
+  </script>
+</body>
+</html>
