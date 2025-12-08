@@ -211,15 +211,8 @@
     </div>
 
     <script>
-        // ═══════════════════════════════════════════════════════════
-        // CONFIGURATION
-        // ═══════════════════════════════════════════════════════════
-        
+        // CONFIG
         const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxrDcyKQfGgfpQrNm4opWsbce_mR1a-w7EbCLYtrrMEc-gFQKQAH7TQiY_ivxf9wZCj/exec';
-        
-        // ═══════════════════════════════════════════════════════════
-        // ELEMENTS
-        // ═══════════════════════════════════════════════════════════
         
         const loginForm = document.getElementById('loginForm');
         const emailInput = document.getElementById('email');
@@ -227,10 +220,6 @@
         const loginBtn = document.getElementById('loginBtn');
         const errorDiv = document.getElementById('error');
         const loader = document.getElementById('loader');
-        
-        // ═══════════════════════════════════════════════════════════
-        // HELPER FUNCTIONS
-        // ═══════════════════════════════════════════════════════════
         
         function showError(message) {
             errorDiv.textContent = '⚠️ ' + message;
@@ -253,44 +242,37 @@
             loginForm.style.opacity = '1';
         }
         
-        // ═══════════════════════════════════════════════════════════
-        // API CALL (JSONP for CORS)
-        // ═══════════════════════════════════════════════════════════
-        
+        // JSONP API
         function apiCall(action, params = {}) {
             return new Promise((resolve, reject) => {
                 const callbackName = 'callback_' + Date.now();
                 const script = document.createElement('script');
                 
-                // Build URL with parameters
                 const url = new URL(BACKEND_URL);
                 url.searchParams.append('action', action);
                 url.searchParams.append('callback', callbackName);
                 
-                // Add params
                 Object.keys(params).forEach(key => {
                     url.searchParams.append(key, params[key]);
                 });
                 
-                // Set global callback
+                console.log('[JSONP URL]', url.toString());
+                
                 window[callbackName] = (data) => {
                     document.body.removeChild(script);
                     delete window[callbackName];
                     resolve(data);
                 };
                 
-                // Error handling
                 script.onerror = () => {
                     document.body.removeChild(script);
                     delete window[callbackName];
                     reject(new Error('Network error'));
                 };
                 
-                // Load script
                 script.src = url.toString();
                 document.body.appendChild(script);
                 
-                // Timeout
                 setTimeout(() => {
                     if (window[callbackName]) {
                         document.body.removeChild(script);
@@ -301,10 +283,7 @@
             });
         }
         
-        // ═══════════════════════════════════════════════════════════
-        // LOGIN HANDLER
-        // ═══════════════════════════════════════════════════════════
-        
+        // LOGIN
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -325,10 +304,8 @@
                 console.log('Login result:', result);
                 
                 if (result.success) {
-                    // Save user data
                     localStorage.setItem('superparty_user', JSON.stringify(result));
                     
-                    // Redirect based on role
                     if (result.role === 'admin') {
                         window.location.href = 'admin/index.html';
                     } else if (result.role === 'gm') {
@@ -348,10 +325,7 @@
             }
         });
         
-        // ═══════════════════════════════════════════════════════════
         // AUTO-REDIRECT IF LOGGED IN
-        // ═══════════════════════════════════════════════════════════
-        
         window.addEventListener('DOMContentLoaded', () => {
             const userData = localStorage.getItem('superparty_user');
             
@@ -359,7 +333,6 @@
                 try {
                     const user = JSON.parse(userData);
                     
-                    // Redirect to appropriate page
                     if (user.role === 'admin') {
                         window.location.href = 'admin/index.html';
                     } else if (user.role === 'gm') {
@@ -368,7 +341,6 @@
                         window.location.href = 'angajat/index.html';
                     }
                 } catch (e) {
-                    // Invalid data, clear it
                     localStorage.removeItem('superparty_user');
                 }
             }
