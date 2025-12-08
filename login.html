@@ -5,36 +5,47 @@
   <title>SuperParty Login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-<body>
+<body style="font-family: Arial; padding: 30px;">
+
   <h2>SuperParty Login</h2>
 
   <form id="loginForm">
     <label>Email:</label><br>
-    <input id="email" type="email" required><br><br>
+    <input id="email" type="email" required style="width: 250px;"><br><br>
 
     <label>Parola:</label><br>
-    <input id="password" type="password" required><br><br>
+    <input id="password" type="password" required style="width: 250px;"><br><br>
 
-    <button type="submit" id="loginBtn">Autentificare</button>
+    <button type="submit" id="loginBtn" style="padding: 8px 20px;">Autentificare</button>
   </form>
 
-  <p id="error" style="color:red; display:none;"></p>
+  <p id="error" style="color:red; display:none; margin-top:15px;"></p>
 
   <script>
-    var BACKEND_URL = "https://script.google.com/macros/s/AKfycbxrDcyKQfGgfpQrNm4opWsbce_mR1a-w7EbCLYtrrMEc-gFQKQAH7TQiY_ivxf9wZCj/exec";
+    /*********************************************
+     *  URL BACKEND — pune aici link-ul de Web App
+     *********************************************/
+    const BACKEND_URL =
+      "https://script.google.com/macros/s/AKfycbxrDcyKQfGgfpQrNm4opWsbce_mR1a-w7EbCLYtrrMEc-gFQKQAH7TQiY_ivxf9wZCj/exec";
 
+    /*********************************************
+     *  Funcție afișare eroare
+     *********************************************/
     function showError(msg) {
-      var e = document.getElementById("error");
-      e.textContent = msg || "Eroare.";
+      const e = document.getElementById("error");
+      e.textContent = msg || "Eroare la login.";
       e.style.display = "block";
     }
 
+    /*********************************************
+     *  Submit formular login
+     *********************************************/
     document.getElementById("loginForm").addEventListener("submit", function (ev) {
       ev.preventDefault();
 
-      var email = document.getElementById("email").value.trim();
-      var password = document.getElementById("password").value.trim();
-      var btn = document.getElementById("loginBtn");
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const btn = document.getElementById("loginBtn");
 
       document.getElementById("error").style.display = "none";
 
@@ -45,44 +56,70 @@
 
       btn.disabled = true;
 
-      var cbName = "spLoginCb_" + Date.now();
-      var script = document.createElement("script");
+      /*********************************************
+       *  Facem nume unic pentru callback JSONP
+       *********************************************/
+      const cbName = "spCb_" + Date.now() + "_" + Math.floor(Math.random() * 999999);
+      const script = document.createElement("script");
 
+      /*********************************************
+       *  Definim callback-ul care primește răspunsul
+       *********************************************/
       window[cbName] = function (resp) {
+        console.log("[LOGIN] Răspuns primit:", resp);
+
         if (!resp || !resp.success) {
-          var msg = resp && resp.error ? resp.error : "Login eșuat.";
-          showError(msg);
+          showError(resp?.error || "Login eșuat.");
           btn.disabled = false;
         } else {
-          var user = resp.user || {};
+          const user = resp.user || {};
+          console.log("[LOGIN] User:", user);
+
+          // salvăm userul în localStorage
           try {
-            localStorage.setItem("sp_user", JSON.stringify(user));
-          } catch (e) {}
+            localStorage.setItem("superparty_user", JSON.stringify(user));
+          } catch (e) {
+            console.warn("Nu pot salva în localStorage:", e);
+          }
+
+          // redirect
           window.location.href = "/superparty-frontend/admin/index.html";
         }
 
-        delete window[cbName];
-        if (script && script.parentNode) {
-          script.parentNode.removeChild(script);
-        }
+        // curățăm callback + script
+        try { delete window[cbName]; } catch (e) {}
+        script.remove();
       };
 
-      var url = BACKEND_URL
+      /*********************************************
+       *  Construim URL-ul JSONP
+       *********************************************/
+      const requestUrl =
+        BACKEND_URL
         + "?action=login"
         + "&email=" + encodeURIComponent(email)
         + "&password=" + encodeURIComponent(password)
         + "&callback=" + encodeURIComponent(cbName)
-        + "&t=" + Date.now();
+        + "&_ts=" + Date.now();
 
-      script.src = url;
+      console.log("[LOGIN] Request URL:", requestUrl);
+
+      script.src = requestUrl;
+      script.async = true;
+
+      /*********************************************
+       *  Dacă serverul nu răspunde
+       *********************************************/
       script.onerror = function () {
+        console.error("[LOGIN] Script load error!");
         btn.disabled = false;
-        showError("Server indisponibil.");
-        delete window[cbName];
+        showError("Server indisponibil sau URL backend greșit.");
+        try { delete window[cbName]; } catch (e) {}
       };
 
       document.body.appendChild(script);
     });
   </script>
+
 </body>
 </html>
