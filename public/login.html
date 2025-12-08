@@ -95,11 +95,10 @@
   </div>
 
   <script>
-    // 🔗 AICI PUI LINKUL TĂU DE BACKEND /exec
-    const BACKEND_URL = "LINKUL_TAU_EXEC_AICI";
+    // 🔗 Backend-ul tău (Apps Script Web App)
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxrDcyKQfGgfpQrNm4opWsbce_mR1a-w7EbCLYtrrMEc-gFQKQAH7TQiY_ivxf9wZCj/exec";
 
     const form = document.getElementById("loginForm");
-    const btn = document.getElementById("loginBtn");
     const errorEl = document.getElementById("error");
     const successEl = document.getElementById("success");
     const debugEl = document.getElementById("debugInfo");
@@ -107,55 +106,75 @@
     function setError(msg) {
       errorEl.textContent = msg;
       errorEl.style.display = "block";
+      successEl.style.display = "none";
     }
 
     function setSuccess(msg) {
       successEl.textContent = msg;
       successEl.style.display = "block";
+      errorEl.style.display = "none";
+    }
+
+    function clearMessages() {
+      errorEl.style.display = "none";
+      successEl.style.display = "none";
     }
 
     form.addEventListener("submit", function (ev) {
       ev.preventDefault();
+      clearMessages();
 
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value.trim();
 
       if (!email || !password) {
-        setError("Completează email și parolă.");
+        setError("Completează emailul și parola.");
         return;
       }
 
       const cbName = "spLoginCb_" + Date.now();
       debugEl.textContent = "Trimit cererea către backend...";
 
+      // definim callback-ul global JSONP
       window[cbName] = function (resp) {
         cleanup();
+        if (!resp) {
+          setError("Răspuns invalid de la server.");
+          return;
+        }
         if (resp.success) {
-          setSuccess("Autentificare reușită! Rol: " + resp.role);
+          setSuccess("Autentificare reușită! Rol: " + (resp.role || "necunoscut"));
+          // aici poți face redirect:
+          // window.location.href = "/admin/index.html";
         } else {
-          setError(resp.error || "Eroare necunoscută.");
+          setError(resp.error || "Login eșuat.");
         }
       };
 
       const params = new URLSearchParams({
         action: "login",
-        email,
-        password,
+        email: email,
+        password: password,
         callback: cbName
       });
 
       const url = BACKEND_URL + "?" + params.toString();
+      console.log("[JSONP] URL:", url);
 
       const script = document.createElement("script");
       script.src = url;
+      script.async = true;
+
       script.onerror = function () {
         cleanup();
-        setError("Network error — backend nu răspunde.");
+        setError("Network error: backend nu răspunde sau link greșit.");
       };
 
       function cleanup() {
-        if (script.parentNode) script.parentNode.removeChild(script);
-        delete window[cbName];
+        if (script && script.parentNode) {
+          script.parentNode.removeChild(script);
+        }
+        try { delete window[cbName]; } catch (e) { window[cbName] = undefined; }
       }
 
       document.body.appendChild(script);
