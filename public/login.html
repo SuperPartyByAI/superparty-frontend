@@ -39,26 +39,38 @@
       margin-bottom: 20px;
     }
 
-    label { display: block; margin-bottom: 6px; font-size: 14px; font-weight: 500; color: #111827; }
-    input {
-      width: 100%; padding: 10px 12px; border-radius: 8px;
-      border: 1px solid #cbd5e1; font-size: 14px; margin-bottom: 14px;
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #111827;
     }
 
-    input:focus { border-color: #4f46e5; box-shadow: 0 0 0 1px rgba(79,70,229,0.4); }
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      font-size: 14px;
+      margin-bottom: 14px;
+      outline: none;
+    }
 
     button {
-      width: 100%; padding: 10px 12px; border-radius: 999px;
-      border: none; background: #4f46e5; color: white;
-      font-size: 15px; font-weight: 600; cursor: pointer;
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: none;
+      background: #4f46e5;
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
     }
-
-    button:hover { background: #4338ca; }
-    button:active { transform: translateY(1px); }
 
     #error { margin-top: 10px; font-size: 13px; color: #b91c1c; display: none; }
     #success { margin-top: 10px; font-size: 13px; color: #15803d; display: none; }
-
     .small { margin-top: 10px; font-size: 11px; color: #94a3b8; text-align: center; }
   </style>
 </head>
@@ -83,7 +95,7 @@
   </div>
 
   <script>
-    // 🔗 AICI PUI NOUL TĂU LINK DE LA DEPLOY /exec
+    // 🔗 AICI PUI LINKUL TĂU DE BACKEND /exec
     const BACKEND_URL = "LINKUL_TAU_EXEC_AICI";
 
     const form = document.getElementById("loginForm");
@@ -92,16 +104,21 @@
     const successEl = document.getElementById("success");
     const debugEl = document.getElementById("debugInfo");
 
-    function setError(msg) { errorEl.textContent = msg; errorEl.style.display = "block"; successEl.style.display = "none"; }
-    function setSuccess(msg) { successEl.textContent = msg; successEl.style.display = "block"; errorEl.style.display = "none"; }
-    function clearMessages() { errorEl.style.display = successEl.style.display = "none"; }
+    function setError(msg) {
+      errorEl.textContent = msg;
+      errorEl.style.display = "block";
+    }
+
+    function setSuccess(msg) {
+      successEl.textContent = msg;
+      successEl.style.display = "block";
+    }
 
     form.addEventListener("submit", function (ev) {
       ev.preventDefault();
-      clearMessages();
 
-      const email = emailInput.value.trim();
-      const password = passwordInput.value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
 
       if (!email || !password) {
         setError("Completează email și parolă.");
@@ -120,12 +137,14 @@
         }
       };
 
-      const url = BACKEND_URL + "?" + new URLSearchParams({
+      const params = new URLSearchParams({
         action: "login",
         email,
         password,
         callback: cbName
       });
+
+      const url = BACKEND_URL + "?" + params.toString();
 
       const script = document.createElement("script");
       script.src = url;
