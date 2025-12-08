@@ -252,7 +252,7 @@
                 console.log('🔍 LOGIN - Email:', email);
                 console.log('🔍 LOGIN - Backend URL:', BACKEND_URL);
                 console.log('🔍 LOGIN - Request URL:', url);
-                const url = `${BACKEND_URL}?action=login&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
+                var url = `${BACKEND_URL}?action=login&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
                 const response = await fetch(url);
                 console.log('🔍 LOGIN - Response status:', response.status);
                 console.log('🔍 LOGIN - Response headers:', response.headers);
@@ -300,7 +300,7 @@
                 console.log('🔍 LOGIN - Email:', email);
                 console.log('🔍 LOGIN - Backend URL:', BACKEND_URL);
                 console.log('🔍 LOGIN - Request URL:', url);
-                const url = `${BACKEND_URL}?action=register&name=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}&phone=0700000000&password=${encodeURIComponent(password)}`;
+                var url = `${BACKEND_URL}?action=register&name=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}&phone=0700000000&password=${encodeURIComponent(password)}`;
                 const response = await fetch(url);
                 console.log('🔍 LOGIN - Response status:', response.status);
                 console.log('🔍 LOGIN - Response headers:', response.headers);
@@ -329,7 +329,7 @@
                 console.log('🔍 LOGIN - Email:', email);
                 console.log('🔍 LOGIN - Backend URL:', BACKEND_URL);
                 console.log('🔍 LOGIN - Request URL:', url);
-                const url = `${BACKEND_URL}?action=getAllUsers`;
+                var url = `${BACKEND_URL}?action=getAllUsers`;
                 const response = await fetch(url);
                 console.log('🔍 LOGIN - Response status:', response.status);
                 console.log('🔍 LOGIN - Response headers:', response.headers);
