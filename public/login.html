@@ -57,6 +57,11 @@
       outline: none;
     }
 
+    input:focus {
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.4);
+    }
+
     button {
       width: 100%;
       padding: 10px 12px;
@@ -69,9 +74,35 @@
       cursor: pointer;
     }
 
-    #error { margin-top: 10px; font-size: 13px; color: #b91c1c; display: none; }
-    #success { margin-top: 10px; font-size: 13px; color: #15803d; display: none; }
-    .small { margin-top: 10px; font-size: 11px; color: #94a3b8; text-align: center; }
+    button:hover { background: #4338ca; }
+    button:active { transform: translateY(1px); }
+
+    button[disabled] {
+      opacity: 0.6;
+      cursor: default;
+      transform: none;
+    }
+
+    #error {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #b91c1c;
+      display: none;
+    }
+
+    #success {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #15803d;
+      display: none;
+    }
+
+    .small {
+      margin-top: 10px;
+      font-size: 11px;
+      color: #94a3b8;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -81,10 +112,10 @@
 
     <form id="loginForm">
       <label for="email">Email</label>
-      <input id="email" type="email" required />
+      <input id="email" type="email" required autocomplete="email" />
 
       <label for="password">Parolă</label>
-      <input id="password" type="password" required />
+      <input id="password" type="password" required autocomplete="current-password" />
 
       <button type="submit" id="loginBtn">Autentificare</button>
     </form>
@@ -95,10 +126,16 @@
   </div>
 
   <script>
-    // 🔗 Backend-ul tău (Apps Script Web App)
+    // 🔗 BACKEND Apps Script (JSONP)
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxrDcyKQfGgfpQrNm4opWsbce_mR1a-w7EbCLYtrrMEc-gFQKQAH7TQiY_ivxf9wZCj/exec";
 
+    // 🔐 Cheia sub care salvăm sesiunea în localStorage
+    const SESSION_KEY = "sp_session";
+    // Cât timp e validă sesiunea (ex: 12 ore)
+    const SESSION_TTL_MS = 12 * 60 * 60 * 1000;
+
     const form = document.getElementById("loginForm");
+    const btn = document.getElementById("loginBtn");
     const errorEl = document.getElementById("error");
     const successEl = document.getElementById("success");
     const debugEl = document.getElementById("debugInfo");
@@ -120,6 +157,87 @@
       successEl.style.display = "none";
     }
 
+    function setLoading(isLoading) {
+      if (isLoading) {
+        btn.disabled = true;
+        btn.textContent = "Se autentifică...";
+      } else {
+        btn.disabled = false;
+        btn.textContent = "Autentificare";
+      }
+    }
+
+    // 🔐 Salvăm sesiunea în localStorage
+    function saveSession(email, role) {
+      const payload = {
+        email,
+        role,
+        createdAt: Date.now(),
+        expiresAt: Date.now() + SESSION_TTL_MS
+      };
+      try {
+        localStorage.setItem(SESSION_KEY, JSON.stringify(payload));
+      } catch (e) {
+        console.warn("Nu pot salva sesiunea în localStorage:", e);
+      }
+    }
+
+    // 🔐 Citim sesiunea
+    function getSession() {
+      try {
+        const raw = localStorage.getItem(SESSION_KEY);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (!parsed || !parsed.email || !parsed.expiresAt) return null;
+        if (Date.now() > parsed.expiresAt) {
+          // expirat
+          localStorage.removeItem(SESSION_KEY);
+          return null;
+        }
+        return parsed;
+      } catch (e) {
+        console.warn("Eroare la citirea sesiunii:", e);
+        return null;
+      }
+    }
+
+    // 🔐 Ștergem sesiunea (dacă vreodată faci buton de logout)
+    function clearSession() {
+      try {
+        localStorage.removeItem(SESSION_KEY);
+      } catch (e) {}
+    }
+
+    // 🚀 Redirect în funcție de rol
+    function redirectByRole(role) {
+      const r = (role || "").toString().trim().toLowerCase();
+
+      if (r === "admin" || r === "administrator") {
+        window.location.href = "/admin/index.html";
+      } else if (r === "gm" || r === "general manager") {
+        window.location.href = "/gm/index.html";
+      } else if (r === "angajat" || r === "operator" || r === "user") {
+        window.location.href = "/angajat/index.html";
+      } else {
+        // fallback – dacă rolul e ciudat, îl băgăm în admin
+        window.location.href = "/admin/index.html";
+      }
+    }
+
+    // 🔁 Autologin la încărcarea paginii (dacă avem sesiune validă)
+    (function autoLoginOnLoad() {
+      const session = getSession();
+      if (session && session.email && session.role) {
+        console.log("[AUTOLOGIN] Găsit sesiune:", session);
+        setSuccess("Autentificare automată... (" + session.role + ")");
+        // Mic delay doar ca să vezi mesajul, apoi redirect
+        setTimeout(function () {
+          redirectByRole(session.role);
+        }, 500);
+      }
+    })();
+
+    // 🧷 LOGIN JSONP
     form.addEventListener("submit", function (ev) {
       ev.preventDefault();
       clearMessages();
@@ -128,28 +246,54 @@
       const password = document.getElementById("password").value.trim();
 
       if (!email || !password) {
-        setError("Completează emailul și parola.");
+        setError("Te rog completează emailul și parola.");
         return;
       }
 
-      const cbName = "spLoginCb_" + Date.now();
-      debugEl.textContent = "Trimit cererea către backend...";
+      setLoading(true);
 
-      // definim callback-ul global JSONP
+      const cbName = "spLoginCb_" + Date.now();
+      debugEl.textContent = "Trimit cerere JSONP către backend...";
+
+      // definim callback-ul global pentru JSONP
       window[cbName] = function (resp) {
+        console.log("[JSONP][OK] Răspuns primit:", resp);
         cleanup();
+
         if (!resp) {
           setError("Răspuns invalid de la server.");
           return;
         }
+
         if (resp.success) {
-          setSuccess("Autentificare reușită! Rol: " + (resp.role || "necunoscut"));
-          // aici poți face redirect:
-          // window.location.href = "/admin/index.html";
+          const role = resp.role || "necunoscut";
+          const emailResp = resp.email || email;
+
+          setSuccess("Autentificare reușită. Rol: " + role);
+
+          // 🔐 salvăm sesiunea
+          saveSession(emailResp, role);
+
+          // mic delay să vezi mesajul, apoi redirect în funcție de rol
+          setTimeout(function () {
+            redirectByRole(role);
+          }, 600);
         } else {
-          setError(resp.error || "Login eșuat.");
+          setError(resp.error || "Login eșuat. Verifică datele.");
         }
       };
+
+      function cleanup() {
+        setLoading(false);
+        if (script && script.parentNode) {
+          script.parentNode.removeChild(script);
+        }
+        try {
+          delete window[cbName];
+        } catch (e) {
+          window[cbName] = undefined;
+        }
+      }
 
       const params = new URLSearchParams({
         action: "login",
@@ -166,16 +310,10 @@
       script.async = true;
 
       script.onerror = function () {
+        console.error("[JSONP][ERROR] Network error la încărcarea script-ului");
         cleanup();
-        setError("Network error: backend nu răspunde sau link greșit.");
+        setError("Network error: backend nu răspunde sau link-ul e greșit.");
       };
-
-      function cleanup() {
-        if (script && script.parentNode) {
-          script.parentNode.removeChild(script);
-        }
-        try { delete window[cbName]; } catch (e) { window[cbName] = undefined; }
-      }
 
       document.body.appendChild(script);
     });
