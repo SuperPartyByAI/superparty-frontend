@@ -111,7 +111,7 @@
       margin-bottom: 6px;
     }
 
-    /* ───── "Handle" la mijloc pe stânga (de el ții degetul) ───── */
+    /* ───── "Handle" la mijloc pe stânga (tap pentru open/close) ───── */
     .sidebar-handle {
       position: fixed;
       left: 0;
@@ -332,13 +332,14 @@
 
     function openChat() {
       chatBox.classList.add('visible');
-      botBtn.style.display = 'none';
+      botBtn.style.display = 'inline-block';
+      botBtn.style.visibility = 'hidden'; // ascundem vizual robotelul
       chatInput.focus();
     }
 
     function closeChat() {
       chatBox.classList.remove('visible');
-      botBtn.style.display = 'inline-block';
+      botBtn.style.visibility = 'visible';
     }
 
     botBtn.addEventListener('click', openChat);
@@ -369,26 +370,36 @@
       if (e.key === 'Enter') sendFakeMessage();
     });
 
-    // ───── Handle: deschide pe touchstart, închide pe touchend (fără logica globală care o închidea instant) ─────
+    // ───── Handle: TAP = toggle sidebar (stă deschisă până o închizi tu) ─────
     const sidebarHandle = document.getElementById('sidebarHandle');
 
-    // Desktop: mousedown -> deschis, mouseup -> închis
-    sidebarHandle.addEventListener('mousedown', (e) => {
-      document.body.classList.add('sidebar-open');
-    });
-    document.addEventListener('mouseup', () => {
-      document.body.classList.remove('sidebar-open');
-    });
+    function toggleSidebar() {
+      document.body.classList.toggle('sidebar-open');
+    }
 
-    // Touch: touchstart -> deschis, touchend -> închis
-    sidebarHandle.addEventListener('touchstart', (e) => {
-      e.stopPropagation();
-      document.body.classList.add('sidebar-open');
-    });
+    // Desktop click
+    sidebarHandle.addEventListener('click', toggleSidebar);
 
+    // Touch (pe mobil) – folosim touchend ca să nu se dubleze cu click
     sidebarHandle.addEventListener('touchend', (e) => {
-      e.stopPropagation();
-      document.body.classList.remove('sidebar-open');
+      e.preventDefault();
+      toggleSidebar();
+    });
+
+    // Închide sidebar dacă atingi în dreapta când e deschis
+    document.addEventListener('touchstart', (e) => {
+      if (!document.body.classList.contains('sidebar-open')) return;
+      const x = e.touches[0].clientX;
+      if (x > 120) {
+        document.body.classList.remove('sidebar-open');
+      }
+    });
+
+    document.addEventListener('mousedown', (e) => {
+      if (!document.body.classList.contains('sidebar-open')) return;
+      if (e.clientX > 120) {
+        document.body.classList.remove('sidebar-open');
+      }
     });
   </script>
 </body>
