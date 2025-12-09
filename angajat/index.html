@@ -1,92 +1,43 @@
-<script>
-  (function () {
-    // URL-ul backend-ului tău pentru login ANGAJAT
-    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxs819m4gt-tpTkAIIS91EnxhwYx-5wdbnh6Zi5_GcY14zs5XYqS9ykFuYCCcokhQ/exec";
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <title>SuperParty Angajat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    const form = document.getElementById("loginForm");
-    const emailInput = document.getElementById("loginEmail");
-    const passwordInput = document.getElementById("loginPassword");
-    const errorEl = document.getElementById("loginError");
+  <style>
+    body { margin:0; font-family:Arial; background:#f9fafb; }
+    header { background:#6366f1; color:white; padding:16px; display:flex; justify-content:space-between; }
+    #logoutBtn { background:white; color:#4338ca; border:none; padding:8px 14px; border-radius:6px; cursor:pointer; }
+  </style>
+</head>
 
-    if (!form) {
-      console.error("Nu găsesc formularul #loginForm în angajat/index.html");
-      return;
-    }
+<body>
+  <header>
+    <h1>SuperParty Angajat</h1>
+    <button id="logoutBtn">Logout</button>
+  </header>
 
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
+  <script>
+    (function(){
+      const raw = localStorage.getItem("user");
+      if (!raw) return location.href="/frontend/login.html";
 
-      const email = emailInput ? emailInput.value.trim() : "";
-      const pass = passwordInput ? passwordInput.value.trim() : "";
+      let user;
+      try { user = JSON.parse(raw); }
+      catch { localStorage.clear(); return location.href="/frontend/login.html"; }
 
-      if (!email || !pass) {
-        if (errorEl) {
-          errorEl.textContent = "Te rog introdu email și parolă.";
-          errorEl.style.display = "block";
-        } else {
-          alert("Te rog introdu email și parolă.");
-        }
-        return;
+      if (!user.role || user.role === "admin" || user.role === "gm") {
+        alert("Această pagină este doar pentru angajați.");
+        return location.href="/frontend/login.html";
       }
 
-      const callbackName = "cb_login_" + Date.now();
-
-      // ⚠️ AICI calculăm URL-ul ÎNAINTE să-l folosim
-      const url =
-        BACKEND_URL +
-        "?action=login" +
-        "&email=" + encodeURIComponent(email) +
-        "&password=" + encodeURIComponent(pass) +
-        "&callback=" + callbackName;
-
-      console.log("🔍 LOGIN - Email:", email);
-      console.log("🔍 LOGIN - Backend URL:", BACKEND_URL);
-      console.log("🔍 LOGIN - Full URL:", url);
-
-      window[callbackName] = function (resp) {
-        console.log("✅ LOGIN JSONP RESP:", resp);
-
-        if (!resp || !resp.success) {
-          const msg = resp && resp.error ? resp.error : "Email sau parolă incorecte.";
-          if (errorEl) {
-            errorEl.textContent = msg;
-            errorEl.style.display = "block";
-          } else {
-            alert(msg);
-          }
-          return;
-        }
-
-        // Salvăm utilizatorul în localStorage
-        try {
-          localStorage.setItem(
-            "superparty_user",
-            JSON.stringify({ email: resp.email, role: resp.role || "angajat" })
-          );
-        } catch (err) {
-          console.warn("Nu pot salva în localStorage:", err);
-        }
-
-        // Redirect în funcție de rol
-        if (resp.role === "admin") {
-          window.location.href = "/admin/index.html";
-        } else {
-          window.location.href = "/angajat/index.html";
-        }
+      document.getElementById("logoutBtn").onclick = () => {
+        localStorage.removeItem("user");
+        location.href = "/frontend/login.html";
       };
+    })();
+  </script>
 
-      const s = document.createElement("script");
-      s.src = url;
-      s.onerror = function (err) {
-        console.error("❌ Script JSONP NU s-a încărcat:", err);
-        if (errorEl) {
-          errorEl.textContent = "Nu s-a putut contacta serverul. Încearcă din nou.";
-          errorEl.style.display = "block";
-        } else {
-          alert("Nu s-a putut contacta serverul. Încearcă din nou.");
-        }
-      };
-      document.body.appendChild(s);
-    });
-  })();
-</script>
+</body>
+</html>

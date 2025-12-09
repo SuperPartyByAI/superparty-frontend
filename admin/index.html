@@ -1,1 +1,63 @@
-<!DOCTYPE html><html lang="ro"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Detalii eveniment - SuperParty</title><style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f8fafc;color:#1e293b;padding:16px;}.page{max-width:900px;margin:0 auto;}.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}.logo{font-weight:700;font-size:18px;color:#ea580c;}.back-btn{padding:8px 14px;border-radius:999px;border:none;background:#e5e7eb;cursor:pointer;font-size:14px;}.card{background:white;border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:0 1px 3px rgba(15,23,42,0.08);} .card-title{font-size:16px;font-weight:600;margin-bottom:8px;}.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}.label{font-size:12px;text-transform:uppercase;color:#6b7280;margin-bottom:4px;}.value{font-size:14px;font-weight:500;}.roles-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}.role-pill{padding:6px 10px;border-radius:999px;font-size:12px;background:#fee2e2;color:#b91c1c;}.role-pill.main{background:#dbeafe;color:#1d4ed8;}.actions{margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;}.btn{border:none;border-radius:999px;padding:8px 14px;font-size:13px;cursor:pointer;}.btn-primary{background:#ea580c;color:white;}.btn-secondary{background:#e5e7eb;color:#111827;}@media(max-width:768px){.grid-2{grid-template-columns:1fr;}}</style></head><body><div class="page"><div class="header"><div class="logo">SuperParty · Detalii eveniment</div><button class="back-btn" onclick="goBack()">⟵ Înapoi la listă</button></div><div class="card"><div class="card-title">Elsa 2h + Olaf 2h</div><div class="grid-2"><div><div class="label">Data</div><div class="value">07 decembrie 2024</div></div><div><div class="label">Interval orar</div><div class="value">15:00 - 17:00</div></div><div><div class="label">Adresa</div><div class="value">București, Sector 3 · Str. Florilor 23</div></div><div><div class="label">Client</div><div class="value">Maria Ionescu · 0722 456 789</div></div></div><div class="roles-list"><span class="role-pill main">Rol principal: ANIMAȚIE</span><span class="role-pill">Elsa 2h · A23</span><span class="role-pill">Olaf 2h · B15</span></div><div class="actions"><button class="btn btn-primary">Vezi / încarcă dovezi foto</button><button class="btn btn-secondary">Vezi cine face bagajul</button></div></div><div class="card"><div class="card-title">Plată & tips</div><div class="grid-2"><div><div class="label">Total</div><div class="value">650 lei (cash)</div></div><div><div class="label">Tips</div><div class="value">—</div></div><div><div class="label">Status încasare</div><div class="value">Neîncasată</div></div><div><div class="label">Necesită șofer</div><div class="value">NU</div></div></div><div class="actions"><button class="btn btn-primary">Marchează ca încasată</button><button class="btn btn-secondary">Adaugă tips</button></div></div><div class="card"><div class="card-title">Roluri & coduri</div><div class="grid-2"><div><div class="label">Bagaj</div><div class="value">A12 · (necompletat)</div></div><div><div class="label">Rol 1</div><div class="value">Elsa 2h · A23</div></div><div><div class="label">Rol 2</div><div class="value">Olaf 2h · B15</div></div></div><div class="actions"><button class="btn btn-primary">Setează cine face bagajul</button><button class="btn btn-secondary">Note interne</button></div></div></div><script>function goBack(){window.location.href="index.html";}</script></body></html>
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <title>SuperParty GM</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f9fafb;
+    }
+
+    header {
+      background: #10b981;
+      color: white;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    #logoutBtn {
+      background: white;
+      color: #047857;
+      border: none;
+      padding: 8px 14px;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>SuperParty GM</h1>
+    <button id="logoutBtn">Logout</button>
+  </header>
+
+  <script>
+    (function(){
+      const raw = localStorage.getItem("user");
+      if (!raw) return location.href="/frontend/login.html";
+
+      let user;
+      try { user = JSON.parse(raw); }
+      catch { localStorage.clear(); return location.href="/frontend/login.html"; }
+
+      if (!user.role || (user.role !== "gm" && user.role !== "admin")) {
+        alert("Acces interzis! Doar GM sau Admin poate intra.");
+        return location.href="/frontend/login.html";
+      }
+
+      document.getElementById("logoutBtn").onclick = () => {
+        localStorage.removeItem("user");
+        location.href = "/frontend/login.html";
+      };
+    })();
+  </script>
+</body>
+</html>
