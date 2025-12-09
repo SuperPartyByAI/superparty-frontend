@@ -14,6 +14,157 @@
     #root {
       height: 100%;
     }
+    .app {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .side-nav {
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100vh;
+      width: 170px;
+      background: #111827;
+      color: white;
+      padding: 16px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 4px 0 16px rgba(15, 23, 42, 0.6);
+      z-index: 20;
+    }
+    .content {
+      margin-left: 170px;
+      padding: 16px;
+    }
+    .button {
+      border-radius: 999px;
+      padding: 8px 14px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .button-primary {
+      background: #4f46e5;
+      color: white;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: #e5e7eb;
+      color: #111827;
+    }
+    .ai-chat-toggle {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #4f46e5, #ec4899);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.5);
+      z-index: 40;
+    }
+    .ai-chat-panel {
+      position: fixed;
+      right: 16px;
+      bottom: 72px;
+      width: 360px;
+      max-height: 520px;
+      background: #0b1120;
+      color: white;
+      border-radius: 18px;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.8);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 50;
+    }
+    .ai-chat-header {
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.4);
+      background: linear-gradient(135deg, #4f46e5, #1e293b);
+    }
+    .ai-chat-messages {
+      flex: 1;
+      padding: 10px 12px;
+      overflow-y: auto;
+      font-size: 13px;
+    }
+    .ai-chat-input {
+      display: flex;
+      border-top: 1px solid rgba(148, 163, 184, 0.4);
+      background: #020617;
+    }
+    .ai-chat-input input {
+      flex: 1;
+      border: none;
+      padding: 8px 10px;
+      font-size: 13px;
+      background: transparent;
+      color: white;
+      outline: none;
+    }
+    .ai-chat-input button {
+      border: none;
+      padding: 0 14px;
+      cursor: pointer;
+      background: transparent;
+      color: #38bdf8;
+      font-weight: 600;
+      font-size: 13px;
+    }
+    .msg-row {
+      margin-bottom: 6px;
+      display: flex;
+    }
+    .msg-row.user {
+      justify-content: flex-end;
+    }
+    .msg-row.ai {
+      justify-content: flex-start;
+    }
+    .msg-bubble {
+      max-width: 80%;
+      padding: 6px 8px;
+      border-radius: 10px;
+      font-size: 13px;
+      line-height: 1.3;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .msg-bubble.user {
+      background: #4f46e5;
+      color: white;
+    }
+    .msg-bubble.ai {
+      background: #111827;
+      color: #e5e7eb;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: rgba(15, 23, 42, 0.8);
+      color: #e5e7eb;
+    }
   </style>
 </head>
 <body>
@@ -29,13 +180,19 @@
 
     const { useState } = React;
 
-    const OWNER_EMAIL = "andrei@example.com";
+    // email-ul tău real; doar cu el merg comenzile de ADMIN/GM
+    const OWNER_EMAIL = "ursache.andrei1995@gmail.com";
+    // parolele pentru modul ADMIN / GM (le poți schimba cum vrei)
     const ADMIN_PASSWORD = "andrei-admin";
     const GM_PASSWORD = "andrei-gm";
+
+    // backend AI (Google Apps Script)
+    const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxs819m4gt-tpTkAIIS91EnxhwYx-5wdbnh6Zi5_GcY14zs5XYqS9ykFuYCCcokhQ/exec';
 
     const App = () => {
       const [theme, setTheme] = useState("dark");
       const [screen, setScreen] = useState("DASHBOARD");
+      // TODO: când legăm cu login-ul, punem aici emailul userului logat
       const [currentUserEmail] = useState(OWNER_EMAIL);
 
       const [chatOpen, setChatOpen] = useState(false);
@@ -103,8 +260,37 @@
           return;
         }
 
-        // răspuns AI default
-        pushAI("AI răspunde aici… (demo)");
+        // apel AI real către backend (JSONP)
+        const callbackName = "sp_ai_" + Date.now() + "_" + Math.floor(Math.random() * 1000000);
+        const script = document.createElement("script");
+
+        window[callbackName] = function(data) {
+          try { delete window[callbackName]; } catch (e) {}
+          if (script.parentNode) script.parentNode.removeChild(script);
+
+          if (!data) {
+            pushAI("Eroare: răspuns gol de la AI.");
+          } else if (!data.success) {
+            pushAI("Eroare AI: " + (data.error || "necunoscută"));
+          } else {
+            pushAI(data.message || "[fără răspuns]");
+          }
+        };
+
+        script.src =
+          BACKEND_URL +
+          "?action=chatGPT" +
+          "&email=" + encodeURIComponent(currentUserEmail) +
+          "&message=" + encodeURIComponent(text) +
+          "&callback=" + encodeURIComponent(callbackName);
+
+        script.onerror = function() {
+          try { delete window[callbackName]; } catch (e) {}
+          if (script.parentNode) script.parentNode.removeChild(script);
+          pushAI("Eroare rețea la backend AI.");
+        };
+
+        document.body.appendChild(script);
       };
 
       const bg = theme === "dark" ? "#0f172a" : "#f3f4f6";
@@ -124,171 +310,284 @@
             .side-nav {
               position:fixed; left:0; top:0; height:100vh; width:170px;
               background:#111827; border-right:1px solid #374151;
-              transform:translateX(${sideNavOpen ? "0" : "-180px"});
-              transition:.25s; padding:16px; color:white; z-index:20;
+              box-shadow:4px 0 16px rgba(15,23,42,0.74);
+              padding:14px 10px; display:flex; flex-direction:column; gap:10px; z-index:25;
             }
-            .side-nav button {
-              width:100%; padding:10px; margin-bottom:8px;
-              border:none; border-radius:8px; cursor:pointer;
-              background:#1f2937; color:#e5e7eb;
+            .content {
+              margin-left:170px; padding:16px;
             }
-            .side-nav button:hover:not(:disabled) { background:#374151; }
-            .side-nav button:disabled { opacity:.4; cursor:not-allowed; }
-
-            .top-bar {
-              position:fixed; left:0; right:0; top:0; height:56px;
-              background:rgba(15,23,42,.85); backdrop-filter:blur(10px);
-              display:flex; justify-content:space-between; align-items:center;
-              padding:0 20px; z-index:10; color:white;
-            }
-
-            .content { padding:80px 20px; }
-
-            .chat-btn {
-              position:fixed; right:16px; bottom:16px;
-              width:60px; height:60px; font-size:30px;
-              background:#2563eb; color:white;
-              border:none; border-radius:50%; cursor:pointer;
-              box-shadow:0 12px 30px rgba(37,99,235,.4);
-            }
-
-            .floating {
-              position:fixed; right:16px; bottom:16px;
-              width:320px; background:#020617;
-              border-radius:12px; padding:10px; color:white;
-              box-shadow:0 20px 50px rgba(15,23,42,.8); z-index:40;
-            }
-
-            .msg { border:1px solid #475569; padding:6px; margin:4px 0; border-radius:6px; }
           `}</style>
 
           <div className="app">
-
-            <div className="side-tab"
-              onClick={() => setSideNavOpen(!sideNavOpen)}
-              onMouseEnter={() => setSideNavOpen(true)}
-            >
-              |||
-            </div>
-
-            <div className="side-nav"
-              onMouseLeave={() => setSideNavOpen(false)}
-            >
-              <button onClick={() => setScreen("DASHBOARD")}>🏠 Dashboard</button>
-              <button
-                onClick={() => setScreen("ADMIN")}
-                disabled={currentUserEmail !== OWNER_EMAIL}
-              >
-                📄 Modul ADMIN
-              </button>
-              <button
-                onClick={() => setScreen("GM")}
-                disabled={currentUserEmail !== OWNER_EMAIL}
-              >
-                ⚙️ Modul GM
-              </button>
-            </div>
-
-            <div className="top-bar">
-              <div style={{fontWeight:"bold"}}>🎉 SuperParty · Panou angajat</div>
-
-              <button
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                style={{
-                  padding:"6px 12px",
-                  borderRadius:"999px",
-                  border:"none",
-                  background:"#1f2937",
-                  color:"white",
-                  cursor:"pointer"
-                }}
-              >
-                {theme === "dark" ? "🌙 Dark" : "☀️ Light"}
-              </button>
-            </div>
-
-            <div className="content">
-
-              {screen === "DASHBOARD" && (
-                <h2>Dashboard angajat</h2>
-              )}
-
-              {screen === "ADMIN" && (
-                <h2>Modul ADMIN (restricționat)</h2>
-              )}
-
-              {screen === "GM" && (
-                <h2>Modul GM (restricționat)</h2>
-              )}
-
-            </div>
-
-            {!chatOpen && (
-              <button className="chat-btn" onClick={() => setChatOpen(true)}>
-                🤖
-              </button>
+            {/* Side nav */}
+            {!sideNavOpen && (
+              <div className="side-tab" onClick={() => setSideNavOpen(true)}>
+                ☰
+              </div>
             )}
 
-            {chatOpen && (
-              <div className="floating">
-                <button
-                  onClick={() => setChatOpen(false)}
-                  style={{
-                    float:"right",
-                    background:"none",
-                    border:"none",
-                    color:"white",
-                    cursor:"pointer"
-                  }}
-                >
-                  ✕
-                </button>
-
-                <h4>Chat AI</h4>
-
-                <div style={{
-                  maxHeight:160,
-                  overflowY:"auto",
-                  marginBottom:6,
-                  padding:4,
-                  borderRadius:8
-                }}>
-                  {chatMessages.map(m => (
-                    <div className="msg" key={m.id}>
-                      <strong>{m.from === "USER" ? "TU" : "AI"}:</strong> {m.text}
-                    </div>
-                  ))}
-
-                  {chatMessages.length === 0 && (
-                    <div style={{fontSize:12,opacity:.7}}>
-                      Scrie un mesaj către asistentul AI.
-                    </div>
-                  )}
+            {sideNavOpen && (
+              <div className="side-nav">
+                <div style={{display:"flex", justifyContent:"space-between", alignItems:"center"}}>
+                  <div style={{fontWeight:700, fontSize:14}}>SuperParty</div>
+                  <button
+                    onClick={() => setSideNavOpen(false)}
+                    style={{
+                      border:"none", background:"transparent",
+                      color:"#9ca3af", cursor:"pointer"
+                    }}
+                  >
+                    ✕
+                  </button>
                 </div>
 
-                <textarea
-                  value={aiPrompt}
-                  onChange={(e)=>setAiPrompt(e.target.value)}
-                  placeholder="Scrie aici..."
-                  style={{width:"100%", height:60, resize:"none"}}
-                ></textarea>
+                <div style={{marginTop:12, fontSize:12, opacity:0.8}}>
+                  Logat ca:<br/>
+                  <span style={{fontWeight:600}}>{currentUserEmail}</span>
+                </div>
 
+                <div style={{marginTop:16, display:"flex", flexDirection:"column", gap:8, fontSize:13}}>
+                  <button
+                    className="button"
+                    style={{background: screen==="DASHBOARD" ? "#4f46e5" : "#374151", color:"white", textAlign:"left"}}
+                    onClick={() => setScreen("DASHBOARD")}
+                  >
+                    🏠 Dashboard
+                  </button>
+                  <button
+                    className="button"
+                    style={{background: screen==="MY_EVENTS" ? "#4f46e5" : "#374151", color:"white", textAlign:"left"}}
+                    onClick={() => setScreen("MY_EVENTS")}
+                  >
+                    📅 Evenimentele mele
+                  </button>
+                  <button
+                    className="button"
+                    style={{background: screen==="PROOFS" ? "#4f46e5" : "#374151", color:"white", textAlign:"left"}}
+                    onClick={() => setScreen("PROOFS")}
+                  >
+                    📸 Dovezi foto
+                  </button>
+
+                  {/* aceste două se activează DOAR când intri cu comanda secretă + parolă */}
+                  <button
+                    className="button"
+                    style={{background: screen==="ADMIN" ? "#b91c1c" : "#374151", color:"white", textAlign:"left", marginTop:12}}
+                    onClick={() => pushAI("Modul ADMIN se activează doar prin chat, cu parolă.")}
+                  >
+                    🔐 Admin (hidden)
+                  </button>
+                  <button
+                    className="button"
+                    style={{background: screen==="GM" ? "#a16207" : "#374151", color:"white", textAlign:"left"}}
+                    onClick={() => pushAI("Modul GM se activează doar prin chat, cu parolă.")}
+                  >
+                    🎮 GM (hidden)
+                  </button>
+                </div>
+
+                <div style={{marginTop:"auto", fontSize:11, opacity:0.7}}>
+                  v1.0 · Panou angajat
+                </div>
+              </div>
+            )}
+
+            {/* Content */}
+            <div className="content">
+              <div style={{display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16}}>
+                <div>
+                  <div style={{fontSize:22, fontWeight:700, marginBottom:4}}>Salut, Andrei 👋</div>
+                  <div style={{fontSize:13, opacity:0.8}}>
+                    Aici vezi evenimentele tale, dovezile și poți vorbi cu AI-ul SuperParty.
+                  </div>
+                </div>
                 <button
-                  onClick={handleSend}
+                  onClick={() => setTheme(t => t === "dark" ? "light" : "dark")}
                   style={{
-                    width:"100%",
-                    marginTop:6,
-                    padding:"8px",
-                    background:"#2563eb",
-                    color:"white",
+                    padding:"6px 12px",
+                    borderRadius:"999px",
                     border:"none",
-                    borderRadius:8,
+                    background:"#1f2937",
+                    color:"white",
                     cursor:"pointer"
                   }}
                 >
-                  Trimite
+                  {theme === "dark" ? "🌙 Dark" : "☀️ Light"}
                 </button>
+              </div>
 
+              <div className="content">
+
+                {screen === "DASHBOARD" && (
+                  <div style={{display:"grid", gap:16}}>
+                    <div style={{background:"#111827", color:"white", borderRadius:16, padding:16}}>
+                      <div style={{fontSize:16, fontWeight:600, marginBottom:4}}>Rezumat ziua de azi</div>
+                      <div style={{fontSize:13, opacity:0.9}}>
+                        Ai 2 evenimente active azi și 1 în weekend. Nu uita de pozele obligatorii la fiecare rol.
+                      </div>
+                      <div style={{marginTop:12, display:"flex", gap:8, flexWrap:"wrap"}}>
+                        <span className="pill">🎈 Animație copii</span>
+                        <span className="pill">📸 Dovezi obligatorii</span>
+                        <span className="pill">🚗 Fără șofer azi</span>
+                      </div>
+                    </div>
+
+                    <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(220px, 1fr))", gap:12}}>
+                      <div style={{background:"#111827", color:"white", borderRadius:14, padding:12}}>
+                        <div style={{fontSize:13, opacity:0.8}}>Evenimente azi</div>
+                        <div style={{fontSize:20, fontWeight:700}}>2</div>
+                      </div>
+                      <div style={{background:"#111827", color:"white", borderRadius:14, padding:12}}>
+                        <div style={{fontSize:13, opacity:0.8}}>Evenimente weekend</div>
+                        <div style={{fontSize:20, fontWeight:700}}>1</div>
+                      </div>
+                      <div style={{background:"#111827", color:"white", borderRadius:14, padding:12}}>
+                        <div style={{fontSize:13, opacity:0.8}}>Dovezi lipsă</div>
+                        <div style={{fontSize:20, fontWeight:700, color:"#f97316"}}>3</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {screen === "MY_EVENTS" && (
+                  <div>
+                    <h2 style={{fontSize:18, marginBottom:8}}>Evenimentele mele</h2>
+                    <div style={{fontSize:13, opacity:0.8, marginBottom:12}}>
+                      Aici vor apărea evenimentele reale din backend (sheet). Momentan sunt mock.
+                    </div>
+                    <div style={{display:"grid", gap:12}}>
+                      <div style={{background:"#111827", color:"white", borderRadius:14, padding:12}}>
+                        <div style={{display:"flex", justifyContent:"space-between", marginBottom:4}}>
+                          <div style={{fontWeight:600}}>Elsa 2h + Olaf 2h</div>
+                          <span className="pill">Azi · 15:00</span>
+                        </div>
+                        <div style={{fontSize:13, opacity:0.85}}>
+                          București, Sector 3 · Str. Florilor 23
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {screen === "PROOFS" && (
+                  <div>
+                    <h2 style={{fontSize:18, marginBottom:8}}>Dovezi foto</h2>
+                    <div style={{fontSize:13, opacity:0.8, marginBottom:12}}>
+                      Aici vei încărca pozele pe etape: bagaj, am ajuns, în timpul evenimentului, retur.
+                    </div>
+                    <div style={{background:"#111827", color:"white", borderRadius:14, padding:12}}>
+                      <div style={{fontSize:14, fontWeight:600, marginBottom:8}}>Eveniment azi</div>
+                      <div style={{fontSize:13, opacity:0.85, marginBottom:8}}>
+                        Elsa 2h · Cod rol: A23
+                      </div>
+                      <button className="button button-primary">
+                        Încarcă dovezi (mock)
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {screen === "ADMIN" && (
+                  <div>
+                    <h2 style={{fontSize:18, marginBottom:8, color:"#b91c1c"}}>Mod ADMIN</h2>
+                    <div style={{fontSize:13, opacity:0.85}}>
+                      Aici vei avea în viitor panoul real de admin (utilizatori, evenimente, KYC, etc.).
+                      <br/>Ai intrat aici prin comanda secretă + parolă, deci doar tu (OWNER) poți intra.
+                    </div>
+                  </div>
+                )}
+
+                {screen === "GM" && (
+                  <div>
+                    <h2 style={{fontSize:18, marginBottom:8, color:"#eab308"}}>Mod GM</h2>
+                    <div style={{fontSize:13, opacity:0.85}}>
+                      Aici vei avea panoul de Game Master: cine ia evenimentele, cine face bagajul, etc.
+                      <br/>La fel, doar tu (OWNER) poți intra prin comanda secretă + parolă.
+                    </div>
+                  </div>
+                )}
+
+              </div>
+            </div>
+
+            {/* Buton plutitor AI */}
+            <div
+              className="ai-chat-toggle"
+              onClick={() => setChatOpen(o => !o)}
+              title="Deschide chat AI"
+            >
+              🤖
+            </div>
+
+            {/* Panou AI chat */}
+            {chatOpen && (
+              <div className="ai-chat-panel">
+                <div className="ai-chat-header">
+                  <div style={{display:"flex", alignItems:"center", gap:8}}>
+                    <div style={{
+                      width:24, height:24, borderRadius:999,
+                      background:"rgba(15,23,42,0.9)", display:"flex",
+                      alignItems:"center", justifyContent:"center", fontSize:14
+                    }}>
+                      🤖
+                    </div>
+                    <div>
+                      <div style={{fontSize:13, fontWeight:600}}>AI SuperParty</div>
+                      <div style={{fontSize:11, opacity:0.8}}>
+                        Îți răspunde la întrebări despre evenimente & roluri
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setChatOpen(false)}
+                    style={{
+                      border:"none", background:"transparent",
+                      color:"#e5e7eb", cursor:"pointer", fontSize:16
+                    }}
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <div className="ai-chat-messages" id="aiMessages">
+                  {chatMessages.length === 0 && (
+                    <div style={{fontSize:12, opacity:0.85, marginBottom:8}}>
+                      Salut! Îmi poți pune întrebări despre:
+                      <br/>· cum funcționează dovezile foto
+                      <br/>· ce cod are rolul tău
+                      <br/>· ce ai de făcut la un anumit eveniment
+                      <br/>· sau poți folosi comenzi speciale (ascunse) 😉
+                    </div>
+                  )}
+                  {chatMessages.map(msg => (
+                    <div
+                      key={msg.id}
+                      className={"msg-row " + (msg.from === "USER" ? "user" : "ai")}
+                    >
+                      <div className={"msg-bubble " + (msg.from === "USER" ? "user" : "ai")}>
+                        {msg.text}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="ai-chat-input">
+                  <input
+                    type="text"
+                    value={aiPrompt}
+                    onChange={e => setAiPrompt(e.target.value)}
+                    placeholder="Scrie un mesaj către AI..."
+                    onKeyDown={e => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleSend();
+                      }
+                    }}
+                  />
+                  <button type="button" onClick={handleSend}>
+                    Trimite
+                  </button>
+                </div>
               </div>
             )}
 
