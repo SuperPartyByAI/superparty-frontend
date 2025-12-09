@@ -195,11 +195,11 @@
 
             const role = (resp.role || "").toLowerCase();
             if (role === "admin")
-              window.location.href = "/frontend/admin/index.html";
+              window.location.href = "/admin/index.html";
             else if (role === "gm")
-              window.location.href = "/frontend/gm/index.html";
+              window.location.href = "/gm/index.html";
             else
-              window.location.href = "/frontend/angajat/index.html";
+              window.location.href = "/angajat/index.html";
           })
           .catch(() => {
             errorEl.textContent =
