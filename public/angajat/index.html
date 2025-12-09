@@ -37,10 +37,10 @@
       backdrop-filter: blur(18px);
     }
 
-    /* SIDEBAR (ascunsă implicit, se deschide la click) */
+    /* SIDEBAR */
     .sidebar {
       width: 0;
-      background: linear-gradient(to bottom, #020617, #020617);
+      background: #020617;
       border-right: 1px solid rgba(51, 65, 85, 0.8);
       overflow: hidden;
       transition: width 0.25s ease-out;
@@ -67,55 +67,6 @@
       color: #60a5fa;
     }
 
-    .sidebar-section-title {
-      font-size: 11px;
-      font-weight: 600;
-      color: #64748b;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin: 18px 20px 8px;
-    }
-
-    .nav-list {
-      list-style: none;
-      padding: 0 12px;
-    }
-
-    .nav-item {
-      margin-bottom: 4px;
-    }
-
-    .nav-button {
-      width: 100%;
-      border: none;
-      background: transparent;
-      color: #cbd5f5;
-      padding: 8px 12px;
-      border-radius: 999px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 14px;
-      cursor: pointer;
-      transition: background 0.18s ease, transform 0.08s ease;
-    }
-
-    .nav-button span.icon {
-      font-size: 17px;
-      width: 20px;
-      text-align: center;
-    }
-
-    .nav-button.active {
-      background: radial-gradient(circle at top left, #1d4ed8, #020617);
-      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.6);
-    }
-
-    .nav-button:hover {
-      background: rgba(30, 64, 175, 0.5);
-      transform: translateY(-1px);
-    }
-
     .sidebar-footer {
       margin-top: auto;
       padding: 12px 20px 0;
@@ -128,7 +79,7 @@
       color: #e5e7eb;
     }
 
-    /* MAIN AREA (centrală, bara pe mijloc vizual) */
+    /* MAIN */
     .main-area {
       flex: 1;
       display: flex;
@@ -141,7 +92,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 18px;
+      margin-bottom: 8px;
     }
 
     .menu-toggle {
@@ -185,17 +136,18 @@
     }
 
     .user-avatar {
-      width: 36px;
-      height: 36px;
+      width: 32px;
+      height: 32px;
       border-radius: 999px;
       background: radial-gradient(circle at 30% 20%, #38bdf8, #1d4ed8);
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 600;
-      font-size: 15px;
+      font-size: 14px;
       color: white;
-      box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.9), 0 10px 25px rgba(15, 23, 42, 0.8);
+      box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.9),
+                  0 8px 18px rgba(15, 23, 42, 0.8);
     }
 
     .user-text {
@@ -204,134 +156,25 @@
     }
 
     .user-text .hello {
-      font-size: 12px;
+      font-size: 11px;
       color: #94a3b8;
     }
 
     .user-text .name {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
     }
 
-    .content-center {
+    /* ZONA CENTRALĂ – GOLĂ, DOAR ALBASTRU */
+    .center-empty {
       flex: 1;
-      display: flex;
-      justify-content: center;
-      align-items: stretch;
-    }
-
-    .center-column {
-      width: 100%;
-      max-width: 520px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .card {
-      background: linear-gradient(to bottom right, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.95));
+      margin-top: 8px;
       border-radius: 20px;
-      border: 1px solid rgba(148, 163, 184, 0.45);
-      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.85);
-      padding: 16px 18px;
+      background: radial-gradient(circle at top, #1d4ed8, #020617);
+      border: 1px solid rgba(37, 99, 235, 0.6);
     }
 
-    .card-header-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .pill {
-      font-size: 11px;
-      padding: 4px 9px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.8);
-      color: #cbd5f5;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .card-title {
-      font-size: 18px;
-      font-weight: 600;
-    }
-
-    .card-subtitle {
-      font-size: 13px;
-      color: #94a3b8;
-      margin-top: 4px;
-    }
-
-    .stats-row {
-      display: flex;
-      gap: 10px;
-      margin-top: 14px;
-    }
-
-    .stat-pill {
-      flex: 1;
-      border-radius: 999px;
-      padding: 6px 10px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(30, 64, 175, 0.8);
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .stat-label {
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #64748b;
-    }
-
-    .stat-value {
-      font-size: 13px;
-      font-weight: 500;
-    }
-
-    .events-list {
-      margin-top: 6px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .event-card {
-      border-radius: 16px;
-      padding: 10px 12px;
-      background: radial-gradient(circle at top, rgba(30, 64, 175, 0.85), rgba(15, 23, 42, 0.95));
-      border: 1px solid rgba(96, 165, 250, 0.7);
-      cursor: default;
-    }
-
-    .event-main-line {
-      display: flex;
-      justify-content: space-between;
-      font-size: 14px;
-      margin-bottom: 4px;
-      font-weight: 500;
-    }
-
-    .event-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-      font-size: 11px;
-      color: #cbd5f5;
-    }
-
-    .tag {
-      padding: 2px 7px;
-      border-radius: 999px;
-      border: 1px solid rgba(191, 219, 254, 0.7);
-      background: rgba(15, 23, 42, 0.65);
-    }
-
-    /* CHAT AI - buton bulă + panou */
+    /* CHAT AI */
     .chat-fab {
       position: absolute;
       right: 18px;
@@ -506,49 +349,11 @@
 </head>
 <body>
   <div class="app-shell">
-    <!-- SIDEBAR ASCUNSĂ (DESCHISĂ DIN BUTON) -->
+    <!-- SIDEBAR ASCUNSĂ -->
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
         <div class="logo">SuperParty</div>
       </div>
-
-      <div class="sidebar-section-title">Navigare</div>
-      <ul class="nav-list">
-        <li class="nav-item">
-          <button class="nav-button active">
-            <span class="icon">🏠</span>
-            <span>Dashboard</span>
-          </button>
-        </li>
-        <li class="nav-item">
-          <button class="nav-button">
-            <span class="icon">🎈</span>
-            <span>Evenimentele mele</span>
-          </button>
-        </li>
-        <li class="nav-item">
-          <button class="nav-button">
-            <span class="icon">📸</span>
-            <span>Dovezi foto</span>
-          </button>
-        </li>
-      </ul>
-
-      <div class="sidebar-section-title">Status</div>
-      <ul class="nav-list">
-        <li class="nav-item">
-          <button class="nav-button">
-            <span class="icon">✅</span>
-            <span>Validări</span>
-          </button>
-        </li>
-        <li class="nav-item">
-          <button class="nav-button">
-            <span class="icon">⚙️</span>
-            <span>Setări</span>
-          </button>
-        </li>
-      </ul>
 
       <div class="sidebar-footer">
         <div><strong>Mod angajat</strong> · v1</div>
@@ -576,85 +381,10 @@
         </div>
       </div>
 
-      <div class="content-center">
-        <div class="center-column">
-          <!-- CARD 1: REZUMAT ZI -->
-          <section class="card">
-            <div class="card-header-row">
-              <div>
-                <div class="pill">Astăzi</div>
-                <div class="card-title">Rezumat ziua de azi</div>
-                <div class="card-subtitle">
-                  Ai 2 evenimente active azi și 1 în weekend. Nu uita de pozele obligatorii la fiecare rol.
-                </div>
-              </div>
-            </div>
-            <div class="stats-row">
-              <div class="stat-pill">
-                <div class="stat-label">Evenimente azi</div>
-                <div class="stat-value">2</div>
-              </div>
-              <div class="stat-pill">
-                <div class="stat-label">Evenimente weekend</div>
-                <div class="stat-value">1</div>
-              </div>
-              <div class="stat-pill">
-                <div class="stat-label">Dovezi lipsă</div>
-                <div class="stat-value">3</div>
-              </div>
-            </div>
-          </section>
+      <!-- CENTRU GOL, DOAR ALBASTRU -->
+      <div class="center-empty"></div>
 
-          <!-- CARD 2: EVENIMENTE LISTĂ -->
-          <section class="card">
-            <div class="card-header-row">
-              <div>
-                <div class="pill">Evenimente</div>
-                <div class="card-title">Următoarele tale roluri</div>
-              </div>
-            </div>
-            <div class="events-list">
-              <article class="event-card">
-                <div class="event-main-line">
-                  <span>Elsa 2h + Olaf 2h</span>
-                  <span>#EVT_124</span>
-                </div>
-                <div class="event-tags">
-                  <span class="tag">📅 Azi · 15:00–17:00</span>
-                  <span class="tag">📍 București, Sector 3</span>
-                  <span class="tag">📸 Dovezi: 1 / 3</span>
-                </div>
-              </article>
-
-              <article class="event-card">
-                <div class="event-main-line">
-                  <span>Spider-Man 2h</span>
-                  <span>#EVT_120</span>
-                </div>
-                <div class="event-tags">
-                  <span class="tag">📅 Azi · 11:00–13:00</span>
-                  <span class="tag">📍 Voluntari, Ilfov</span>
-                  <span class="tag">📸 Dovezi: 0 / 2</span>
-                </div>
-              </article>
-
-              <article class="event-card">
-                <div class="event-main-line">
-                  <span>Elsa 2h</span>
-                  <span>#EVT_130</span>
-                </div>
-                <div class="event-tags">
-                  <span class="tag">📅 Sâmbătă · 16:00–18:00</span>
-                  <span class="tag">📍 Pipera</span>
-                  <span class="tag">📸 Dovezi: 0 / 3</span>
-                </div>
-              </article>
-            </div>
-          </section>
-        </div>
-      </div>
-
-      <!-- CHAT AI: buton + panou -->
+      <!-- CHAT AI -->
       <button class="chat-fab" id="chatFab" aria-label="Deschide chat AI">
         <div class="chat-fab-icon">🤖</div>
       </button>
@@ -674,7 +404,7 @@
         <div class="chat-messages" id="chatMessages">
           <div class="chat-msg bot">
             Salut, Andrei! Sunt AI-ul SuperParty.<br />
-            Îmi poți cere rezumatul zilei sau poți folosi comenzi secrete, de exemplu:
+            Poți folosi comenzi secrete, de exemplu:
             <br /><br />
             <code>open mod andrei admin</code><br />
             <code>open mod andrei gm</code>
@@ -695,7 +425,7 @@
   </div>
 
   <script>
-    // ====== TOGGLE SIDEBAR ======
+    // SIDEBAR TOGGLE
     const sidebar = document.getElementById("sidebar");
     const menuToggle = document.getElementById("menuToggle");
 
@@ -703,7 +433,7 @@
       sidebar.classList.toggle("open");
     });
 
-    // ====== CHAT TOGGLE ======
+    // CHAT TOGGLE
     const chatFab = document.getElementById("chatFab");
     const chatPanel = document.getElementById("chatPanel");
     const chatCloseBtn = document.getElementById("chatCloseBtn");
@@ -716,7 +446,7 @@
       chatPanel.classList.remove("open");
     });
 
-    // ====== CHAT LOGIC MINIMALĂ + COMENZI SECRETE ======
+    // CHAT MINIMAL + COMENZI SECRETE
     const chatInput = document.getElementById("chatInput");
     const chatSendBtn = document.getElementById("chatSendBtn");
     const chatMessages = document.getElementById("chatMessages");
@@ -734,13 +464,13 @@
 
       if (cmd === "open mod andrei admin") {
         console.log("SECRET CMD: open mod andrei admin");
-        alert("Comandă secretă detectată: MOD ANDREI ADMIN\nMomentan doar logăm în consolă, fără redirect.");
+        alert("Comandă secretă detectată: MOD ANDREI ADMIN (deocamdată fără redirect).");
         return true;
       }
 
       if (cmd === "open mod andrei gm") {
         console.log("SECRET CMD: open mod andrei gm");
-        alert("Comandă secretă detectată: MOD ANDREI GM\nMomentan doar logăm în consolă, fără redirect.");
+        alert("Comandă secretă detectată: MOD ANDREI GM (deocamdată fără redirect).");
         return true;
       }
 
@@ -755,20 +485,16 @@
       addMessage(trimmed, "user");
       chatInput.value = "";
 
-      // Comenzi secrete
       if (handleSecretCommand(trimmed)) {
-        addMessage("Ok, am înțeles comanda secretă (doar log în acest moment).", "bot");
+        addMessage("Ok, am înțeles comanda secretă (momentan doar log).", "bot");
         return;
       }
 
-      // Răspuns dummy (fără AI real deocamdată)
       const lower = trimmed.toLowerCase();
-      let reply = "Am primit mesajul tău. În versiunea finală voi vorbi cu backend-ul SuperParty.";
+      let reply = "Am primit mesajul tău. În versiunea finală voi fi legat la backend.";
 
-      if (lower.includes("rezumat")) {
-        reply = "Azi ai 2 evenimente și 3 dovezi foto lipsă. Nu uita să încarci pozele la început și la final.";
-      } else if (lower.includes("buna") || lower.includes("salut")) {
-        reply = "Salut! Sunt aici să te ajut cu evenimente, dovezi și statusuri.";
+      if (lower.includes("buna") || lower.includes("salut")) {
+        reply = "Salut! Sunt aici să te ajut cu evenimente și dovezi.";
       }
 
       setTimeout(() => {
@@ -777,7 +503,6 @@
     }
 
     chatSendBtn.addEventListener("click", handleSend);
-
     chatInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
