@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <title>SuperParty - Angajat</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -17,30 +16,29 @@
       color: #e5e7eb;
     }
 
-    /* 👇 BARA DE MENIU (SUS STÂNGA) */
+    /* ===== BUTON MENIU SUS STÂNGA ===== */
     #menuToggle {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      width: 44px;
-      height: 44px;
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      width: 46px;
+      height: 46px;
       border-radius: 999px;
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid rgba(148, 163, 184, 0.7);
+      border: 1px solid rgba(148,163,184,0.7);
+      background: rgba(15,23,42,0.9);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: 0.2s;
       z-index: 20;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
     }
 
     #menuToggle:hover {
-      background: rgba(30, 64, 175, 0.9);
-      transform: translateY(-2px);
+      background: rgba(30,64,175,0.95);
     }
 
-    .menu-toggle-lines {
+    .menu-lines {
       width: 18px;
       height: 14px;
       display: flex;
@@ -48,128 +46,234 @@
       justify-content: space-between;
     }
 
-    .menu-toggle-line {
+    .menu-lines div {
       height: 2px;
       border-radius: 999px;
       background: #e5e7eb;
     }
 
-    /* 👇 SIDEBAR */
-    .sidebar {
+    /* ===== SIDEBAR ===== */
+    #sidebar {
       position: fixed;
       top: 0;
       left: 0;
       width: 0;
       height: 100vh;
       background: #020617;
-      border-right: 1px solid rgba(51, 65, 85, 0.8);
+      border-right: 1px solid rgba(51,65,85,0.9);
       overflow: hidden;
       transition: width 0.25s ease-out;
-      padding-top: 80px;
-      z-index: 25;
+      z-index: 15;
+      padding-top: 70px;
     }
-    .sidebar.open { width: 260px; }
+
+    #sidebar.open {
+      width: 260px;
+    }
+
+    .sidebar-inner {
+      padding: 12px 16px;
+      font-size: 14px;
+    }
+
+    .sidebar-section-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #6b7280;
+      margin-bottom: 6px;
+    }
+
+    .sidebar-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .sidebar-btn {
+      width: 100%;
+      border: none;
+      border-radius: 10px;
+      background: rgba(15,23,42,0.95);
+      color: #e5e7eb;
+      padding: 8px 10px;
+      text-align: left;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .sidebar-btn:hover {
+      background: rgba(37,99,235,0.95);
+    }
 
     .sidebar-footer {
-      position: absolute;
-      bottom: 20px;
-      left: 20px;
-      font-size: 12px;
-      color: #64748b;
+      font-size: 11px;
+      color: #6b7280;
+      border-top: 1px solid rgba(31,41,55,0.9);
+      padding-top: 8px;
+      margin-top: 12px;
     }
 
-    /* 👇 CHAT BUTTON */
-    .chat-fab {
+    /* ===== BULĂ AI (MARE) DREAPTA JOS ===== */
+    #chatFab {
       position: fixed;
-      right: 20px;
-      bottom: 20px;
-      width: 60px;
-      height: 60px;
+      right: 16px;
+      bottom: 16px;
+      width: 90px;
+      height: 90px;
       border-radius: 999px;
       background: radial-gradient(circle at 30% 20%, #38bdf8, #1d4ed8);
-      border: 1px solid rgba(191, 219, 254, 0.8);
+      border: 2px solid rgba(191, 219, 254, 0.9);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7);
-      z-index: 30;
-      transition: 0.2s;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.85);
+      z-index: 50;
+      font-size: 40px; /* emoji MARE */
     }
 
-    .chat-fab:hover {
+    #chatFab:hover {
       transform: translateY(-2px);
     }
 
-    /* 👇 CHAT PANEL */
-    .chat-panel {
+    /* ===== CHAT PANEL EXACT ÎN COLȚ DREAPTA-JOS ===== */
+    #chatPanel {
       position: fixed;
-      right: 20px;
-      bottom: 90px;
-      width: 320px;
-      max-height: 420px;
-      background: rgba(15, 23, 42, 0.98);
-      border-radius: 16px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
+      right: 0;
+      bottom: 0;
+      width: 380px;
+      max-height: 60vh;
+      background: rgba(15,23,42,0.98);
+      border-radius: 16px 0 0 0;
+      border-top: 1px solid rgba(55,65,81,0.9);
+      border-left: 1px solid rgba(55,65,81,0.9);
       display: none;
       flex-direction: column;
-      z-index: 30;
+      z-index: 40;
       overflow: hidden;
     }
-    .chat-panel.open { display: flex; }
 
-    .chat-header {
-      padding: 10px;
-      font-weight: bold;
-      border-bottom: 1px solid rgba(51, 65, 85, 0.9);
+    #chatPanel.open {
+      display: flex;
     }
 
-    .chat-messages {
-      flex: 1;
-      padding: 10px;
+    .chat-header {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(31,41,55,0.95);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       font-size: 13px;
+    }
+
+    .chat-header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chat-header-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 20%, #e0f2fe, #1d4ed8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .chat-header-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-header-text small {
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
+    .chat-close {
+      border: none;
+      background: transparent;
+      color: #9ca3af;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .chat-body {
+      flex: 1;
       overflow-y: auto;
+      padding: 8px 10px;
+      font-size: 13px;
     }
 
     .chat-msg {
-      margin-bottom: 8px;
-      line-height: 1.4;
-      padding: 7px 9px;
-      border-radius: 8px;
-      max-width: 85%;
+      margin-bottom: 6px;
+      display: flex;
     }
 
     .chat-msg.user {
-      background: #1d4ed8;
-      margin-left: auto;
+      justify-content: flex-end;
     }
+
     .chat-msg.bot {
+      justify-content: flex-start;
+    }
+
+    .chat-bubble {
+      max-width: 90%;
+      padding: 7px 9px;
+      border-radius: 10px;
+      line-height: 1.4;
+    }
+
+    .chat-msg.user .chat-bubble {
+      background: #1d4ed8;
+    }
+
+    .chat-msg.bot .chat-bubble {
       background: #111827;
-      border: 1px solid rgba(55, 65, 81, 0.6);
+      border: 1px solid rgba(55,65,81,0.8);
     }
 
     .chat-input-row {
-      padding: 8px;
+      border-top: 1px solid rgba(31,41,55,0.95);
+      padding: 6px 8px;
       display: flex;
       gap: 6px;
-      border-top: 1px solid rgba(51, 65, 85, 0.9);
     }
 
     .chat-input {
       flex: 1;
       border-radius: 999px;
-      border: 1px solid rgba(51, 65, 85, 0.9);
-      background: rgba(15, 23, 42, 0.95);
-      padding: 7px 11px;
-      color: white;
+      border: 1px solid rgba(55,65,81,0.9);
+      background: rgba(15,23,42,0.95);
+      color: #e5e7eb;
+      padding: 6px 10px;
+      font-size: 13px;
+      outline: none;
     }
 
     .chat-send-btn {
       border-radius: 999px;
-      padding: 0 12px;
-      background: #3b82f6;
       border: none;
+      padding: 0 12px;
+      background: #22c55e;
+      color: white;
       cursor: pointer;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 480px) {
+      #chatPanel {
+        width: 100vw;
+        max-height: 70vh;
+      }
     }
   </style>
 </head>
@@ -177,80 +281,121 @@
 
   <!-- BUTON MENIU -->
   <button id="menuToggle">
-    <div class="menu-toggle-lines">
-      <div class="menu-toggle-line"></div>
-      <div class="menu-toggle-line"></div>
-      <div class="menu-toggle-line"></div>
+    <div class="menu-lines">
+      <div></div><div></div><div></div>
     </div>
   </button>
 
   <!-- SIDEBAR -->
-  <div class="sidebar" id="sidebar">
-    <div class="sidebar-footer">
-      Mod angajat · v1<br>
-      ID: A23
-    </div>
-  </div>
+  <aside id="sidebar">
+    <div class="sidebar-inner">
+      <div class="sidebar-section-title">Panou</div>
+      <ul class="sidebar-list">
+        <li><button class="sidebar-btn">Evenimentele mele</button></li>
+        <li><button class="sidebar-btn">Dovezi & poze</button></li>
+        <li><button class="sidebar-btn">Șofer & bagaj</button></li>
+      </ul>
 
-  <!-- CHAT BUTTON -->
-  <button class="chat-fab" id="chatFab">🤖</button>
+      <div class="sidebar-section-title">Cont</div>
+      <ul class="sidebar-list">
+        <li><button class="sidebar-btn">Contract & KYC</button></li>
+        <li><button class="sidebar-btn">Setări profil</button></li>
+      </ul>
+
+      <div class="sidebar-footer">
+        Mod angajat · logica admin/GM e ascunsă (se face din chat și backend).
+      </div>
+    </div>
+  </aside>
+
+  <!-- BULĂ AI -->
+  <button id="chatFab">🤖</button>
 
   <!-- CHAT PANEL -->
-  <div class="chat-panel" id="chatPanel">
-    <div class="chat-header">SuperParty AI</div>
+  <div id="chatPanel">
+    <div class="chat-header">
+      <div class="chat-header-left">
+        <div class="chat-header-avatar">🤖</div>
+        <div class="chat-header-text">
+          <span>AI SuperParty</span>
+          <small>Chat demo (fără backend încă)</small>
+        </div>
+      </div>
+      <button id="chatClose" class="chat-close">×</button>
+    </div>
 
-    <!-- FĂRĂ NICIUN MESAJ AUTOMAT -->
-    <div class="chat-messages" id="chatMessages"></div>
+    <div id="chatMessages" class="chat-body">
+      <!-- INTENȚIONAT GOL, FĂRĂ MESAJE AUTOMATE -->
+    </div>
 
     <div class="chat-input-row">
-      <input id="chatInput" class="chat-input" placeholder="scrie..." />
-      <button id="chatSendBtn" class="chat-send-btn">Trimite</button>
+      <input id="chatInput" class="chat-input" placeholder="scrie un mesaj..." />
+      <button id="chatSend" class="chat-send-btn">Trimite</button>
     </div>
   </div>
 
-<script>
-  // MENU
-  menuToggle.onclick = () => sidebar.classList.toggle("open");
+  <script>
+    // SIDEBAR TOGGLE
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
 
-  // CHAT TOGGLE
-  chatFab.onclick = () => chatPanel.classList.toggle("open");
-  chatSendBtn.onclick = sendChat;
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+    });
 
-  chatInput.addEventListener("keydown", e => {
-    if (e.key === "Enter") sendChat();
-  });
+    // CHAT TOGGLE
+    const chatFab = document.getElementById('chatFab');
+    const chatPanel = document.getElementById('chatPanel');
+    const chatClose = document.getElementById('chatClose');
 
-  function addMsg(text, sender) {
-    const div = document.createElement("div");
-    div.className = "chat-msg " + sender;
-    div.textContent = text;
-    chatMessages.appendChild(div);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-  }
+    chatFab.addEventListener('click', () => {
+      chatPanel.classList.toggle('open');
+      if (chatPanel.classList.contains('open')) {
+        document.getElementById('chatInput').focus();
+      }
+    });
 
-  function sendChat() {
-    const t = chatInput.value.trim();
-    if (!t) return;
-    addMsg(t, "user");
-    chatInput.value = "";
+    chatClose.addEventListener('click', () => {
+      chatPanel.classList.remove('open');
+    });
 
-    const cmd = t.toLowerCase();
+    // CHAT LOGIC SIMPLU
+    const chatInput = document.getElementById('chatInput');
+    const chatSend = document.getElementById('chatSend');
+    const chatMessages = document.getElementById('chatMessages');
 
-    if (cmd === "open mod andrei admin") {
-      alert("Comandă secretă: admin (momentan fără redirect)");
-      addMsg("OK, comandă secretă acceptată.", "bot");
-      return;
+    function addMessage(text, sender) {
+      const wrap = document.createElement('div');
+      wrap.className = 'chat-msg ' + (sender === 'user' ? 'user' : 'bot');
+      const bubble = document.createElement('div');
+      bubble.className = 'chat-bubble';
+      bubble.textContent = text;
+      wrap.appendChild(bubble);
+      chatMessages.appendChild(wrap);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    if (cmd === "open mod andrei gm") {
-      alert("Comandă secretă: gm (momentan fără redirect)");
-      addMsg("OK, comandă secretă acceptată.", "bot");
-      return;
+    function handleSend() {
+      const text = chatInput.value.trim();
+      if (!text) return;
+      addMessage(text, 'user');
+      chatInput.value = '';
+
+      const lower = text.toLowerCase();
+      if (lower === 'open mod andrei admin' || lower === 'open mod andrei gm') {
+        addMessage('Comanda secretă o legăm la backend și la paginile admin/GM când vrei tu.', 'bot');
+      } else {
+        addMessage('Răspuns demo. Aici o să vorbesc cu backend-ul tău.', 'bot');
+      }
     }
 
-    addMsg("Răspuns AI demo.", "bot");
-  }
-</script>
-
+    chatSend.addEventListener('click', handleSend);
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleSend();
+      }
+    });
+  </script>
 </body>
 </html>
