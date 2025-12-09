@@ -15,14 +15,13 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* ───────────── Layout gol ───────────── */
     .app-root {
       min-height: 100vh;
       width: 100%;
       position: relative;
     }
 
-    /* ───────────── Sidebar îngust ascuns ───────────── */
+    /* ───────── Sidebar îngust ascuns ───────── */
     .sidebar-wrapper {
       position: fixed;
       top: 0;
@@ -34,7 +33,6 @@
       z-index: 40;
       touch-action: none;
     }
-
     body.sidebar-open .sidebar-wrapper {
       transform: translateX(0);
     }
@@ -92,19 +90,15 @@
       cursor: pointer;
       transition: all 0.15s ease;
     }
-
     .sidebar-btn.active {
       border-color: #38bdf8;
       box-shadow: 0 0 0 1px rgba(56,189,248,0.55), 0 12px 26px rgba(15,23,42,0.9);
     }
-
     .sidebar-btn:hover {
       transform: translateY(-1px) scale(1.03);
     }
 
-    .sidebar-spacer {
-      flex: 1;
-    }
+    .sidebar-spacer { flex: 1; }
 
     .sidebar-footer-text {
       font-size: 10px;
@@ -113,8 +107,7 @@
       margin-bottom: 6px;
     }
 
-    /* ───────────── Zone de swipe ───────────── */
-
+    /* ───────── Zone de swipe ───────── */
     .swipe-zone-left {
       position: fixed;
       top: 0;
@@ -124,42 +117,26 @@
       z-index: 10;
     }
 
-    .swipe-zone-right {
-      position: fixed;
-      top: 0;
-      right: 0;
-      width: 40px;
-      height: 100vh;
-      z-index: 10;
-    }
-
-    /* ───────────── Bot AI mic colț dreapta jos ───────────── */
-
+    /* ───────── Bot AI mic: DOAR robotel, fără bulină ───────── */
     .ai-bot {
       position: fixed;
       bottom: 18px;
       right: 18px;
-      width: 60px;
-      height: 60px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 0, #38bdf8, #6366f1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
+      /* nu mai desenăm bulină, doar robotelul */
+      background: transparent;
+      border: none;
+      padding: 0;
+      font-size: 40px;
       cursor: pointer;
       z-index: 50;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.55);
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      line-height: 1;
     }
 
     .ai-bot:active {
       transform: scale(0.9);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.7);
     }
 
-    /* ───────────── Chat popup FIX în colț dreapta jos ───────────── */
-
+    /* ───────── Chat popup în colț dreapta jos ───────── */
     .chat-popup {
       position: fixed;
       bottom: 16px;
@@ -177,10 +154,7 @@
       overflow: hidden;
       z-index: 60;
     }
-
-    .chat-popup.visible {
-      display: flex;
-    }
+    .chat-popup.visible { display: flex; }
 
     .chat-header {
       padding: 10px 12px;
@@ -211,6 +185,8 @@
       padding: 10px 12px;
       overflow-y: auto;
       font-size: 12px;
+      display: flex;
+      flex-direction: column;
     }
 
     .msg {
@@ -270,20 +246,13 @@
         bottom: 12px;
         height: 320px;
       }
-      .ai-bot {
-        bottom: 14px;
-        right: 14px;
-        width: 56px;
-        height: 56px;
-      }
     }
   </style>
 </head>
 <body>
   <div class="app-root">
-    <!-- Zone de swipe -->
+    <!-- Zona de swipe pentru sidebar -->
     <div class="swipe-zone-left"></div>
-    <div class="swipe-zone-right"></div>
 
     <!-- Sidebar îngust ascuns -->
     <div class="sidebar-wrapper">
@@ -304,12 +273,12 @@
       </div>
     </div>
 
-    <!-- Bot AI mic în colț dreapta jos -->
+    <!-- DOAR ROBOTELUL, fără bulină -->
     <button class="ai-bot" id="botBtn" aria-label="Deschide chat AI">
       🤖
     </button>
 
-    <!-- Chat popup chiar în colț dreapta jos -->
+    <!-- Chat popup în colț dreapta jos -->
     <div class="chat-popup" id="chatBox">
       <div class="chat-header">
         <div class="chat-title">SuperParty AI</div>
@@ -317,8 +286,8 @@
       </div>
       <div class="chat-body" id="chatBody">
         <div class="msg msg-ai">
-          Salut! Sunt robotelul SuperParty 🤖<br />
-          Momentan îți răspund doar fake, dar aici vom conecta AI-ul real.
+          Salut! Sunt robotelul SuperParty 🤖
+          <br />Momentan răspunsul e fake, dar aici conectăm AI-ul real.
         </div>
       </div>
       <div class="chat-input-row">
@@ -329,7 +298,7 @@
   </div>
 
   <script>
-    // ─────────── Logica chat: bot mic ↔ popup în colț ───────────
+    // ───────── Chat: robotel ↔ popup ─────────
     const botBtn = document.getElementById('botBtn');
     const chatBox = document.getElementById('chatBox');
     const chatCloseBtn = document.getElementById('chatCloseBtn');
@@ -345,7 +314,7 @@
 
     function closeChat() {
       chatBox.classList.remove('visible');
-      botBtn.style.display = 'flex';
+      botBtn.style.display = 'inline-block';
     }
 
     botBtn.addEventListener('click', openChat);
@@ -363,7 +332,7 @@
       setTimeout(() => {
         const aiMsg = document.createElement('div');
         aiMsg.className = 'msg msg-ai';
-        aiMsg.textContent = 'În varianta finală aici vine AI-ul real care știe de evenimentele tale 😉';
+        aiMsg.textContent = 'Aici, în versiunea finală, vine AI-ul real care știe toate evenimentele tale 😉';
         chatBody.appendChild(aiMsg);
         chatBody.scrollTop = chatBody.scrollHeight;
       }, 400);
@@ -376,7 +345,7 @@
       if (e.key === 'Enter') sendFakeMessage();
     });
 
-    // ─────────── Swipe pentru sidebar ───────────
+    // ───────── Swipe pentru sidebar ─────────
     const swipeLeft = document.querySelector('.swipe-zone-left');
     let startX = 0, currentX = 0, dragging = false;
 
@@ -402,7 +371,6 @@
     document.addEventListener('touchstart', (e) => {
       if (!document.body.classList.contains('sidebar-open')) return;
       const x = e.touches[0].clientX;
-      // dacă atingi mai în dreapta de 120px, închide sidebar
       if (x > 120) {
         document.body.classList.remove('sidebar-open');
       }
