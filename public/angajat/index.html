@@ -1,292 +1,503 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-  <meta charset="UTF-8" />
-  <title>SuperParty · Dashboard angajat</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      min-height: 100vh;
-      background: radial-gradient(circle at top, #ff9a9e 0, #fad0c4 40%, #fbc2eb 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-    }
-
-    .dashboard {
-      background: #0f172a;
-      color: #e5e7eb;
-      border-radius: 20px;
-      box-shadow: 0 20px 60px rgba(15, 23, 42, 0.45);
-      max-width: 960px;
-      width: 100%;
-      padding: 20px 22px 24px;
-    }
-
-    .dashboard-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 18px;
-    }
-
-    .dashboard-header-left h1 {
-      font-size: 20px;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .dashboard-header-left p {
-      font-size: 13px;
-      color: #9ca3af;
-    }
-
-    .mode-toggle {
-      font-size: 12px;
-      padding: 6px 12px;
-      border-radius: 999px;
-      background: #020617;
-      border: 1px solid #1e293b;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-    }
-
-    .mode-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: #f97316;
-    }
-
-    .summary-card {
-      background: linear-gradient(135deg, #1d2538, #020617);
-      border-radius: 16px;
-      padding: 14px 16px;
-      margin-bottom: 16px;
-      border: 1px solid rgba(148, 163, 184, 0.3);
-    }
-
-    .summary-main {
-      font-size: 15px;
-      margin-bottom: 4px;
-    }
-
-    .summary-sub {
-      font-size: 13px;
-      color: #9ca3af;
-    }
-
-    .chips-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    .chip {
-      font-size: 12px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid #1d4ed8;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .chip:nth-child(2) {
-      border-color: #f97316;
-    }
-
-    .chip:nth-child(3) {
-      border-color: #22c55e;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-      gap: 16px;
-      margin-top: 8px;
-    }
-
-    @media (max-width: 720px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .card {
-      background: #020617;
-      border-radius: 14px;
-      border: 1px solid #1f2937;
-      padding: 14px 14px 12px;
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .card-title {
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #9ca3af;
-    }
-
-    .card-count {
-      font-size: 13px;
-      color: #e5e7eb;
-    }
-
-    .event-main-title {
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
-
-    .event-meta {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      font-size: 13px;
-      color: #9ca3af;
-    }
-
-    .event-meta-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 11px;
-      padding: 3px 8px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid #4b5563;
-      margin-top: 8px;
-    }
-
-    .list {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      font-size: 13px;
-      color: #e5e7eb;
-    }
-
-    .list-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 6px 8px;
-      border-radius: 10px;
-      background: #020617;
-      border: 1px solid #111827;
-    }
-
-    .list-item span:first-child {
-      color: #9ca3af;
-      font-size: 12px;
-    }
-
-    .badge-red {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 24px;
-      padding: 2px 7px;
-      border-radius: 999px;
-      font-size: 12px;
-      background: #b91c1c;
-      color: #fee2e2;
-    }
-
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuperParty App</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; overflow-x: hidden; }
+        .page { display: none; min-height: 100vh; }
+        .page.active { display: flex !important; }
+        .login-page { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
+        .login-card { width: 100%; max-width: 500px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border: 2px solid rgba(255,255,255,0.1); border-radius: 30px; padding: 60px 40px; box-shadow: 0 30px 60px rgba(0,0,0,0.6); }
+        .login-title { font-size: 36px; font-weight: 700; color: #f1f5f9; text-align: center; margin-bottom: 40px; }
+        .register-page { background: linear-gradient(135deg, #10b981 0%, #059669 100%); flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
+        .register-card { width: 100%; max-width: 600px; background: white; border-radius: 30px; padding: 60px 40px; box-shadow: 0 30px 60px rgba(0,0,0,0.3); }
+        .kyc-page { background: #0f172a; flex-direction: column; align-items: center; padding: 60px 40px; }
+        .kyc-container { max-width: 1200px; width: 100%; background: rgba(15, 23, 42, 0.9); border: 2px solid #334155; border-radius: 30px; padding: 60px; color: #f1f5f9; }
+        .dashboard-page { background: #0f172a; flex-direction: column; padding: 40px; }
+        .dashboard-container { max-width: 1400px; margin: 0 auto; width: 100%; }
+        .dashboard-header { background: rgba(15, 23, 42, 0.9); border: 2px solid #334155; border-radius: 30px; padding: 40px; margin-bottom: 30px; color: #f1f5f9; }
+        .tasks-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; }
+        .task-card { background: rgba(15, 23, 42, 0.9); border: 2px solid #334155; border-radius: 20px; padding: 30px; color: #f1f5f9; transition: all 0.3s; }
+        .task-card:hover { border-color: #667eea; transform: translateY(-5px); }
+        .admin-page, .gm-page { background: #0f172a; flex-direction: column; padding: 40px; }
+        .form-group { margin-bottom: 25px; }
+        label { display: block; font-size: 13px; font-weight: 600; text-transform: uppercase; color: #e2e8f0; margin-bottom: 10px; }
+        input { width: 100%; padding: 16px 20px; background: rgba(15, 23, 42, 0.7); border: 2px solid #475569; border-radius: 16px; color: #f1f5f9; font-size: 16px; outline: none; }
+        input:focus { border-color: #818cf8; }
+        .btn { width: 100%; padding: 18px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 9999px; color: white; font-size: 18px; font-weight: 700; cursor: pointer; margin-top: 10px; transition: all 0.3s; }
+        .btn:hover { transform: scale(1.02); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .error { background: rgba(239, 68, 68, 0.2); border: 2px solid rgba(239, 68, 68, 0.5); color: #fca5a5; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
+        .link-toggle { text-align: center; margin-top: 30px; color: rgba(255,255,255,0.8); font-size: 14px; }
+        .link-toggle a { color: white; text-decoration: none; font-weight: 600; border-bottom: 2px solid white; cursor: pointer; }
+        .link-toggle a:hover { opacity: 0.8; }
+        .register-card label { color: #374151; text-transform: none; }
+        .register-card input { background: white; border: 2px solid #e5e7eb; color: #1f2937; }
+        .register-card input:focus { border-color: #10b981; }
+        .register-card .link-toggle { color: #374151; }
+        .register-card .link-toggle a { color: #10b981; border-color: #10b981; }
+        .section { background: rgba(15, 23, 42, 0.8); border: 2px solid #334155; border-radius: 20px; padding: 30px; margin-bottom: 30px; }
+        .upload-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px; }
+        .upload-card { background: rgba(30, 41, 59, 0.6); border: 2px dashed #475569; border-radius: 16px; padding: 30px; text-align: center; cursor: pointer; transition: all 0.3s; }
+        .upload-card:hover { border-color: #818cf8; background: rgba(30, 41, 59, 0.8); }
+        .upload-card input[type="file"] { display: none; }
+        .driver-section { display: none; margin-top: 30px; padding-top: 30px; border-top: 2px solid #334155; }
+        .driver-section.show { display: block; }
+        .checkbox-large { display: flex; align-items: center; gap: 15px; cursor: pointer; padding: 20px; background: rgba(30, 41, 59, 0.6); border: 2px solid #475569; border-radius: 16px; transition: all 0.3s; }
+        .checkbox-large:hover { border-color: #818cf8; }
+        .checkbox-large input[type="checkbox"] { width: 24px; height: 24px; cursor: pointer; }
+        .checkbox-large span { font-size: 16px; font-weight: 600; text-transform: none; }
+        .card { background: rgba(15, 23, 42, 0.9); border: 2px solid #334155; border-radius: 30px; padding: 40px; margin-bottom: 30px; color: #f1f5f9; }
+        table { width: 100%; border-collapse: collapse; margin-top: 30px; }
+        th { padding: 18px; text-align: left; color: #94a3b8; border-bottom: 2px solid #334155; }
+        td { padding: 18px; border-bottom: 1px solid #334155; color: #f1f5f9; }
+        .badge { padding: 6px 14px; border-radius: 9999px; font-size: 13px; font-weight: 600; }
+        .badge-pending { background: rgba(251, 191, 36, 0.25); color: #fbbf24; }
+        .badge-active { background: rgba(34, 197, 94, 0.25); color: #22c55e; }
+        .logout-btn { position: fixed; top: 20px; right: 20px; padding: 12px 24px; background: rgba(239, 68, 68, 0.9); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; z-index: 1000; }
+    </style>
 </head>
 <body>
-  <div class="dashboard">
-    <div class="dashboard-header">
-      <div class="dashboard-header-left">
-        <h1>Salut, Andrei 👋</h1>
-        <p>Aici vezi evenimentele tale, dovezile și poți vorbi cu AI-ul SuperParty.</p>
-      </div>
-      <button class="mode-toggle">
-        <span class="mode-dot"></span>
-        🌙 Dark
-      </button>
-    </div>
-
-    <div class="summary-card">
-      <div class="summary-main">
-        Ai <strong>2 evenimente active azi</strong> și <strong>1 în weekend</strong>.
-      </div>
-      <div class="summary-sub">
-        Nu uita de pozele obligatorii la fiecare rol.
-      </div>
-
-      <div class="chips-row">
-        <div class="chip">🎈 <span>Animație copii</span></div>
-        <div class="chip">📸 <span>Dovezi obligatorii</span></div>
-        <div class="chip">🚗 <span>Fără șofer azi</span></div>
-      </div>
-    </div>
-
-    <div class="grid">
-      <!-- Stânga: evenimente -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">Evenimente azi</div>
-          <div class="card-count">2</div>
-        </div>
-
-        <div class="event-main">
-          <div class="event-main-title">Elsa 2h + Olaf 2h</div>
-          <div class="event-meta">
-            <div class="event-meta-row">
-              📅 <span>Azi · 15:00</span>
+    <!-- LOGIN -->
+    <div id="login" class="page active login-page">
+        <div class="login-card">
+            <h1 class="login-title">🎉 SuperParty Login</h1>
+            <div id="loginError" class="error" style="display:none;"></div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" placeholder="ex: ana@superparty.ro" required />
+                </div>
+                <div class="form-group">
+                    <label>Parolă</label>
+                    <input type="password" id="loginPassword" placeholder="Introdu parola" required />
+                </div>
+                <button type="submit" class="btn" id="loginBtn">🔓 Intră în aplicație</button>
+            </form>
+            <div class="link-toggle">
+                Nu ai cont? <a href="#" onclick="event.preventDefault(); showPage('register');">Înregistrează-te aici</a>
             </div>
-            <div class="event-meta-row">
-              📍 <span>București, Sector 3 · Str. Florilor 23</span>
-            </div>
-          </div>
-          <div class="pill">📸 Dovezi lipsă: <strong>3</strong></div>
         </div>
-      </div>
-
-      <!-- Dreapta: weekend / dovezi -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">Statistici rapide</div>
-        </div>
-        <div class="list">
-          <div class="list-item">
-            <span>Evenimente weekend</span>
-            <span>1</span>
-          </div>
-          <div class="list-item">
-            <span>Dovezi lipsă</span>
-            <span class="badge-red">3</span>
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
+
+    <!-- REGISTER -->
+    <div id="register" class="page register-page">
+        <div class="register-card">
+            <div style="text-align: center; margin-bottom: 40px;">
+                <div style="font-size: 64px; margin-bottom: 15px;">✨</div>
+                <h2 style="font-size: 36px; font-weight: 700; color: #1f2937;">Înregistrează-te</h2>
+            </div>
+            <div id="registerError" class="error" style="display:none;"></div>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label>👨‍💼 Username</label>
+                    <input type="text" id="registerUsername" placeholder="Alege un username" required />
+                </div>
+                <div class="form-group">
+                    <label>📧 Email</label>
+                    <input type="email" id="registerEmail" placeholder="adresa@email.ro" required />
+                </div>
+                <div class="form-group">
+                    <label>🔒 Parolă</label>
+                    <input type="password" id="registerPassword" placeholder="Minim 8 caractere" required />
+                </div>
+                <button type="submit" class="btn" id="registerBtn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">✨ Creează cont</button>
+            </form>
+            <div class="link-toggle">
+                Ai deja cont? <a href="#" onclick="event.preventDefault(); showPage('login');">Login aici</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- KYC + CONTRACT -->
+    <div id="kyc" class="page kyc-page">
+        <div class="kyc-container">
+            <h1 style="font-size: 42px; margin-bottom: 40px;">🪪 KYC Onboarding</h1>
+
+            <div class="section">
+                <h2 style="font-size: 24px; margin-bottom: 20px;">📄 Contract de Colaborare</h2>
+                <label class="checkbox-large">
+                    <input type="checkbox" id="contractCheck" />
+                    <span>Am citit și accept contractul de colaborare SuperParty</span>
+                </label>
+            </div>
+
+            <div class="section">
+                <h2 style="font-size: 24px; margin-bottom: 20px;">👤 Documente de Identitate</h2>
+                <p style="color: #94a3b8; margin-bottom: 20px;">Obligatoriu pentru toți angajații</p>
+                <div class="upload-grid">
+                    <label class="upload-card" for="buletinUpload">
+                        <div style="font-size: 48px; margin-bottom: 10px;">🪪</div>
+                        <div style="font-weight: 600; margin-bottom: 5px;">Buletin / CI</div>
+                        <div style="font-size: 12px; color: #94a3b8;">Față + Spate</div>
+                        <input type="file" id="buletinUpload" accept="image/*,.pdf" />
+                    </label>
+                    <label class="upload-card" for="selfieUpload">
+                        <div style="font-size: 48px; margin-bottom: 10px;">🤳</div>
+                        <div style="font-weight: 600; margin-bottom: 5px;">Selfie cu Buletinul</div>
+                        <div style="font-size: 12px; color: #94a3b8;">Chip vizibil + CI</div>
+                        <input type="file" id="selfieUpload" accept="image/*" />
+                    </label>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 style="font-size: 24px; margin-bottom: 20px;">🚗 Doresc să fiu Șofer</h2>
+                <label class="checkbox-large">
+                    <input type="checkbox" id="driverCheck" onchange="toggleDriverSection()" />
+                    <span>✅ DA, vreau să fiu și șofer (livrări, transport echipamente)</span>
+                </label>
+                <div id="driverDocs" class="driver-section">
+                    <h3 style="font-size: 20px; margin-bottom: 20px; color: #818cf8;">📋 Documente Șofer (Obligatorii)</h3>
+                    <div class="upload-grid">
+                        <label class="upload-card" for="permisUpload">
+                            <div style="font-size: 48px; margin-bottom: 10px;">🪪</div>
+                            <div style="font-weight: 600; margin-bottom: 5px;">Permis de Conducere</div>
+                            <div style="font-size: 12px; color: #94a3b8;">Categoria B - Față + Spate</div>
+                            <input type="file" id="permisUpload" accept="image/*,.pdf" />
+                        </label>
+                        <label class="upload-card" for="cazierUpload">
+                            <div style="font-size: 48px; margin-bottom: 10px;">📄</div>
+                            <div style="font-weight: 600; margin-bottom: 5px;">Cazier Judiciar</div>
+                            <div style="font-size: 12px; color: #94a3b8;">Emis în ultimele 3 luni</div>
+                            <input type="file" id="cazierUpload" accept="image/*,.pdf" />
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn" onclick="completeKYC()" style="margin-top: 20px;">🚀 Finalizează Onboarding</button>
+        </div>
+    </div>
+
+    <!-- DASHBOARD ANGAJAT -->
+    <div id="dashboard" class="page dashboard-page">
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+        <div class="dashboard-container">
+            <div class="dashboard-header">
+                <h1 style="font-size: 42px; margin-bottom: 10px;">👋 Bine ai venit!</h1>
+                <p style="color: #94a3b8; font-size: 18px;" id="welcomeText">Loading...</p>
+            </div>
+            <div class="tasks-grid">
+                <div class="task-card">
+                    <div style="font-size: 48px; margin-bottom: 15px;">📅</div>
+                    <h3 style="font-size: 24px; margin-bottom: 10px;">Task-uri Astăzi</h3>
+                    <p style="color: #94a3b8;">0 task-uri programate</p>
+                </div>
+                <div class="task-card">
+                    <div style="font-size: 48px; margin-bottom: 15px;">💰</div>
+                    <h3 style="font-size: 24px; margin-bottom: 10px;">Profit Luna Asta</h3>
+                    <p style="color: #94a3b8;">0 RON</p>
+                </div>
+                <div class="task-card">
+                    <div style="font-size: 48px; margin-bottom: 15px;">⭐</div>
+                    <h3 style="font-size: 24px; margin-bottom: 10px;">Rating</h3>
+                    <p style="color: #94a3b8;">5.0 / 5.0</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMIN -->
+    <div id="admin" class="page admin-page">
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+        <div style="max-width: 1600px; margin: 0 auto; width: 100%;">
+            <div class="card">
+                <h1 style="font-size: 42px;">🔒 Admin Panel</h1>
+            </div>
+            <div class="card">
+                <h2 style="margin-bottom: 20px;">Utilizatori</h2>
+                <table>
+                    <thead><tr><th>Nume</th><th>Email</th><th>Rol</th><th>KYC / Contract</th></tr></thead>
+                    <tbody id="adminBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- GM -->
+    <div id="gm" class="page gm-page">
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+        <div style="max-width: 1600px; margin: 0 auto; width: 100%;">
+            <div class="card">
+                <h1 style="font-size: 42px;">👑 GM Panel</h1>
+                <p style="color: #94a3b8; margin-top: 20px;">Panel pentru General Manager</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbwpScVyziDaoVeuxcqdBQ3qx6j-QHy5FYoWtvlqMSsu15eXGI_l5fmo1Bg8zqP1BLyJ/exec';
+
+        let currentUser = null;
+
+        // MOCK pentru tine (owner) - NU îl stricăm
+        const MOCK_OWNER = {
+            email: 'ursache.andrei1995@gmail.com',
+            password: 'Andrei209512!',
+            user: {
+                success: true,
+                name: 'Andrei Ursache',
+                email: 'ursache.andrei1995@gmail.com',
+                role: 'admin',
+                kyc_status: true,
+                contract_signed: true,
+                status: 'active'
+            }
+        };
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            const el = document.getElementById(pageId);
+            if (el) el.classList.add('active');
+        }
+
+        function toggleDriverSection() {
+            const driverDocs = document.getElementById('driverDocs');
+            const driverCheck = document.getElementById('driverCheck');
+            if (driverCheck.checked) driverDocs.classList.add('show');
+            else driverDocs.classList.remove('show');
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('superparty_user');
+            showPage('login');
+        }
+
+        // KYC + CONTRACT FINALIZE
+        async function completeKYC() {
+            if (!currentUser || !currentUser.email) {
+                alert('Eroare: nu am găsit utilizatorul curent. Te rog reloghează-te.');
+                logout();
+                return;
+            }
+
+            const contractCheck = document.getElementById('contractCheck');
+            if (!contractCheck.checked) {
+                alert('Trebuie să accepți contractul de colaborare înainte să continui.');
+                return;
+            }
+
+            const email = currentUser.email;
+            let backendOk = false;
+
+            try {
+                const url = `${BACKEND_URL}?action=completeKYC&email=${encodeURIComponent(email)}`;
+                const response = await fetch(url);
+                const result = await response.json();
+                console.log('🔍 completeKYC - backend result:', result);
+
+                if (result && result.success) {
+                    backendOk = true;
+                    if (result.user) {
+                        currentUser = result.user;
+                    } else {
+                        currentUser.kyc_status = true;
+                        currentUser.contract_signed = true;
+                    }
+                }
+            } catch (error) {
+                console.warn('⚠️ completeKYC - backend indisponibil, folosesc doar localStorage', error);
+            }
+
+            if (!backendOk) {
+                currentUser.kyc_status = true;
+                currentUser.contract_signed = true;
+            }
+
+            localStorage.setItem('superparty_user', JSON.stringify(currentUser));
+            document.getElementById('welcomeText').textContent = currentUser.name || currentUser.email;
+            showPage('dashboard');
+        }
+
+        // LOGIN
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const btn = document.getElementById('loginBtn');
+            const err = document.getElementById('loginError');
+
+            btn.disabled = true;
+            btn.textContent = 'Se încarcă...';
+            err.style.display = 'none';
+
+            console.log('🔍 LOGIN - Email:', email);
+
+            // 1) MOCK OWNER (tu)
+            if (email === MOCK_OWNER.email && password === MOCK_OWNER.password) {
+                console.log('✅ MOCK LOGIN - Owner detected, using local auth');
+                currentUser = MOCK_OWNER.user;
+                localStorage.setItem('superparty_user', JSON.stringify(currentUser));
+                document.getElementById('welcomeText').textContent = currentUser.name;
+                showPage('admin');
+                loadAdminData();
+                btn.disabled = false;
+                btn.textContent = '🔓 Intră în aplicație';
+                return;
+            }
+
+            // 2) LOGIN back-end
+            try {
+                console.log('🔍 LOGIN - Trying backend...');
+                const url =
+                    `${BACKEND_URL}?action=login&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
+                console.log('🔍 LOGIN - Request URL:', url);
+
+                const response = await fetch(url);
+                console.log('🔍 LOGIN - Response status:', response.status);
+                const result = await response.json();
+                console.log('🔍 LOGIN - Backend result:', result);
+
+                if (!result.success) {
+                    err.textContent = '⚠️ ' + (result.error || 'Email sau parolă greșită');
+                    err.style.display = 'block';
+                } else {
+                    const status = (result.status || 'active').toLowerCase();
+                    const kycDone = !!result.kyc_status;
+                    const contractSigned = !!result.contract_signed;
+
+                    // dacă e PENDING → nu îl lăsăm să intre
+                    if (status === 'pending') {
+                        err.textContent =
+                            '⏳ Contul tău este în așteptare. Un administrator trebuie să îl aprobe înainte să poți intra.';
+                        err.style.display = 'block';
+                    } else {
+                        currentUser = result;
+                        localStorage.setItem('superparty_user', JSON.stringify(result));
+                        document.getElementById('welcomeText').textContent = result.name || result.email;
+
+                        const role = (result.role || '').toLowerCase();
+
+                        if (!kycDone || !contractSigned) {
+                            showPage('kyc');
+                        } else if (role === 'admin') {
+                            showPage('admin');
+                            loadAdminData();
+                        } else if (role === 'gm') {
+                            showPage('gm');
+                        } else {
+                            showPage('dashboard');
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('🔴 LOGIN - Error:', error);
+                err.textContent = '⚠️ Backend indisponibil - verifică emailul și parola';
+                err.style.display = 'block';
+            }
+
+            btn.disabled = false;
+            btn.textContent = '🔓 Intră în aplicație';
+        });
+
+        // REGISTER
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('registerUsername').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const btn = document.getElementById('registerBtn');
+            const err = document.getElementById('registerError');
+
+            btn.disabled = true;
+            btn.textContent = 'Se creează...';
+            err.style.display = 'none';
+
+            try {
+                const url =
+                    `${BACKEND_URL}?action=register&name=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}&phone=0700000000&password=${encodeURIComponent(password)}`;
+                const response = await fetch(url);
+                const result = await response.json();
+                console.log('🔍 REGISTER - Backend result:', result);
+
+                if (result.success) {
+                    alert('✅ Cont creat! Așteaptă aprobarea administratorului înainte să te poți loga.');
+                    showPage('login');
+                } else {
+                    err.textContent = '⚠️ ' + (result.error || 'Eroare la creare cont');
+                    err.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('🔴 REGISTER - Error:', error);
+                err.textContent = '⚠️ Backend indisponibil';
+                err.style.display = 'block';
+            }
+
+            btn.disabled = false;
+            btn.textContent = '✨ Creează cont';
+        });
+
+        // ADMIN - LISTĂ USERI
+        async function loadAdminData() {
+            const tbody = document.getElementById('adminBody');
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Se încarcă...</td></tr>';
+            try {
+                const url = `${BACKEND_URL}?action=getAllUsers`;
+                const response = await fetch(url);
+                const result = await response.json();
+                console.log('🔍 ADMIN - getAllUsers result:', result);
+
+                if (result.success && result.users) {
+                    tbody.innerHTML = result.users
+                        .map(u => {
+                            const status = (u.status || 'active').toLowerCase();
+                            const badgeClass =
+                                status === 'pending' ? 'badge badge-pending' : 'badge badge-active';
+                            const statusText =
+                                status === 'pending' ? 'În așteptare' : 'Activ';
+                            return `
+                                <tr>
+                                    <td>${u.name || '-'}</td>
+                                    <td>${u.email || '-'}</td>
+                                    <td><span class="${badgeClass}">${u.role || '-'}</span> (${statusText})</td>
+                                    <td>${u.kyc_status ? '✅ KYC' : '❌ KYC'} · ${u.contract_signed ? '📄 Contract' : '—'}</td>
+                                </tr>
+                            `;
+                        })
+                        .join('');
+                }
+            } catch (error) {
+                console.error('🔴 ADMIN - Error:', error);
+                tbody.innerHTML =
+                    '<tr><td colspan="4" style="text-align:center;">Backend indisponibil</td></tr>';
+            }
+        }
+
+        // AUTO-LOGIN DIN LOCALSTORAGE
+        window.addEventListener('DOMContentLoaded', () => {
+            const saved = localStorage.getItem('superparty_user');
+            if (saved) {
+                try {
+                    currentUser = JSON.parse(saved);
+                    document.getElementById('welcomeText').textContent =
+                        currentUser.name || currentUser.email;
+                    const role = (currentUser.role || '').toLowerCase();
+                    const kycDone = !!currentUser.kyc_status;
+                    const contractSigned = !!currentUser.contract_signed;
+
+                    if (!kycDone || !contractSigned) {
+                        showPage('kyc');
+                    } else if (role === 'admin') {
+                        showPage('admin');
+                        loadAdminData();
+                    } else if (role === 'gm') {
+                        showPage('gm');
+                    } else {
+                        showPage('dashboard');
+                    }
+                } catch (e) {
+                    console.error('🔴 DOMContentLoaded - parse error:', e);
+                    localStorage.removeItem('superparty_user');
+                }
+            }
+        });
+    </script>
 </body>
 </html>
