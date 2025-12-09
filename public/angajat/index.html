@@ -21,7 +21,7 @@
       position: relative;
     }
 
-    /* ───────── Sidebar îngust ascuns ───────── */
+    /* ───── Sidebar îngust ascuns ───── */
     .sidebar-wrapper {
       position: fixed;
       top: 0;
@@ -33,6 +33,7 @@
       z-index: 40;
       touch-action: none;
     }
+
     body.sidebar-open .sidebar-wrapper {
       transform: translateX(0);
     }
@@ -73,8 +74,7 @@
       flex-direction: column;
       align-items: center;
       gap: 10px;
-      margin-top: 6px;
-      margin-bottom: 6px;
+      margin-top: 10px;
     }
 
     .sidebar-btn {
@@ -90,15 +90,19 @@
       cursor: pointer;
       transition: all 0.15s ease;
     }
+
     .sidebar-btn.active {
       border-color: #38bdf8;
       box-shadow: 0 0 0 1px rgba(56,189,248,0.55), 0 12px 26px rgba(15,23,42,0.9);
     }
+
     .sidebar-btn:hover {
       transform: translateY(-1px) scale(1.03);
     }
 
-    .sidebar-spacer { flex: 1; }
+    .sidebar-spacer {
+      flex: 1;
+    }
 
     .sidebar-footer-text {
       font-size: 10px;
@@ -107,22 +111,39 @@
       margin-bottom: 6px;
     }
 
-    /* ───────── Zone de swipe ───────── */
-    .swipe-zone-left {
+    /* ───── "Handle" la mijloc pe stânga ───── */
+    .sidebar-handle {
       position: fixed;
-      top: 0;
       left: 0;
-      width: 35px;
-      height: 100vh;
-      z-index: 10;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 70px;
+      border-radius: 0 10px 10px 0;
+      background: rgba(15,23,42,0.9);
+      border-right: 1px solid rgba(148,163,184,0.6);
+      border-top: 1px solid rgba(148,163,184,0.6);
+      border-bottom: 1px solid rgba(148,163,184,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 35;
     }
 
-    /* ───────── Bot AI mic: DOAR robotel, fără bulină ───────── */
+    .sidebar-handle-lines {
+      width: 6px;
+      height: 26px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.7);
+      box-shadow: inset 0 0 0 1px rgba(15,23,42,0.9);
+    }
+
+    /* ───── Bot AI mic: doar robotel ───── */
     .ai-bot {
       position: fixed;
       bottom: 18px;
       right: 18px;
-      /* nu mai desenăm bulină, doar robotelul */
       background: transparent;
       border: none;
       padding: 0;
@@ -136,7 +157,7 @@
       transform: scale(0.9);
     }
 
-    /* ───────── Chat popup în colț dreapta jos ───────── */
+    /* ───── Chat popup în colț dreapta jos ───── */
     .chat-popup {
       position: fixed;
       bottom: 16px;
@@ -154,7 +175,10 @@
       overflow: hidden;
       z-index: 60;
     }
-    .chat-popup.visible { display: flex; }
+
+    .chat-popup.visible {
+      display: flex;
+    }
 
     .chat-header {
       padding: 10px 12px;
@@ -196,11 +220,13 @@
       max-width: 85%;
       line-height: 1.35;
     }
+
     .msg-ai {
       background: rgba(15,23,42,0.9);
       border: 1px solid rgba(148,163,184,0.6);
       align-self: flex-start;
     }
+
     .msg-user {
       background: radial-gradient(circle at top left, rgba(56,189,248,0.35), #0f172a);
       border: 1px solid rgba(56,189,248,0.7);
@@ -251,10 +277,12 @@
 </head>
 <body>
   <div class="app-root">
-    <!-- Zona de swipe pentru sidebar -->
-    <div class="swipe-zone-left"></div>
+    <!-- "Handle" la mijloc pe stânga -->
+    <div class="sidebar-handle" id="sidebarHandle">
+      <div class="sidebar-handle-lines"></div>
+    </div>
 
-    <!-- Sidebar îngust ascuns -->
+    <!-- Sidebar îngust cu 3 butoane -->
     <div class="sidebar-wrapper">
       <div class="sidebar">
         <div class="sidebar-logo">🎈</div>
@@ -265,15 +293,11 @@
           <button class="sidebar-btn" title="Dovezi">📸</button>
         </div>
         <div class="sidebar-spacer"></div>
-        <div class="sidebar-section-label">Altele</div>
-        <div class="sidebar-group">
-          <button class="sidebar-btn" title="Setări">⚙️</button>
-        </div>
         <div class="sidebar-footer-text">SuperParty</div>
       </div>
     </div>
 
-    <!-- DOAR ROBOTELUL, fără bulină -->
+    <!-- DOAR robotelul, jos dreapta -->
     <button class="ai-bot" id="botBtn" aria-label="Deschide chat AI">
       🤖
     </button>
@@ -286,8 +310,8 @@
       </div>
       <div class="chat-body" id="chatBody">
         <div class="msg msg-ai">
-          Salut! Sunt robotelul SuperParty 🤖
-          <br />Momentan răspunsul e fake, dar aici conectăm AI-ul real.
+          Salut! Sunt robotelul SuperParty 🤖<br/>
+          Deocamdată răspunsul e fake, dar aici o să fie AI-ul real cu evenimentele tale.
         </div>
       </div>
       <div class="chat-input-row">
@@ -298,7 +322,7 @@
   </div>
 
   <script>
-    // ───────── Chat: robotel ↔ popup ─────────
+    // ───── Chat: robotel <-> popup ─────
     const botBtn = document.getElementById('botBtn');
     const chatBox = document.getElementById('chatBox');
     const chatCloseBtn = document.getElementById('chatCloseBtn');
@@ -332,7 +356,7 @@
       setTimeout(() => {
         const aiMsg = document.createElement('div');
         aiMsg.className = 'msg msg-ai';
-        aiMsg.textContent = 'Aici, în versiunea finală, vine AI-ul real care știe toate evenimentele tale 😉';
+        aiMsg.textContent = 'În varianta finală o să răspundă AI-ul real 😉';
         chatBody.appendChild(aiMsg);
         chatBody.scrollTop = chatBody.scrollHeight;
       }, 400);
@@ -345,29 +369,32 @@
       if (e.key === 'Enter') sendFakeMessage();
     });
 
-    // ───────── Swipe pentru sidebar ─────────
-    const swipeLeft = document.querySelector('.swipe-zone-left');
-    let startX = 0, currentX = 0, dragging = false;
+    // ───── Handle la mijloc: deschide / închide bara ─────
+    const sidebarHandle = document.getElementById('sidebarHandle');
 
-    swipeLeft.addEventListener('touchstart', (e) => {
-      startX = e.touches[0].clientX;
-      dragging = true;
+    function toggleSidebar() {
+      document.body.classList.toggle('sidebar-open');
+    }
+
+    // Tap / click
+    sidebarHandle.addEventListener('click', toggleSidebar);
+
+    // Touch (când "ții degetul" pe el)
+    let handleTouchStartX = 0;
+    sidebarHandle.addEventListener('touchstart', (e) => {
+      handleTouchStartX = e.touches[0].clientX;
     });
 
-    swipeLeft.addEventListener('touchmove', (e) => {
-      if (!dragging) return;
-      currentX = e.touches[0].clientX;
-      const diff = currentX - startX;
-      if (diff > 25) {
-        document.body.classList.add('sidebar-open');
-        dragging = false;
+    sidebarHandle.addEventListener('touchend', (e) => {
+      const endX = e.changedTouches[0].clientX;
+      const diff = endX - handleTouchStartX;
+      // chiar dacă îl miști puțin, îl considerăm intenție de deschidere
+      if (Math.abs(diff) < 60) {
+        toggleSidebar();
       }
     });
 
-    swipeLeft.addEventListener('touchend', () => {
-      dragging = false;
-    });
-
+    // Dacă atingi mai în dreapta când bara e deschisă, o închidem
     document.addEventListener('touchstart', (e) => {
       if (!document.body.classList.contains('sidebar-open')) return;
       const x = e.touches[0].clientX;
