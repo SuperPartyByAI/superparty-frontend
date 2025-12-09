@@ -16,7 +16,7 @@
       color: #e5e7eb;
     }
 
-    /* DEBUG MIC JOS STÂNGA – CA SĂ ȘTIM CĂ E V3 */
+    /* DEBUG MIC JOS STÂNGA – CA SĂ ȘTIM CĂ E V4 */
     #debugTag {
       position: fixed;
       left: 10px;
@@ -104,7 +104,7 @@
 
     .sidebar-btn:hover { background: #2563eb; }
 
-    /* BULA AI – MAI MICĂ */
+    /* BULA AI – MICĂ, COLȚ DREAPTA JOS */
     #chatFab {
       position: fixed;
       right: 20px;
@@ -126,13 +126,13 @@
 
     #chatFab:hover { transform: scale(1.08); }
 
-    /* CHAT PĂTRAT – MAI MARE, MAI AERISIT */
+    /* CHAT PĂTRAT – MARE, AERISIT */
     #chatPanel {
       position: fixed;
       right: 0;
       bottom: 0;
-      width: 430px;          /* mai lat */
-      height: 70vh;          /* mai înalt */
+      width: 430px;
+      height: 70vh;
       background: rgba(15,23,42,0.97);
       border-left: 1px solid rgba(51,65,85,0.8);
       border-top: 1px solid rgba(51,65,85,0.8);
@@ -199,7 +199,7 @@
 </head>
 <body>
 
-<div id="debugTag">ANGAJAT v3 + logic</div>
+<div id="debugTag">ANGAJAT v4 (AI activ)</div>
 
 <button id="menuToggle">
   <div class="menu-lines"><div></div><div></div><div></div></div>
@@ -236,17 +236,19 @@
 </div>
 
 <script>
-  // === GUARD LOGIN + KYC ===
+  // === GUARD LOGIN + KYC (simplu) ===
   (function guard() {
     const email = localStorage.getItem("sp_email");
     const kyc = (localStorage.getItem("sp_kyc") || "").toUpperCase();
 
     if (!email) {
+      console.warn("Nu există sp_email în localStorage. Trimit la /login.html");
       window.location.href = "/login.html";
       return;
     }
 
     if (kyc && kyc !== "OK") {
+      console.warn("KYC nu este OK (" + kyc + "). Trimit la /kyc.html");
       window.location.href = "/kyc.html";
       return;
     }
@@ -257,26 +259,13 @@
   const sidebar = document.getElementById("sidebar");
   menuToggle.onclick = () => sidebar.classList.toggle("open");
 
-  // CHAT
+  // CHAT ELEMENTE
   const chatFab = document.getElementById("chatFab");
   const chatPanel = document.getElementById("chatPanel");
   const chatClose = document.getElementById("chatClose");
   const chatInput = document.getElementById("chatInput");
   const chatMessages = document.getElementById("chatMessages");
   const chatSend = document.getElementById("chatSend");
-
-  // DESCHIDE CHATUL: dispare bulina
-  chatFab.addEventListener("click", () => {
-    chatPanel.classList.add("open");
-    chatFab.style.display = "none";  // dispare complet
-    chatInput.focus();
-  });
-
-  // ÎNCHIDE CHATUL: reapare bulina 🤖
-  chatClose.addEventListener("click", () => {
-    chatPanel.classList.remove("open");
-    chatFab.style.display = "flex";
-  });
 
   function addMsg(text, who) {
     const line = document.createElement("div");
@@ -285,6 +274,29 @@
     chatMessages.appendChild(line);
     chatMessages.scrollTop = chatMessages.scrollHeight;
   }
+
+  function openChat() {
+    chatPanel.classList.add("open");
+    chatFab.style.display = "none";  // bulina dispare complet
+    chatInput.focus();
+  }
+
+  function closeChat() {
+    chatPanel.classList.remove("open");
+    chatFab.style.display = "flex";  // reapare robotelul
+  }
+
+  // DESCHIDE CHAT CÂND APEȘI PE 🤖
+  chatFab.addEventListener("click", () => {
+    console.log("chatFab click -> openChat");
+    openChat();
+  });
+
+  // ÎNCHIDE CHAT CÂND APEȘI PE X
+  chatClose.addEventListener("click", () => {
+    console.log("chatClose click -> closeChat");
+    closeChat();
+  });
 
   function openAdminMode() {
     const email = (localStorage.getItem("sp_email") || "").toLowerCase();
@@ -328,7 +340,7 @@
     }
   }
 
-  function send() {
+  function handleSend() {
     const t = chatInput.value.trim();
     if (!t) return;
     addMsg(t, "user");
@@ -336,7 +348,6 @@
 
     const lower = t.toLowerCase();
 
-    // comenzi secrete
     if (lower.includes("open mod andrei admin")) {
       openAdminMode();
       return;
@@ -346,17 +357,20 @@
       return;
     }
 
-    // răspuns normal
-    addMsg("Am primit mesajul tău. Când legăm backend-ul, îți arăt aici evenimentele și dovezile.", "bot");
+    // răspuns demo dacă nu e comandă secretă
+    addMsg("Am primit mesajul tău. Asta e versiunea demo. Când legăm backend-ul, aici îți arăt evenimentele și dovezile.", "bot");
   }
 
-  chatSend.onclick = send;
-  chatInput.onkeydown = (e) => {
+  chatSend.addEventListener("click", handleSend);
+  chatInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      send();
+      handleSend();
     }
-  };
+  });
+
+  // MESAJ DE START CA SĂ VEZI CĂ AI-UL E VIU
+  addMsg("Salut, Andrei! Sunt AI-ul demo din dashboard. Scrie-mi ceva sau folosește comenzile: 'open mod andrei admin' / 'open mod andrei gm'.", "bot");
 </script>
 
 </body>
