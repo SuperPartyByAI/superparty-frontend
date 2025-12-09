@@ -2,589 +2,291 @@
 <html lang="ro">
 <head>
   <meta charset="UTF-8" />
-  <title>SuperParty - Panou angajat</title>
+  <title>SuperParty · Dashboard angajat</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    html, body {
+    * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      height: 100%;
+    }
+
+    body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-    #root {
-      height: 100%;
-    }
-    .app {
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    .side-nav {
-      position: fixed;
-      left: 0;
-      top: 0;
-      height: 100vh;
-      width: 170px;
-      background: #111827;
-      color: white;
-      padding: 16px 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      box-shadow: 4px 0 16px rgba(15, 23, 42, 0.6);
-      z-index: 20;
-    }
-    .content {
-      margin-left: 170px;
-      padding: 16px;
-    }
-    .button {
-      border-radius: 999px;
-      padding: 8px 14px;
-      border: none;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    .button-primary {
-      background: #4f46e5;
-      color: white;
-    }
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      background: #e5e7eb;
-      color: #111827;
-    }
-    .ai-chat-toggle {
-      position: fixed;
-      right: 16px;
-      bottom: 16px;
-      width: 44px;
-      height: 44px;
-      border-radius: 999px;
-      background: linear-gradient(135deg, #4f46e5, #ec4899);
+      background: radial-gradient(circle at top, #ff9a9e 0, #fad0c4 40%, #fbc2eb 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: white;
-      font-size: 20px;
-      cursor: pointer;
-      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.5);
-      z-index: 40;
+      padding: 16px;
     }
-    .ai-chat-panel {
-      position: fixed;
-      right: 16px;
-      bottom: 72px;
-      width: 360px;
-      max-height: 520px;
-      background: #0b1120;
-      color: white;
-      border-radius: 18px;
-      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.8);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      z-index: 50;
+
+    .dashboard {
+      background: #0f172a;
+      color: #e5e7eb;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(15, 23, 42, 0.45);
+      max-width: 960px;
+      width: 100%;
+      padding: 20px 22px 24px;
     }
-    .ai-chat-header {
-      padding: 10px 14px;
+
+    .dashboard-header {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid rgba(148, 163, 184, 0.4);
-      background: linear-gradient(135deg, #4f46e5, #1e293b);
+      align-items: center;
+      margin-bottom: 18px;
     }
-    .ai-chat-messages {
-      flex: 1;
-      padding: 10px 12px;
-      overflow-y: auto;
-      font-size: 13px;
-    }
-    .ai-chat-input {
-      display: flex;
-      border-top: 1px solid rgba(148, 163, 184, 0.4);
-      background: #020617;
-    }
-    .ai-chat-input input {
-      flex: 1;
-      border: none;
-      padding: 8px 10px;
-      font-size: 13px;
-      background: transparent;
-      color: white;
-      outline: none;
-    }
-    .ai-chat-input button {
-      border: none;
-      padding: 0 14px;
-      cursor: pointer;
-      background: transparent;
-      color: #38bdf8;
+
+    .dashboard-header-left h1 {
+      font-size: 20px;
       font-weight: 600;
-      font-size: 13px;
+      margin-bottom: 4px;
     }
-    .msg-row {
-      margin-bottom: 6px;
+
+    .dashboard-header-left p {
+      font-size: 13px;
+      color: #9ca3af;
+    }
+
+    .mode-toggle {
+      font-size: 12px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: #020617;
+      border: 1px solid #1e293b;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .mode-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #f97316;
+    }
+
+    .summary-card {
+      background: linear-gradient(135deg, #1d2538, #020617);
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+    }
+
+    .summary-main {
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+
+    .summary-sub {
+      font-size: 13px;
+      color: #9ca3af;
+    }
+
+    .chips-row {
       display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
     }
-    .msg-row.user {
-      justify-content: flex-end;
+
+    .chip {
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid #1d4ed8;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
     }
-    .msg-row.ai {
-      justify-content: flex-start;
+
+    .chip:nth-child(2) {
+      border-color: #f97316;
     }
-    .msg-bubble {
-      max-width: 80%;
-      padding: 6px 8px;
-      border-radius: 10px;
+
+    .chip:nth-child(3) {
+      border-color: #22c55e;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 720px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: #020617;
+      border-radius: 14px;
+      border: 1px solid #1f2937;
+      padding: 14px 14px 12px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .card-title {
       font-size: 13px;
-      line-height: 1.3;
-      white-space: pre-wrap;
-      word-break: break-word;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #9ca3af;
     }
-    .msg-bubble.user {
-      background: #4f46e5;
-      color: white;
-    }
-    .msg-bubble.ai {
-      background: #111827;
+
+    .card-count {
+      font-size: 13px;
       color: #e5e7eb;
     }
+
+    .event-main-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .event-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 13px;
+      color: #9ca3af;
+    }
+
+    .event-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
     .pill {
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      padding: 2px 8px;
-      border-radius: 999px;
       font-size: 11px;
-      background: rgba(15, 23, 42, 0.8);
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid #4b5563;
+      margin-top: 8px;
+    }
+
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 13px;
       color: #e5e7eb;
     }
+
+    .list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 8px;
+      border-radius: 10px;
+      background: #020617;
+      border: 1px solid #111827;
+    }
+
+    .list-item span:first-child {
+      color: #9ca3af;
+      font-size: 12px;
+    }
+
+    .badge-red {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 24px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: #b91c1c;
+      color: #fee2e2;
+    }
+
   </style>
 </head>
 <body>
-  <div id="root"></div>
+  <div class="dashboard">
+    <div class="dashboard-header">
+      <div class="dashboard-header-left">
+        <h1>Salut, Andrei 👋</h1>
+        <p>Aici vezi evenimentele tale, dovezile și poți vorbi cu AI-ul SuperParty.</p>
+      </div>
+      <button class="mode-toggle">
+        <span class="mode-dot"></span>
+        🌙 Dark
+      </button>
+    </div>
 
-  <!-- React + ReactDOM + Babel -->
-  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <div class="summary-card">
+      <div class="summary-main">
+        Ai <strong>2 evenimente active azi</strong> și <strong>1 în weekend</strong>.
+      </div>
+      <div class="summary-sub">
+        Nu uita de pozele obligatorii la fiecare rol.
+      </div>
 
-  <script type="text/babel">
-    const { useState } = React;
+      <div class="chips-row">
+        <div class="chip">🎈 <span>Animație copii</span></div>
+        <div class="chip">📸 <span>Dovezi obligatorii</span></div>
+        <div class="chip">🚗 <span>Fără șofer azi</span></div>
+      </div>
+    </div>
 
-    const OWNER_EMAIL = "ursache.andrei1995@gmail.com";
-    const ADMIN_PASSWORD = "andrei-admin";
-    const GM_PASSWORD = "andrei-gm";
+    <div class="grid">
+      <!-- Stânga: evenimente -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Evenimente azi</div>
+          <div class="card-count">2</div>
+        </div>
 
-    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxs819m4gt-tpTkAIIS91EnxhwYx-5wdbnh6Zi5_GcY14zs5XYqS9ykFuYCCcokhQ/exec";
-
-    const App = () => {
-      const [theme, setTheme] = useState("dark");
-      const [screen, setScreen] = useState("DASHBOARD");
-      const [currentUserEmail] = useState(OWNER_EMAIL);
-
-      const [chatOpen, setChatOpen] = useState(false);
-      const [sideNavOpen, setSideNavOpen] = useState(false);
-      const [aiPrompt, setAiPrompt] = useState("");
-      const [chatMessages, setChatMessages] = useState([]);
-      const [waitingForPassword, setWaitingForPassword] = useState(null);
-
-      const now = () => new Date().toLocaleString("ro-RO");
-
-      const pushAI = (txt) => {
-        setChatMessages(prev => [...prev, {
-          id: Date.now() + "-ai",
-          from: "AI",
-          text: txt,
-          timestamp: now()
-        }]);
-      };
-
-      const pushUser = (txt) => {
-        setChatMessages(prev => [...prev, {
-          id: Date.now() + "-u",
-          from: "USER",
-          text: txt,
-          timestamp: now()
-        }]);
-      };
-
-      const handleSend = () => {
-        const text = aiPrompt.trim();
-        if (!text) return;
-
-        pushUser(text);
-        setAiPrompt("");
-
-        const lower = text.toLowerCase();
-
-        // Dacă așteptăm parolă pt ADMIN / GM
-        if (waitingForPassword) {
-          const correct =
-            waitingForPassword === "ADMIN" ? ADMIN_PASSWORD : GM_PASSWORD;
-
-          if (text === correct) {
-            pushAI(`Parolă corectă → Modul ${waitingForPassword} activat.`);
-            setScreen(waitingForPassword);
-          } else {
-            pushAI("Parolă greșită.");
-          }
-
-          setWaitingForPassword(null);
-          return;
-        }
-
-        // Comenzi secrete
-        if (lower.includes("open mod andrei admin")) {
-          if (currentUserEmail !== OWNER_EMAIL) {
-            pushAI("Acces blocat.");
-            return;
-          }
-          pushAI("Scrie parola de ADMIN.");
-          setWaitingForPassword("ADMIN");
-          return;
-        }
-
-        if (lower.includes("open mod andrei gm")) {
-          if (currentUserEmail !== OWNER_EMAIL) {
-            pushAI("Acces blocat.");
-            return;
-          }
-          pushAI("Scrie parola de GM.");
-          setWaitingForPassword("GM");
-          return;
-        }
-
-        // Apel AI real către backend (JSONP)
-        const callbackName = "sp_ai_" + Date.now() + "_" + Math.floor(Math.random() * 1000000);
-        const script = document.createElement("script");
-
-        window[callbackName] = function(data) {
-          try { delete window[callbackName]; } catch (e) {}
-          if (script.parentNode) script.parentNode.removeChild(script);
-
-          if (!data) {
-            pushAI("Eroare: răspuns gol de la AI.");
-          } else if (!data.success) {
-            pushAI("Eroare AI: " + (data.error || "necunoscută"));
-          } else {
-            pushAI(data.message || "[fără răspuns]");
-          }
-        };
-
-        script.src =
-          BACKEND_URL +
-          "?action=chatGPT" +
-          "&email=" + encodeURIComponent(currentUserEmail) +
-          "&message=" + encodeURIComponent(text) +
-          "&callback=" + encodeURIComponent(callbackName);
-
-        script.onerror = function() {
-          try { delete window[callbackName]; } catch (e) {}
-          if (script.parentNode) script.parentNode.removeChild(script);
-          pushAI("Eroare rețea la backend AI.");
-        };
-
-        document.body.appendChild(script);
-      };
-
-      const bg = theme === "dark" ? "#0f172a" : "#f3f4f6";
-      const textColor = theme === "dark" ? "#fff" : "#000";
-
-      return (
-        <>
-          <style>{`
-            .app { min-height:100vh; background:${bg}; color:${textColor}; transition:.2s; }
-            .side-tab {
-              position:fixed; left:0; top:40%;
-              width:22px; height:80px;
-              background:#1e293b; color:white;
-              display:flex; justify-content:center; align-items:center;
-              border-radius:0 8px 8px 0; cursor:pointer; z-index:30;
-            }
-            .side-nav {
-              position:fixed; left:0; top:0; height:100vh; width:170px;
-              background:#111827; border-right:1px solid #374151;
-              box-shadow:4px 0 16px rgba(15,23,42,0.74);
-              padding:14px 10px; display:flex; flex-direction:column; gap:10px; z-index:25;
-            }
-            .content {
-              margin-left:170px; padding:16px;
-            }
-          `}</style>
-
-          <div className="app">
-            {/* Side nav */}
-            {!sideNavOpen && (
-              <div className="side-tab" onClick={() => setSideNavOpen(true)}>
-                ☰
-              </div>
-            )}
-
-            {sideNavOpen && (
-              <div className="side-nav">
-                <div style={{display:"flex", justifyContent:"space-between", alignItems:"center"}}>
-                  <div style={{fontWeight:700, fontSize:14}}>SuperParty</div>
-                  <button
-                    onClick={() => setSideNavOpen(false)}
-                    style={{
-                      border:"none", background:"transparent",
-                      color:"#9ca3af", cursor:"pointer"
-                    }}
-                  >
-                    ✕
-                  </button>
-                </div>
-
-                <div style={{marginTop:12, fontSize:12, opacity:0.8}}>
-                  Logat ca:<br/>
-                  <span style={{fontWeight:600}}>{currentUserEmail}</span>
-                </div>
-
-                <div style={{marginTop:16, display:"flex", flexDirection:"column", gap:8, fontSize:13}}>
-                  <button
-                    className="button"
-                    style={{background: screen==="DASHBOARD" ? "#4f46e5" : "#374151", color:"white", textAlign:"left"}}
-                    onClick={() => setScreen("DASHBOARD")}
-                  >
-                    🏠 Dashboard
-                  </button>
-                  <button
-                    className="button"
-                    style={{background: screen==="MY_EVENTS" ? "#4f46e5" : "#374151", color:"white", textAlign:"left"}}
-                    onClick={() => setScreen("MY_EVENTS")}
-                  >
-                    📅 Evenimentele mele
-                  </button>
-                  <button
-                    className="button"
-                    style={{background: screen==="PROOFS" ? "#4f46e5" : "#374151", color:"white", textAlign:"left"}}
-                    onClick={() => setScreen("PROOFS")}
-                  >
-                    📸 Dovezi foto
-                  </button>
-                </div>
-
-                <div style={{marginTop:"auto", fontSize:11, opacity:0.7}}>
-                  v1.0 · Panou angajat
-                </div>
-              </div>
-            )}
-
-            {/* Content */}
-            <div className="content">
-              <div style={{display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16}}>
-                <div>
-                  <div style={{fontSize:22, fontWeight:700, marginBottom:4}}>Salut, Andrei 👋</div>
-                  <div style={{fontSize:13, opacity:0.8}}>
-                    Aici vezi evenimentele tale, dovezile și poți vorbi cu AI-ul SuperParty.
-                  </div>
-                </div>
-                <button
-                  onClick={() => setTheme(t => t === "dark" ? "light" : "dark")}
-                  style={{
-                    padding:"6px 12px",
-                    borderRadius:"999px",
-                    border:"none",
-                    background:"#1f2937",
-                    color:"white",
-                    cursor:"pointer"
-                  }}
-                >
-                  {theme === "dark" ? "🌙 Dark" : "☀️ Light"}
-                </button>
-              </div>
-
-              <div className="content">
-                {screen === "DASHBOARD" && (
-                  <div style={{display:"grid", gap:16}}>
-                    <div style={{background:"#111827", color:"white", borderRadius:16, padding:16}}>
-                      <div style={{fontSize:16, fontWeight:600, marginBottom:4}}>Rezumat ziua de azi</div>
-                      <div style={{fontSize:13, opacity:0.9}}>
-                        Ai 2 evenimente active azi și 1 în weekend. Nu uita de pozele obligatorii la fiecare rol.
-                      </div>
-                      <div style={{marginTop:12, display:"flex", gap:8, flexWrap:"wrap"}}>
-                        <span className="pill">🎈 Animație copii</span>
-                        <span className="pill">📸 Dovezi obligatorii</span>
-                        <span className="pill">🚗 Fără șofer azi</span>
-                      </div>
-                    </div>
-
-                    <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(220px, 1fr))", gap:12}}>
-                      <div style={{background:"#111827", color:"white", borderRadius:14, padding:12}}>
-                        <div style={{display:"flex", justifyContent:"space-between", marginBottom:4}}>
-                          <div style={{fontWeight:600}}>Elsa 2h + Olaf 2h</div>
-                          <span className="pill">Azi · 15:00</span>
-                        </div>
-                        <div style={{fontSize:13, opacity:0.85}}>
-                          București, Sector 3 · Str. Florilor 23
-                        </div>
-                      </div>
-                      <div style={{background:"#111827", color:"white", borderRadius:14, padding:12}}>
-                        <div style={{fontSize:13, opacity:0.8}}>Evenimente weekend</div>
-                        <div style={{fontSize:20, fontWeight:700}}>1</div>
-                      </div>
-                      <div style={{background:"#111827", color:"white", borderRadius:14, padding:12}}>
-                        <div style={{fontSize:13, opacity:0.8}}>Dovezi lipsă</div>
-                        <div style={{fontSize:20, fontWeight:700, color:"#f97316"}}>3</div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {screen === "MY_EVENTS" && (
-                  <div>
-                    <h2 style={{fontSize:18, marginBottom:8}}>Evenimentele mele</h2>
-                    <div style={{fontSize:13, opacity:0.8, marginBottom:12}}>
-                      Aici vor apărea evenimentele reale din backend (sheet). Momentan sunt mock.
-                    </div>
-                    <div style={{display:"grid", gap:12}}>
-                      <div style={{background:"#111827", color:"white", borderRadius:14, padding:12}}>
-                        <div style={{display:"flex", justifyContent:"space-between", marginBottom:4}}>
-                          <div style={{fontWeight:600}}>Elsa 2h + Olaf 2h</div>
-                          <span className="pill">Azi · 15:00</span>
-                        </div>
-                        <div style={{fontSize:13, opacity:0.85}}>
-                          București, Sector 3 · Str. Florilor 23
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {screen === "PROOFS" && (
-                  <div>
-                    <h2 style={{fontSize:18, marginBottom:8}}>Dovezi foto</h2>
-                    <div style={{fontSize:13, opacity:0.8, marginBottom:12}}>
-                      Aici vei încărca pozele pe etape: bagaj, am ajuns, în timpul evenimentului, retur.
-                    </div>
-                    <div style={{background:"#111827", color:"white", borderRadius:14, padding:12}}>
-                      <div style={{fontSize:14, fontWeight:600, marginBottom:8}}>Eveniment azi</div>
-                      <div style={{fontSize:13, opacity:0.85, marginBottom:8}}>
-                        Elsa 2h · Cod rol: A23
-                      </div>
-                      <button className="button button-primary">
-                        Încarcă dovezi (mock)
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {screen === "ADMIN" && (
-                  <div>
-                    <h2 style={{fontSize:18, marginBottom:8, color:"#b91c1c"}}>Mod ADMIN</h2>
-                    <div style={{fontSize:13, opacity:0.85}}>
-                      Aici vei avea în viitor panoul real de admin (utilizatori, evenimente, KYC, etc.).
-                      <br/>Ai intrat aici prin comanda secretă + parolă, doar tu (OWNER) poți intra.
-                    </div>
-                  </div>
-                )}
-
-                {screen === "GM" && (
-                  <div>
-                    <h2 style={{fontSize:18, marginBottom:8, color:"#eab308"}}>Mod GM</h2>
-                    <div style={{fontSize:13, opacity:0.85}}>
-                      Aici vei avea panoul de Game Master: cine ia evenimentele, cine face bagajul, etc.
-                      <br/>La fel, doar tu (OWNER) poți intra prin comanda secretă + parolă.
-                    </div>
-                  </div>
-                )}
-              </div>
+        <div class="event-main">
+          <div class="event-main-title">Elsa 2h + Olaf 2h</div>
+          <div class="event-meta">
+            <div class="event-meta-row">
+              📅 <span>Azi · 15:00</span>
             </div>
-
-            {/* Buton plutitor AI */}
-            <div
-              className="ai-chat-toggle"
-              onClick={() => setChatOpen(o => !o)}
-              title="Deschide chat AI"
-            >
-              🤖
+            <div class="event-meta-row">
+              📍 <span>București, Sector 3 · Str. Florilor 23</span>
             </div>
-
-            {/* Panou AI chat */}
-            {chatOpen && (
-              <div className="ai-chat-panel">
-                <div className="ai-chat-header">
-                  <div style={{display:"flex", alignItems:"center", gap:8}}>
-                    <div style={{
-                      width:24, height:24, borderRadius:999,
-                      background:"rgba(15,23,42,0.9)", display:"flex",
-                      alignItems:"center", justifyContent:"center", fontSize:14
-                    }}>
-                      🤖
-                    </div>
-                    <div>
-                      <div style={{fontSize:13, fontWeight:600}}>AI SuperParty</div>
-                      <div style={{fontSize:11, opacity:0.8}}>
-                        Îți răspunde la întrebări despre evenimente & roluri
-                      </div>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => setChatOpen(false)}
-                    style={{
-                      border:"none", background:"transparent",
-                      color:"#e5e7eb", cursor:"pointer", fontSize:16
-                    }}
-                  >
-                    ✕
-                  </button>
-                </div>
-
-                <div className="ai-chat-messages" id="aiMessages">
-                  {chatMessages.length === 0 && (
-                    <div style={{fontSize:12, opacity:0.85, marginBottom:8}}>
-                      Salut! Îmi poți pune întrebări despre:
-                      <br/>· cum funcționează dovezile foto
-                      <br/>· ce cod are rolul tău
-                      <br/>· ce ai de făcut la un anumit eveniment
-                      <br/>· sau poți folosi comenzi speciale (ascunse) 😉
-                    </div>
-                  )}
-                  {chatMessages.map(msg => (
-                    <div
-                      key={msg.id}
-                      className={"msg-row " + (msg.from === "USER" ? "user" : "ai")}
-                    >
-                      <div className={"msg-bubble " + (msg.from === "USER" ? "user" : "ai")}>
-                        {msg.text}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="ai-chat-input">
-                  <input
-                    type="text"
-                    value={aiPrompt}
-                    onChange={e => setAiPrompt(e.target.value)}
-                    placeholder="Scrie un mesaj către AI..."
-                    onKeyDown={e => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        handleSend();
-                      }
-                    }}
-                  />
-                  <button type="button" onClick={handleSend}>
-                    Trimite
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
-        </>
-      );
-    };
+          <div class="pill">📸 Dovezi lipsă: <strong>3</strong></div>
+        </div>
+      </div>
 
-    const root = ReactDOM.createRoot(document.getElementById("root"));
-    root.render(<App />);
-  </script>
+      <!-- Dreapta: weekend / dovezi -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Statistici rapide</div>
+        </div>
+        <div class="list">
+          <div class="list-item">
+            <span>Evenimente weekend</span>
+            <span>1</span>
+          </div>
+          <div class="list-item">
+            <span>Dovezi lipsă</span>
+            <span class="badge-red">3</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
