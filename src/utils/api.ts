@@ -1,4 +1,4 @@
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwpScVyziDaoVeuxcqdBQ3qx6j-QHy5FYoWtvlqMSsu15eXGI_l5fmo1Bg8zqP1BLyJ/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxs819m4gt-tpTkAIIS91EnxhwYx-5wdbnh6Zi5_GcY14zs5XYqS9ykFuYCCcokhQ/exec";
 
 export interface User {
   id: string;
