@@ -52,6 +52,13 @@
       cursor: pointer;
       width: 100%;
     }
+
+    .hidden-login-form {
+      display: none;
+      visibility: hidden;
+      height: 0;
+      overflow: hidden;
+    }
   </style>
 </head>
 <body>
@@ -69,6 +76,12 @@
   </div>
 </div>
 
+<!-- FORMULAR LOGIN FICTIV, DOAR CA SA NU MAI DEA EROARE JS -->
+<form id="loginForm" class="hidden-login-form">
+  <input type="email" name="email" />
+  <input type="password" name="password" />
+</form>
+
 <script>
   // verifica login
   const user = localStorage.getItem("sp_user");
@@ -76,9 +89,15 @@
   if (!user) {
     window.location.href = "/login.html";
   } else {
-    const data = JSON.parse(user);
-    document.getElementById("emailDisplay").textContent =
-      "Email: " + data.email;
+    try {
+      const data = JSON.parse(user);
+      const emailEl = document.getElementById("emailDisplay");
+      if (emailEl && data && data.email) {
+        emailEl.textContent = "Email: " + data.email;
+      }
+    } catch (e) {
+      console.error("Eroare la citirea userului din localStorage:", e);
+    }
   }
 
   function logout() {
