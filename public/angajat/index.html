@@ -924,7 +924,6 @@
         console.warn('Nu am putut salva KYC local:', e);
       }
 
-      // Aici, când vrei, putem adăuga și apel la backend (Apps Script) pentru a urca link-uri sau meta.
       setTimeout(() => {
         kycBtn.disabled = false;
         kycBtn.textContent = '🚀 Finalizează KYC și intră în dashboard';
@@ -949,11 +948,15 @@
       window.location.href = '/login.html';
     });
 
-    // ===== Chat AI (frontend demo) =====
+    // ===== Chat AI (frontend demo + comenzi secrete) =====
     const chatForm = document.getElementById('chatForm');
     const chatBody = document.getElementById('chatBody');
     const chatInput = document.getElementById('chatInput');
     const chatSendBtn = document.getElementById('chatSendBtn');
+
+    const OWNER_EMAIL = 'ursache.andrei1995@gmail.com';
+    const ADMIN_PASSWORD = 'andrei-admin-2024';
+    const GM_PASSWORD = 'andrei-gm-2024';
 
     function appendMessage(text, type) {
       const div = document.createElement('div');
@@ -963,18 +966,69 @@
       chatBody.scrollTop = chatBody.scrollHeight;
     }
 
+    function isOwnerUser() {
+      if (!currentUser || !currentUser.email) return false;
+      return String(currentUser.email).toLowerCase() === OWNER_EMAIL.toLowerCase();
+    }
+
+    function handleSecretCommand(rawText) {
+      const text = rawText.trim().toLowerCase();
+      if (text === 'open mod andrei admin') {
+        if (!isOwnerUser()) {
+          appendMessage('Nu ai permisiune să intri în modul de <strong>admin</strong>.', 'bot');
+          return true;
+        }
+        const pwd = prompt('Introdu parola pentru modul de admin:');
+        if (!pwd) {
+          appendMessage('Comanda admin a fost anulată.', 'bot');
+          return true;
+        }
+        if (pwd !== ADMIN_PASSWORD) {
+          appendMessage('Parolă greșită pentru modul de <strong>admin</strong>.', 'bot');
+          return true;
+        }
+        window.location.href = '/admin/index.html';
+        return true;
+      }
+
+      if (text === 'open mod andrei gm') {
+        if (!isOwnerUser()) {
+          appendMessage('Nu ai permisiune să intri în modul de <strong>GM</strong>.', 'bot');
+          return true;
+        }
+        const pwd = prompt('Introdu parola pentru modul de GM:');
+        if (!pwd) {
+          appendMessage('Comanda GM a fost anulată.', 'bot');
+          return true;
+        }
+        if (pwd !== GM_PASSWORD) {
+          appendMessage('Parolă greșită pentru modul de <strong>GM</strong>.', 'bot');
+          return true;
+        }
+        window.location.href = '/gm/index.html';
+        return true;
+      }
+      return false;
+    }
+
     chatForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const text = chatInput.value.trim();
       if (!text) return;
 
-      appendMessage(text, 'user');
+      appendMessage(text.replace(/</g, '&lt;'), 'user');
       chatInput.value = '';
       chatInput.focus();
 
       chatSendBtn.disabled = true;
 
-      // Aici se face mai târziu integrarea reală cu AI-ul din backend.
+      // întâi verificăm dacă este o comandă secretă
+      if (handleSecretCommand(text)) {
+        chatSendBtn.disabled = false;
+        return;
+      }
+
+      // demo AI normal
       setTimeout(() => {
         appendMessage(
           'Am înțeles: <strong>' +
