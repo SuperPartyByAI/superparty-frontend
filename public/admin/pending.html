@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <title>SuperParty - Admin Users Pending</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #020617;
+      color: #e5e7eb;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      font-size: 22px;
+      margin-bottom: 16px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+    }
+    th, td {
+      border-bottom: 1px solid #1f2937;
+      padding: 8px;
+      font-size: 14px;
+      text-align: left;
+    }
+    th {
+      background: #0f172a;
+    }
+    button {
+      padding: 6px 10px;
+      border: none;
+      border-radius: 6px;
+      background: #22c55e;
+      color: white;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #16a34a;
+    }
+    #status {
+      margin-top: 10px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Admin – Utilizatori în așteptare</h1>
+  <div id="status"></div>
+  <table id="usersTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nume</th>
+        <th>Email</th>
+        <th>Telefon</th>
+        <th>Status</th>
+        <th>KYC</th>
+        <th>Creat</th>
+        <th>Acțiune</th>
+      </tr>
+    </thead>
+    <tbody id="usersBody">
+      <tr><td colspan="8">Loading...</td></tr>
+    </tbody>
+  </table>
+
+  <script>
+    const BACKEND_URL = "https://script.google.com/macros/s/IDUL_TAU/exec";
+
+    function setStatus(msg, isError) {
+      const el = document.getElementById('status');
+      el.textContent = msg || '';
+      el.style.color = isError ? '#f87171' : '#22c55e';
+    }
+
+    function loadPending() {
+      setStatus('Se încarcă utilizatorii în așteptare...', false);
+      const cbName = 'handlePending_' + Date.now();
+      window[cbName] = function(res) {
+        try {
+          renderUsers(res);
+        } finally {
+          delete window[cbName];
+        }
+      };
+      const script = document.createElement('script');
+      script.src = BACKEND_URL + '?action=listPendingUsers&callback=' + cbName;
+      document.body.appendChild(script);
+    }
+
+    function renderUsers(res) {
+      const tbody = document.getElementById('usersBody');
+      tbody.innerHTML = '';
+      if (!res || !res.success) {
+        setStatus(res && res.error ? res.error : 'Eroare la listare.', true);
+        tbody.innerHTML = '<tr><td colspan="8">Eroare.</td></tr>';
+        return;
+      }
+
+      const items = res.items || [];
+      if (items.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8">Nu există utilizatori pending.</td></tr>';
+        setStatus('Nu există utilizatori în așteptare.', false);
+        return;
+      }
+
+      setStatus('Utilizatori încărcați: ' + items.length, false);
+
+      items.forEach(function(u) {
+        const tr = document.createElement('tr');
+
+        tr.innerHTML = `
+          <td>${u.id || ''}</td>
+          <td>${u.fullname || ''}</td>
+          <td>${u.email || ''}</td>
+          <td>${u.phone || ''}</td>
+          <td>${u.status || ''}</td>
+          <td>${u.kycStatus || ''}</td>
+          <td>${u.createdAt || ''}</td>
+          <td><button onclick="approveUser('${u.id}','${u.email}')">Approve</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function approveUser(id, email) {
+      setStatus('Aprobăm ' + email + '...', false);
+      const cbName = 'handleApprove_' + Date.now();
+      window[cbName] = function(res) {
+        try {
+          if (res && res.success) {
+            setStatus('Aprobat: ' + res.email, false);
+            loadPending(); // re-încarcă lista
+          } else {
+            setStatus(res && res.error ? res.error : 'Eroare la aprobare.', true);
+          }
+        } finally {
+          delete window[cbName];
+        }
+      };
+      const script = document.createElement('script');
+      script.src = BACKEND_URL
+        + '?action=approveUser'
+        + '&id=' + encodeURIComponent(id)
+        + '&callback=' + cbName;
+      document.body.appendChild(script);
+    }
+
+    window.onload = loadPending;
+  </script>
+</body>
+</html>
