@@ -10,6 +10,17 @@
       background: #0f172a;
       color: #e5e7eb;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 24px;
+    }
+
+    h1 {
+      margin-bottom: 12px;
+    }
+
+    code {
+      background: #020617;
+      padding: 4px 6px;
+      border-radius: 4px;
     }
   </style>
 
@@ -20,40 +31,48 @@
     console.log("DEBUG: Script diagnosticare pornit.");
 
     // 1) Detectăm refresh repetat
-    const lastLoad = localStorage.getItem("lastPageLoad");
-    const now = Date.now();
+    (function() {
+      var lastLoad = localStorage.getItem("lastPageLoad");
+      var now = Date.now();
 
-    if (lastLoad && now - lastLoad < 3000) {
-      console.warn("⚠️ DETECTAT REFRESH LOOP!");
-      alert("⚠️ Pagina se autoreîncarcă! Vezi consola (F12).");
-    }
-    localStorage.setItem("lastPageLoad", now);
+      if (lastLoad && now - lastLoad < 3000) {
+        console.warn("⚠️ DETECTAT REFRESH LOOP! 2 încărcări în < 3 secunde.");
+        alert("⚠️ Pagina pare să se încarce foarte des (posibil refresh loop). Deschide consola (F12 → Console) și fă poză la mesaje.");
+      }
 
-    // 2) Detectăm redirecturi forțate
-    (function () {
-      const originalHref = Object.getOwnPropertyDescriptor(Location.prototype, "href");
-
-      Object.defineProperty(window.location, "href", {
-        set: function (val) {
-          console.error("⚠️ REDIRECT DETECTAT CĂTRE:", val);
-          alert("⚠️ Redirect detectat către: " + val);
-        },
-        get: function () {
-          return originalHref.get.call(window.location);
-        }
-      });
+      localStorage.setItem("lastPageLoad", String(now));
     })();
 
-    // 3) Interceptare location.reload()
-    const origReload = window.location.reload;
-    window.location.reload = function () {
-      console.error("⚠️ APEL location.reload() detectat!");
-      alert("⚠️ Scriptul cheamă reload() !");
-    };
+    // 2) Hook pentru redirecturi (NU mai umblăm la href, doar la funcții)
+    (function() {
+      function hookFunction(obj, name) {
+        if (!obj || typeof obj[name] !== "function") return;
 
-    // 4) Afișează toate erorile JS
-    window.onerror = function (msg, url, line) {
-      console.error("⚠️ EROARE JS:", msg, "la", url, "linia", line);
+        var original = obj[name];
+        obj[name] = function() {
+          console.error("⚠️ " + name + " a fost apelat cu argumente:", arguments);
+          alert("⚠️ A fost apelat window.location." + name + " (vezi consola).");
+          // comentăm ca să NU mai facă redirect în debug
+          // return original.apply(this, arguments);
+        };
+      }
+
+      // Interceptăm funcțiile de redirect
+      hookFunction(window.location, "assign");
+      hookFunction(window.location, "replace");
+      hookFunction(window.location, "reload");
+
+      // Interceptăm și history (nu strică)
+      hookFunction(window.history, "pushState");
+      hookFunction(window.history, "replaceState");
+      hookFunction(window.history, "go");
+      hookFunction(window.history, "back");
+      hookFunction(window.history, "forward");
+    })();
+
+    // 3) Afișăm toate erorile JS
+    window.onerror = function(msg, url, line, col, error) {
+      console.error("⚠️ EROARE JS:", msg, "la", url, "linia", line, "coloana", col, "detalii:", error);
       alert("⚠️ Eroare JS: " + msg + " (linia " + line + ")");
     };
   </script>
@@ -61,8 +80,18 @@
 
 <body>
   <h1>DEBUG - Pagina angajat</h1>
-  <p>Dacă vezi acest text, pagina nu ar trebui să dea refresh automat.</p>
+  <p>Dacă vezi acest text, fișierul <code>public/angajat/index.html</code> se încarcă corect.</p>
 
-  <p>Deschide consola (F12 → Console) și spune-mi ce mesaj apare acolo.</p>
+  <p>
+    <strong>Pas următor:</strong><br/>
+    1. Deschide consola (F12 → tab „Console”).<br/>
+    2. Reîncarcă pagina (<code>Ctrl + R</code>).<br/>
+    3. Dacă apare un alert cu „⚠️ A fost apelat window.location...” sau alt mesaj, fă screenshot la consolă și trimite-mi.<br/>
+  </p>
+
+  <p>
+    Nu există momentan niciun redirect intenționat în acest fișier. Dacă tot te scoate din pagină sau se reîncarcă singură,
+    înseamnă că vine din altă parte (config Vercel, alt script global, redirect în <code>vercel.json</code>, etc.).
+  </p>
 </body>
 </html>
