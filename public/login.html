@@ -22,9 +22,9 @@
       background: rgba(15, 23, 42, 0.96);
       border-radius: 24px;
       border: 1px solid rgba(148, 163, 184, 0.35);
-      padding: 24px 20px 20px;
+      padding: 20px 20px 18px;
       width: 100%;
-      max-width: 360px;
+      max-width: 380px;
       box-shadow: 0 28px 60px rgba(15, 23, 42, 0.8);
     }
 
@@ -64,21 +64,49 @@
       color: #9ca3af;
     }
 
+    .tabs {
+      display: flex;
+      gap: 4px;
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 999px;
+      padding: 3px;
+      margin-bottom: 12px;
+      border: 1px solid rgba(31, 41, 55, 0.9);
+    }
+
+    .tab-btn {
+      flex: 1;
+      font-size: 12px;
+      padding: 6px 0;
+      border-radius: 999px;
+      border: none;
+      background: transparent;
+      color: #9ca3af;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .tab-btn.active {
+      background: radial-gradient(circle at top, #3b82f6, #1d4ed8);
+      color: #f9fafb;
+      box-shadow: 0 10px 22px rgba(37, 99, 235, 0.5);
+    }
+
     .title {
       font-size: 18px;
       font-weight: 600;
-      margin-bottom: 4px;
+      margin-bottom: 3px;
       color: #f9fafb;
     }
 
     .subtitle {
       font-size: 12px;
       color: #9ca3af;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     .form-group {
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     label {
@@ -137,7 +165,7 @@
     }
 
     .status {
-      margin-top: 10px;
+      margin-top: 9px;
       font-size: 12px;
       padding: 8px 10px;
       border-radius: 10px;
@@ -163,7 +191,7 @@
     }
 
     .footnote {
-      margin-top: 12px;
+      margin-top: 10px;
       font-size: 11px;
       color: #6b7280;
       text-align: center;
@@ -171,6 +199,10 @@
 
     .footnote strong {
       color: #e5e7eb;
+    }
+
+    .hidden {
+      display: none;
     }
   </style>
 </head>
@@ -180,134 +212,215 @@
       <div class="logo-badge">🎉</div>
       <div class="logo-text">
         <span>SuperParty</span>
-        <span>staff login</span>
+        <span>staff portal</span>
       </div>
     </div>
 
-    <div class="title">Autentificare angajat</div>
-    <div class="subtitle">Introdu emailul și parola primite de la SuperParty.</div>
+    <div class="tabs">
+      <button type="button" id="tabLogin" class="tab-btn active">Login</button>
+      <button type="button" id="tabRegister" class="tab-btn">Creare cont</button>
+    </div>
 
-    <form id="loginForm">
-      <div class="form-group">
-        <label for="email">Email de angajat</label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          autocomplete="email"
-          placeholder="ex: prenume.nume@superparty.ro"
-          required
-        />
+    <!-- LOGIN VIEW -->
+    <div id="viewLogin">
+      <div class="title">Autentificare angajat</div>
+      <div class="subtitle">Introdu emailul și parola primite de la SuperParty.</div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="loginEmail">Email de angajat</label>
+          <input
+            id="loginEmail"
+            name="email"
+            type="email"
+            autocomplete="email"
+            placeholder="ex: prenume.nume@superparty.ro"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Parolă</label>
+          <input
+            id="loginPassword"
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            placeholder="********"
+            required
+          />
+        </div>
+        <button type="submit" class="btn-primary" id="loginBtn">Intră în aplicație</button>
+        <div id="loginStatus" class="status"></div>
+      </form>
+    </div>
+
+    <!-- REGISTER VIEW -->
+    <div id="viewRegister" class="hidden">
+      <div class="title">Creare cont nou</div>
+      <div class="subtitle">
+        Completează datele de bază. Un administrator va aproba contul înainte să poți intra.
       </div>
-      <div class="form-group">
-        <label for="password">Parolă</label>
-        <input
-          id="password"
-          name="password"
-          type="password"
-          autocomplete="current-password"
-          placeholder="********"
-          required
-        />
-      </div>
-      <button type="submit" class="btn-primary" id="loginBtn">Intră în aplicație</button>
-      <div id="status" class="status"></div>
-    </form>
+
+      <form id="registerForm">
+        <div class="form-group">
+          <label for="regName">Nume complet</label>
+          <input
+            id="regName"
+            name="name"
+            type="text"
+            placeholder="ex: Andrei Ursache"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="regEmail">Email</label>
+          <input
+            id="regEmail"
+            name="email"
+            type="email"
+            placeholder="ex: prenume.nume@superparty.ro"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="regPhone">Telefon</label>
+          <input
+            id="regPhone"
+            name="phone"
+            type="tel"
+            placeholder="ex: 07xx xxx xxx"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="regPassword">Parolă</label>
+          <input
+            id="regPassword"
+            name="password"
+            type="password"
+            placeholder="Alege o parolă"
+            required
+          />
+        </div>
+        <button type="submit" class="btn-primary" id="registerBtn">Creează cont</button>
+        <div id="registerStatus" class="status"></div>
+      </form>
+    </div>
 
     <div class="footnote">
-      Probleme la logare? Scrie pe WhatsApp la <strong>SuperParty</strong> și verificăm contul.
+      Probleme la acces? Scrie pe WhatsApp la <strong>SuperParty</strong> și verificăm contul.
     </div>
   </div>
 
   <script>
-    // ATENTIE: acesta este ID-ul de Apps Script care a mers la testul cu curl (testCB)
+    // ATENȚIE: ID-ul de Apps Script care a mers cu testCB (login JSONP)
     const BACKEND_URL =
       'https://script.google.com/macros/s/AKfycbxs819m4gt-tpTkAIIS91EnxhwYx-5wdbnh6Zi5_GcY14zs5XYqS9ykFuYCCcokhQ/exec';
 
-    const form = document.getElementById('loginForm');
-    const btn = document.getElementById('loginBtn');
-    const statusBox = document.getElementById('status');
+    // Tabs
+    const tabLogin = document.getElementById('tabLogin');
+    const tabRegister = document.getElementById('tabRegister');
+    const viewLogin = document.getElementById('viewLogin');
+    const viewRegister = document.getElementById('viewRegister');
 
-    let currentJsonpScript = null;
-    let jsonpTimeoutId = null;
+    tabLogin.addEventListener('click', () => {
+      tabLogin.classList.add('active');
+      tabRegister.classList.remove('active');
+      viewLogin.classList.remove('hidden');
+      viewRegister.classList.add('hidden');
+    });
 
-    function setStatus(message, type) {
-      statusBox.textContent = message;
-      statusBox.className = 'status ' + type;
-      statusBox.style.display = 'block';
+    tabRegister.addEventListener('click', () => {
+      tabRegister.classList.add('active');
+      tabLogin.classList.remove('active');
+      viewRegister.classList.remove('hidden');
+      viewLogin.classList.add('hidden');
+    });
+
+    // Helpers status
+    function setStatus(el, message, type) {
+      el.textContent = message;
+      el.className = 'status ' + type;
+      el.style.display = 'block';
     }
 
-    function clearStatus() {
-      statusBox.textContent = '';
-      statusBox.style.display = 'none';
-      statusBox.className = 'status';
+    function clearStatus(el) {
+      el.textContent = '';
+      el.style.display = 'none';
+      el.className = 'status';
     }
 
-    function resetButton() {
-      btn.disabled = false;
-      btn.textContent = 'Intră în aplicație';
+    // ===== LOGIN JSONP =====
+
+    const loginForm = document.getElementById('loginForm');
+    const loginBtn = document.getElementById('loginBtn');
+    const loginStatus = document.getElementById('loginStatus');
+
+    let loginScript = null;
+    let loginTimeoutId = null;
+
+    function resetLoginBtn() {
+      loginBtn.disabled = false;
+      loginBtn.textContent = 'Intră în aplicație';
     }
 
-    // JSONP callback global
+    // callback global pentru login
     window.SUPERPARTY_LOGIN_CB = function(result) {
-      // curățăm timerul + script-ul de JSONP
-      if (jsonpTimeoutId) {
-        clearTimeout(jsonpTimeoutId);
-        jsonpTimeoutId = null;
+      if (loginTimeoutId) {
+        clearTimeout(loginTimeoutId);
+        loginTimeoutId = null;
       }
-      if (currentJsonpScript && currentJsonpScript.parentNode) {
-        currentJsonpScript.parentNode.removeChild(currentJsonpScript);
-        currentJsonpScript = null;
+      if (loginScript && loginScript.parentNode) {
+        loginScript.parentNode.removeChild(loginScript);
+        loginScript = null;
       }
 
       console.log('🔍 LOGIN JSONP result:', result);
 
       if (!result || result.success !== true) {
         setStatus(
+          loginStatus,
           'Email sau parolă greșită, sau contul nu este activ. Verifică datele și reîncearcă.',
           'error'
         );
-        resetButton();
+        resetLoginBtn();
         return;
       }
 
       try {
-        // salvăm userul în localStorage ca să-l preia dashboard-ul /angajat
         localStorage.setItem('superparty_user', JSON.stringify(result));
       } catch (e) {
-        console.warn('Nu pot salva in localStorage:', e);
+        console.warn('Nu pot salva in localStorage la login:', e);
       }
 
-      setStatus('Autentificare reușită. Te redirecționez în dashboard...', 'success');
+      setStatus(loginStatus, 'Autentificare reușită. Te redirecționez în dashboard...', 'success');
 
       setTimeout(function() {
         window.location.href = '/angajat/';
       }, 400);
     };
 
-    form.addEventListener('submit', function(e) {
+    loginForm.addEventListener('submit', function(e) {
       e.preventDefault();
-      clearStatus();
+      clearStatus(loginStatus);
 
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
 
       if (!email || !password) {
-        setStatus('Te rog să completezi emailul și parola.', 'error');
+        setStatus(loginStatus, 'Te rog să completezi emailul și parola.', 'error');
         return;
       }
 
-      btn.disabled = true;
-      btn.textContent = 'Se verifică...';
-      setStatus('Se verifică datele tale în sistem...', 'info');
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'Se verifică...';
+      setStatus(loginStatus, 'Se verifică datele tale în sistem...', 'info');
 
-      // curățăm script-ul vechi, dacă a rămas
-      if (currentJsonpScript && currentJsonpScript.parentNode) {
-        currentJsonpScript.parentNode.removeChild(currentJsonpScript);
-        currentJsonpScript = null;
+      if (loginScript && loginScript.parentNode) {
+        loginScript.parentNode.removeChild(loginScript);
+        loginScript = null;
       }
 
-      // construim URL JSONP
       const url =
         BACKEND_URL +
         '?action=login' +
@@ -324,23 +437,151 @@
       script.async = true;
 
       script.onerror = function() {
-        console.error('JSONP script load error');
-        setStatus('Backend indisponibil sau URL greșit. Vorbește cu Andrei să verifice Apps Script.', 'error');
-        resetButton();
+        console.error('JSONP login script load error');
+        setStatus(
+          loginStatus,
+          'Backend indisponibil sau URL greșit. Vorbește cu Andrei să verifice Apps Script.',
+          'error'
+        );
+        resetLoginBtn();
       };
 
-      currentJsonpScript = script;
+      loginScript = script;
       document.body.appendChild(script);
 
-      // fallback în caz că callback-ul nu vine deloc
-      jsonpTimeoutId = setTimeout(function() {
-        console.error('JSONP timeout - niciun raspuns de la backend');
-        if (currentJsonpScript && currentJsonpScript.parentNode) {
-          currentJsonpScript.parentNode.removeChild(currentJsonpScript);
-          currentJsonpScript = null;
+      loginTimeoutId = setTimeout(function() {
+        console.error('JSONP login timeout - niciun răspuns de la backend');
+        if (loginScript && loginScript.parentNode) {
+          loginScript.parentNode.removeChild(loginScript);
+          loginScript = null;
         }
-        setStatus('Nu am primit răspuns de la server. Încearcă din nou sau verifică Apps Script.', 'error');
-        resetButton();
+        setStatus(
+          loginStatus,
+          'Nu am primit răspuns de la server. Încearcă din nou sau verifică Apps Script.',
+          'error'
+        );
+        resetLoginBtn();
+      }, 15000);
+    });
+
+    // ===== REGISTER JSONP =====
+
+    const registerForm = document.getElementById('registerForm');
+    const registerBtn = document.getElementById('registerBtn');
+    const registerStatus = document.getElementById('registerStatus');
+
+    let registerScript = null;
+    let registerTimeoutId = null;
+
+    function resetRegisterBtn() {
+      registerBtn.disabled = false;
+      registerBtn.textContent = 'Creează cont';
+    }
+
+    window.SUPERPARTY_REGISTER_CB = function(result) {
+      if (registerTimeoutId) {
+        clearTimeout(registerTimeoutId);
+        registerTimeoutId = null;
+      }
+      if (registerScript && registerScript.parentNode) {
+        registerScript.parentNode.removeChild(registerScript);
+        registerScript = null;
+      }
+
+      console.log('🔍 REGISTER JSONP result:', result);
+
+      if (!result || result.success !== true) {
+        setStatus(
+          registerStatus,
+          (result && result.error) ||
+            'Nu am putut crea contul. Verifică datele sau vorbește cu Andrei.',
+          'error'
+        );
+        resetRegisterBtn();
+        return;
+      }
+
+      setStatus(
+        registerStatus,
+        'Cont creat cu succes. Așteaptă aprobarea administratorului înainte să te poți loga.',
+        'success'
+      );
+
+      // nu logăm automat; îl lăsăm să meargă pe tab-ul de login
+      setTimeout(function() {
+        tabLogin.click();
+      }, 800);
+
+      resetRegisterBtn();
+    };
+
+    registerForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      clearStatus(registerStatus);
+
+      const name = document.getElementById('regName').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const phone = document.getElementById('regPhone').value.trim();
+      const password = document.getElementById('regPassword').value;
+
+      if (!name || !email || !phone || !password) {
+        setStatus(registerStatus, 'Te rog să completezi toate câmpurile.', 'error');
+        return;
+      }
+
+      registerBtn.disabled = true;
+      registerBtn.textContent = 'Se trimite...';
+      setStatus(registerStatus, 'Se trimite cererea de creare cont...', 'info');
+
+      if (registerScript && registerScript.parentNode) {
+        registerScript.parentNode.removeChild(registerScript);
+        registerScript = null;
+      }
+
+      const url =
+        BACKEND_URL +
+        '?action=register' +
+        '&name=' +
+        encodeURIComponent(name) +
+        '&email=' +
+        encodeURIComponent(email) +
+        '&phone=' +
+        encodeURIComponent(phone) +
+        '&password=' +
+        encodeURIComponent(password) +
+        '&callback=SUPERPARTY_REGISTER_CB';
+
+      console.log('🔍 REGISTER JSONP url:', url);
+
+      const script = document.createElement('script');
+      script.src = url;
+      script.async = true;
+
+      script.onerror = function() {
+        console.error('JSONP register script load error');
+        setStatus(
+          registerStatus,
+          'Backend indisponibil sau URL greșit. Vorbește cu Andrei să verifice Apps Script.',
+          'error'
+        );
+        resetRegisterBtn();
+      };
+
+      registerScript = script;
+      document.body.appendChild(script);
+
+      registerTimeoutId = setTimeout(function() {
+        console.error('JSONP register timeout - niciun răspuns de la backend');
+        if (registerScript && registerScript.parentNode) {
+          registerScript.parentNode.removeChild(registerScript);
+          registerScript = null;
+        }
+        setStatus(
+          registerStatus,
+          'Nu am primit răspuns de la server. Încearcă din nou sau verifică Apps Script.',
+          'error'
+        );
+        resetRegisterBtn();
       }, 15000);
     });
   </script>
