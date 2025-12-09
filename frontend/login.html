@@ -91,11 +91,11 @@
     <p id="error"></p>
   </div>
 
-
   <!-- SCRIPT LOGIN COMPLET cu BACKEND CORECT -->
   <script>
     console.log("[LOGIN] Script încărcat");
 
+    // 🔹 URL-ul NOULUI backend Apps Script (cel pe care l-ai testat cu curl și merge)
     const BACKEND =
       "https://script.google.com/macros/s/AKfycbxs819m4gt-tpTkAIIS91EnxhwYx-5wdbnh6Zi5_GcY14zs5XYqS9ykFuYCCcokhQ/exec";
 
@@ -112,34 +112,42 @@
 
         console.log("[LOGIN] Trimit cerere JSONP...");
 
+        // Ștergem un eventual script JSONP vechi
         const oldScript = document.getElementById("jsonpScript");
         if (oldScript) oldScript.remove();
 
+        // Callback unic
         const callbackName = "loginCallback_" + Date.now();
 
+        // Definim callback-ul global
         window[callbackName] = function (response) {
           console.log("[JSONP] Răspuns primit:", response);
 
+          // curățăm callback-ul
           delete window[callbackName];
 
           if (!response || response.success !== true) {
-            document.getElementById("error").innerText =
-              "Email sau parolă incorectă!";
-            document.getElementById("error").style.display = "block";
+            const errorEl = document.getElementById("error");
+            errorEl.innerText = "Email sau parolă incorectă!";
+            errorEl.style.display = "block";
             return;
           }
 
+          // Salvăm user-ul în localStorage
           localStorage.setItem("user", JSON.stringify(response));
 
+          // 🔹 Redirect în funcție de rol
+          // Folosim căi RELATIVE, ca să meargă și dacă root-ul este / sau /frontend
           if (response.role === "admin") {
-            window.location.href = "/frontend/admin/index.html";
+            window.location.href = "admin/index.html";
           } else if (response.role === "gm") {
-            window.location.href = "/frontend/gm/index.html";
+            window.location.href = "gm/index.html";
           } else {
-            window.location.href = "/frontend/angajat/index.html";
+            window.location.href = "angajat/index.html";
           }
         };
 
+        // Construim URL-ul JSONP
         const url =
           `${BACKEND}?action=login&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&callback=${callbackName}`;
 
@@ -149,9 +157,9 @@
         script.src = url;
         script.id = "jsonpScript";
         script.onerror = () => {
-          document.getElementById("error").innerText =
-            "Network error – Backend indisponibil!";
-          document.getElementById("error").style.display = "block";
+          const errorEl = document.getElementById("error");
+          errorEl.innerText = "Network error – backend indisponibil sau URL greșit.";
+          errorEl.style.display = "block";
         };
 
         document.body.appendChild(script);
