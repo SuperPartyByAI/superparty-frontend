@@ -21,7 +21,7 @@ export interface LoginResponse {
 
 // URL-ul WebApp-ului tău Google Apps Script
 const WEBAPP_URL =
-  "https://script.google.com/macros/s/AKfycbxrDcyKQfGgfpQrNm4opWsbce_mR1a-w7EbCLYtrrMEc-gFQKQAH7TQiY_ivxf9wZCj/exec";
+  "https://script.google.com/macros/s/AKfycbxs819m4gt-tpTkAIIS91EnxhwYx-5wdbnh6Zi5_GcY14zs5XYqS9ykFuYCCcokhQ/exec";
 
 /**
  * Login API → trimite email + parolă la backend

@@ -1,321 +1,212 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-  <meta charset="UTF-8">
-  <title>SuperParty Login</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <meta charset="UTF-8" />
+  <title>SuperParty - Autentificare</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: linear-gradient(135deg, #6366f1, #ec4899);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
+      background: radial-gradient(circle at top, #ff9a9e 0, #fad0c4 40%, #fbc2eb 100%);
     }
 
     .login-card {
       background: #ffffff;
-      padding: 24px 20px;
       border-radius: 16px;
+      padding: 24px 28px;
+      max-width: 380px;
       width: 100%;
-      max-width: 400px;
-      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.35);
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.25);
     }
 
-    .login-card h2 {
-      text-align: center;
-      margin-bottom: 4px;
+    .login-title {
+      font-size: 24px;
+      font-weight: 700;
       color: #0f172a;
+      margin-bottom: 4px;
+      text-align: center;
     }
 
-    .login-card p.subtitle {
-      text-align: center;
+    .login-subtitle {
       font-size: 13px;
       color: #64748b;
       margin-bottom: 20px;
+      text-align: center;
     }
 
     label {
+      font-size: 13px;
+      color: #0f172a;
       display: block;
-      margin-bottom: 6px;
-      font-size: 14px;
-      font-weight: 500;
-      color: #111827;
+      margin-bottom: 4px;
     }
 
-    input {
+    input[type="email"],
+    input[type="password"] {
       width: 100%;
-      padding: 10px 12px;
+      padding: 9px 10px;
       border-radius: 8px;
-      border: 1px solid #cbd5e1;
+      border: 1px solid #cbd5f5;
       font-size: 14px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       outline: none;
+      transition: border 0.15s, box-shadow 0.15s;
     }
 
-    input:focus {
-      border-color: #4f46e5;
-      box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.4);
+    input[type="email"]:focus,
+    input[type="password"]:focus {
+      border-color: #6366f1;
+      box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.3);
     }
 
     button {
       width: 100%;
-      padding: 10px 12px;
+      padding: 10px 14px;
       border-radius: 999px;
       border: none;
-      background: #4f46e5;
-      color: white;
       font-size: 15px;
       font-weight: 600;
+      background: linear-gradient(135deg, #6366f1, #ec4899);
+      color: white;
       cursor: pointer;
+      margin-top: 4px;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.1s ease;
+      box-shadow: 0 12px 30px rgba(99, 102, 241, 0.4);
     }
 
-    button:hover { background: #4338ca; }
-    button:active { transform: translateY(1px); }
-
-    button[disabled] {
-      opacity: 0.6;
-      cursor: default;
-      transform: none;
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 40px rgba(99, 102, 241, 0.55);
+      opacity: 0.96;
     }
 
-    #error {
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 10px 26px rgba(99, 102, 241, 0.3);
+    }
+
+    .error-msg {
+      display: none;
       margin-top: 10px;
       font-size: 13px;
       color: #b91c1c;
-      display: none;
+      background: #fee2e2;
+      border-radius: 8px;
+      padding: 8px 10px;
     }
 
-    #success {
-      margin-top: 10px;
-      font-size: 13px;
-      color: #15803d;
-      display: none;
-    }
-
-    .small {
-      margin-top: 10px;
+    .footer-note {
+      margin-top: 14px;
       font-size: 11px;
-      color: #94a3b8;
       text-align: center;
+      color: #94a3b8;
+    }
+
+    .footer-note span {
+      font-weight: 600;
+      color: #6366f1;
     }
   </style>
 </head>
 <body>
   <div class="login-card">
-    <h2>SuperParty Login</h2>
-    <p class="subtitle">Autentificare operator / admin</p>
+    <h1 class="login-title">SuperParty</h1>
+    <p class="login-subtitle">Autentificare staff &amp; colaboratori</p>
 
     <form id="loginForm">
       <label for="email">Email</label>
-      <input id="email" type="email" required autocomplete="email" />
+      <input id="email" type="email" placeholder="ex: nume@superparty.ro" required />
 
-      <label for="password">Parolă</label>
-      <input id="password" type="password" required autocomplete="current-password" />
+      <label for="password">Parola</label>
+      <input id="password" type="password" placeholder="Parola ta" required />
 
       <button type="submit" id="loginBtn">Autentificare</button>
     </form>
 
-    <p id="error"></p>
-    <p id="success"></p>
-    <p class="small" id="debugInfo"></p>
+    <p id="error" class="error-msg"></p>
+
+    <p class="footer-note">
+      Acces doar pentru <span>staff SuperParty</span>.
+    </p>
   </div>
 
   <script>
-    // 🔗 BACKEND Apps Script (JSONP)
-    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxrDcyKQfGgfpQrNm4opWsbce_mR1a-w7EbCLYtrrMEc-gFQKQAH7TQiY_ivxf9wZCj/exec";
+    const BACKEND_URL =
+      "https://script.google.com/macros/s/AKfycbxs819m4gt-tpTkAIIS91EnxhwYx-5wdbnh6Zi5_GcY14zs5XYqS9ykFuYCCcokhQ/exec";
 
-    // 🔐 Cheia sub care salvăm sesiunea în localStorage
-    const SESSION_KEY = "sp_session";
-    // Cât timp e validă sesiunea (ex: 12 ore)
-    const SESSION_TTL_MS = 12 * 60 * 60 * 1000;
+    function jsonpLogin(email, password) {
+      return new Promise((resolve, reject) => {
+        const cbName = "SP_LOGIN_CB_" + Date.now();
 
-    const form = document.getElementById("loginForm");
-    const btn = document.getElementById("loginBtn");
-    const errorEl = document.getElementById("error");
-    const successEl = document.getElementById("success");
-    const debugEl = document.getElementById("debugInfo");
+        window[cbName] = function (response) {
+          resolve(response);
+          try { delete window[cbName]; } catch {}
+          script.remove();
+        };
 
-    function setError(msg) {
-      errorEl.textContent = msg;
-      errorEl.style.display = "block";
-      successEl.style.display = "none";
-    }
+        const script = document.createElement("script");
+        const url =
+          BACKEND_URL +
+          "?action=login" +
+          "&email=" +
+          encodeURIComponent(email) +
+          "&password=" +
+          encodeURIComponent(password) +
+          "&callback=" +
+          encodeURIComponent(cbName);
 
-    function setSuccess(msg) {
-      successEl.textContent = msg;
-      successEl.style.display = "block";
-      errorEl.style.display = "none";
-    }
+        script.src = url;
 
-    function clearMessages() {
-      errorEl.style.display = "none";
-      successEl.style.display = "none";
-    }
+        script.onerror = function () {
+          reject(new Error("Network error"));
+          script.remove();
+        };
 
-    function setLoading(isLoading) {
-      if (isLoading) {
-        btn.disabled = true;
-        btn.textContent = "Se autentifică...";
-      } else {
-        btn.disabled = false;
-        btn.textContent = "Autentificare";
-      }
-    }
-
-    // 🔐 Salvăm sesiunea în localStorage
-    function saveSession(email, role) {
-      const payload = {
-        email,
-        role,
-        createdAt: Date.now(),
-        expiresAt: Date.now() + SESSION_TTL_MS
-      };
-      try {
-        localStorage.setItem(SESSION_KEY, JSON.stringify(payload));
-      } catch (e) {
-        console.warn("Nu pot salva sesiunea în localStorage:", e);
-      }
-    }
-
-    // 🔐 Citim sesiunea
-    function getSession() {
-      try {
-        const raw = localStorage.getItem(SESSION_KEY);
-        if (!raw) return null;
-        const parsed = JSON.parse(raw);
-        if (!parsed || !parsed.email || !parsed.expiresAt) return null;
-        if (Date.now() > parsed.expiresAt) {
-          // expirat
-          localStorage.removeItem(SESSION_KEY);
-          return null;
-        }
-        return parsed;
-      } catch (e) {
-        console.warn("Eroare la citirea sesiunii:", e);
-        return null;
-      }
-    }
-
-    // 🔐 Ștergem sesiunea (dacă vreodată faci buton de logout)
-    function clearSession() {
-      try {
-        localStorage.removeItem(SESSION_KEY);
-      } catch (e) {}
-    }
-
-    // 🚀 Redirect în funcție de rol
-    function redirectByRole(role) {
-      const r = (role || "").toString().trim().toLowerCase();
-
-      if (r === "admin" || r === "administrator") {
-        window.location.href = "/admin/index.html";
-      } else if (r === "gm" || r === "general manager") {
-        window.location.href = "/gm/index.html";
-      } else if (r === "angajat" || r === "operator" || r === "user") {
-        window.location.href = "/angajat/index.html";
-      } else {
-        // fallback – dacă rolul e ciudat, îl băgăm în admin
-        window.location.href = "/admin/index.html";
-      }
-    }
-
-    // 🔁 Autologin la încărcarea paginii (dacă avem sesiune validă)
-    (function autoLoginOnLoad() {
-      const session = getSession();
-      if (session && session.email && session.role) {
-        console.log("[AUTOLOGIN] Găsit sesiune:", session);
-        setSuccess("Autentificare automată... (" + session.role + ")");
-        // Mic delay doar ca să vezi mesajul, apoi redirect
-        setTimeout(function () {
-          redirectByRole(session.role);
-        }, 500);
-      }
-    })();
-
-    // 🧷 LOGIN JSONP
-    form.addEventListener("submit", function (ev) {
-      ev.preventDefault();
-      clearMessages();
-
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
-
-      if (!email || !password) {
-        setError("Te rog completează emailul și parola.");
-        return;
-      }
-
-      setLoading(true);
-
-      const cbName = "spLoginCb_" + Date.now();
-      debugEl.textContent = "Trimit cerere JSONP către backend...";
-
-      // definim callback-ul global pentru JSONP
-      window[cbName] = function (resp) {
-        console.log("[JSONP][OK] Răspuns primit:", resp);
-        cleanup();
-
-        if (!resp) {
-          setError("Răspuns invalid de la server.");
-          return;
-        }
-
-        if (resp.success) {
-          const role = resp.role || "necunoscut";
-          const emailResp = resp.email || email;
-
-          setSuccess("Autentificare reușită. Rol: " + role);
-
-          // 🔐 salvăm sesiunea
-          saveSession(emailResp, role);
-
-          // mic delay să vezi mesajul, apoi redirect în funcție de rol
-          setTimeout(function () {
-            redirectByRole(role);
-          }, 600);
-        } else {
-          setError(resp.error || "Login eșuat. Verifică datele.");
-        }
-      };
-
-      function cleanup() {
-        setLoading(false);
-        if (script && script.parentNode) {
-          script.parentNode.removeChild(script);
-        }
-        try {
-          delete window[cbName];
-        } catch (e) {
-          window[cbName] = undefined;
-        }
-      }
-
-      const params = new URLSearchParams({
-        action: "login",
-        email: email,
-        password: password,
-        callback: cbName
+        document.body.appendChild(script);
       });
+    }
 
-      const url = BACKEND_URL + "?" + params.toString();
-      console.log("[JSONP] URL:", url);
+    document.addEventListener("DOMContentLoaded", function () {
+      const form = document.getElementById("loginForm");
+      const emailInput = document.getElementById("email");
+      const passInput = document.getElementById("password");
+      const errorEl = document.getElementById("error");
 
-      const script = document.createElement("script");
-      script.src = url;
-      script.async = true;
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
 
-      script.onerror = function () {
-        console.error("[JSONP][ERROR] Network error la încărcarea script-ului");
-        cleanup();
-        setError("Network error: backend nu răspunde sau link-ul e greșit.");
-      };
+        const email = emailInput.value.trim();
+        const password = passInput.value.trim();
+        errorEl.style.display = "none";
 
-      document.body.appendChild(script);
+        jsonpLogin(email, password)
+          .then((resp) => {
+            if (!resp || !resp.success) {
+              errorEl.textContent = resp.error || "Email sau parolă greșite.";
+              errorEl.style.display = "block";
+              return;
+            }
+
+            const role = (resp.role || "").toLowerCase();
+            if (role === "admin")
+              window.location.href = "/frontend/admin/index.html";
+            else if (role === "gm")
+              window.location.href = "/frontend/gm/index.html";
+            else
+              window.location.href = "/frontend/angajat/index.html";
+          })
+          .catch(() => {
+            errorEl.textContent =
+              "Nu s-a putut contacta serverul. Încearcă din nou.";
+            errorEl.style.display = "block";
+          });
+      });
     });
   </script>
 </body>
