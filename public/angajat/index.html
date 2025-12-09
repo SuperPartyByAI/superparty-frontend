@@ -2,117 +2,42 @@
 <html lang="ro">
 <head>
   <meta charset="UTF-8" />
-  <title>SuperParty - Dashboard angajat</title>
+  <title>SuperParty - Angajat</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      background: radial-gradient(circle at top, #1d4ed8 0%, #0f172a 45%, #020617 100%);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      min-height: 100vh;
-      background: radial-gradient(circle at top, #1d4ed8 0, #0f172a 45%, #020617 100%);
-      color: #e5e7eb;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-    }
-
-    .app-shell {
-      width: 100%;
-      max-width: 1200px;
-      min-height: 520px;
-      max-height: 720px;
-      background: rgba(15, 23, 42, 0.9);
-      border-radius: 24px;
-      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.7);
-      display: flex;
-      overflow: hidden;
-      position: relative;
-      border: 1px solid rgba(148, 163, 184, 0.3);
-      backdrop-filter: blur(18px);
-    }
-
-    /* SIDEBAR */
-    .sidebar {
-      width: 0;
-      background: #020617;
-      border-right: 1px solid rgba(51, 65, 85, 0.8);
-      overflow: hidden;
-      transition: width 0.25s ease-out;
-      display: flex;
-      flex-direction: column;
-      padding: 24px 0;
-    }
-
-    .sidebar.open {
-      width: 260px;
-    }
-
-    .sidebar-header {
-      padding: 0 20px 16px;
-      border-bottom: 1px solid rgba(30, 64, 175, 0.6);
-      margin-bottom: 16px;
-    }
-
-    .logo {
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #60a5fa;
-    }
-
-    .sidebar-footer {
-      margin-top: auto;
-      padding: 12px 20px 0;
-      border-top: 1px solid rgba(30, 64, 175, 0.6);
-      font-size: 12px;
-      color: #64748b;
-    }
-
-    .sidebar-footer strong {
       color: #e5e7eb;
     }
 
-    /* MAIN */
-    .main-area {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      padding: 16px;
-      position: relative;
-    }
-
-    .top-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 8px;
-    }
-
-    .menu-toggle {
-      width: 40px;
-      height: 40px;
+    /* 👇 BARA DE MENIU (SUS STÂNGA) */
+    #menuToggle {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 44px;
+      height: 44px;
       border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
       background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(148, 163, 184, 0.7);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.6);
-      transition: background 0.18s ease, transform 0.08s ease, box-shadow 0.18s ease;
+      transition: 0.2s;
+      z-index: 20;
     }
 
-    .menu-toggle:hover {
+    #menuToggle:hover {
       background: rgba(30, 64, 175, 0.9);
-      transform: translateY(-1px);
-      box-shadow: 0 10px 25px rgba(30, 64, 175, 0.7);
+      transform: translateY(-2px);
     }
 
     .menu-toggle-lines {
@@ -129,58 +54,37 @@
       background: #e5e7eb;
     }
 
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
+    /* 👇 SIDEBAR */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 100vh;
+      background: #020617;
+      border-right: 1px solid rgba(51, 65, 85, 0.8);
+      overflow: hidden;
+      transition: width 0.25s ease-out;
+      padding-top: 80px;
+      z-index: 25;
     }
+    .sidebar.open { width: 260px; }
 
-    .user-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 20%, #38bdf8, #1d4ed8);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-      font-size: 14px;
-      color: white;
-      box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.9),
-                  0 8px 18px rgba(15, 23, 42, 0.8);
-    }
-
-    .user-text {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .user-text .hello {
-      font-size: 11px;
-      color: #94a3b8;
-    }
-
-    .user-text .name {
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    /* ZONA CENTRALĂ – GOLĂ, DOAR ALBASTRU */
-    .center-empty {
-      flex: 1;
-      margin-top: 8px;
-      border-radius: 20px;
-      background: radial-gradient(circle at top, #1d4ed8, #020617);
-      border: 1px solid rgba(37, 99, 235, 0.6);
-    }
-
-    /* CHAT AI */
-    .chat-fab {
+    .sidebar-footer {
       position: absolute;
-      right: 18px;
-      bottom: 18px;
-      width: 54px;
-      height: 54px;
+      bottom: 20px;
+      left: 20px;
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    /* 👇 CHAT BUTTON */
+    .chat-fab {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      width: 60px;
+      height: 60px;
       border-radius: 999px;
       background: radial-gradient(circle at 30% 20%, #38bdf8, #1d4ed8);
       border: 1px solid rgba(191, 219, 254, 0.8);
@@ -188,122 +92,67 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.9);
-      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.15s ease;
-      z-index: 20;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7);
+      z-index: 30;
+      transition: 0.2s;
     }
 
     .chat-fab:hover {
       transform: translateY(-2px);
-      box-shadow: 0 24px 50px rgba(30, 64, 175, 0.9);
     }
 
-    .chat-fab-icon {
-      font-size: 24px;
-    }
-
+    /* 👇 CHAT PANEL */
     .chat-panel {
-      position: absolute;
-      right: 18px;
-      bottom: 80px;
+      position: fixed;
+      right: 20px;
+      bottom: 90px;
       width: 320px;
       max-height: 420px;
       background: rgba(15, 23, 42, 0.98);
-      border-radius: 20px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.9);
+      border-radius: 16px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
       display: none;
       flex-direction: column;
+      z-index: 30;
       overflow: hidden;
-      z-index: 25;
     }
-
-    .chat-panel.open {
-      display: flex;
-    }
+    .chat-panel.open { display: flex; }
 
     .chat-header {
-      padding: 10px 12px;
+      padding: 10px;
+      font-weight: bold;
       border-bottom: 1px solid rgba(51, 65, 85, 0.9);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .chat-header-left {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .chat-bot-avatar {
-      width: 26px;
-      height: 26px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 20%, #22c55e, #16a34a);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.9);
-    }
-
-    .chat-bot-text {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .chat-bot-name {
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .chat-bot-status {
-      font-size: 11px;
-      color: #22c55e;
-    }
-
-    .chat-header-close {
-      border: none;
-      background: transparent;
-      color: #64748b;
-      cursor: pointer;
-      font-size: 18px;
     }
 
     .chat-messages {
-      padding: 10px;
       flex: 1;
-      overflow-y: auto;
+      padding: 10px;
       font-size: 13px;
+      overflow-y: auto;
     }
 
     .chat-msg {
-      max-width: 90%;
       margin-bottom: 8px;
       line-height: 1.4;
-    }
-
-    .chat-msg.bot {
-      background: rgba(15, 23, 42, 0.95);
-      border-radius: 12px;
       padding: 7px 9px;
-      border: 1px solid rgba(51, 65, 85, 0.9);
+      border-radius: 8px;
+      max-width: 85%;
     }
 
     .chat-msg.user {
+      background: #1d4ed8;
       margin-left: auto;
-      background: radial-gradient(circle at 10% 0, #1d4ed8, #1e40af);
-      border-radius: 12px;
-      padding: 7px 9px;
-      border: 1px solid rgba(191, 219, 254, 0.8);
+    }
+    .chat-msg.bot {
+      background: #111827;
+      border: 1px solid rgba(55, 65, 81, 0.6);
     }
 
     .chat-input-row {
-      border-top: 1px solid rgba(51, 65, 85, 0.9);
       padding: 8px;
       display: flex;
       gap: 6px;
+      border-top: 1px solid rgba(51, 65, 85, 0.9);
     }
 
     .chat-input {
@@ -312,203 +161,96 @@
       border: 1px solid rgba(51, 65, 85, 0.9);
       background: rgba(15, 23, 42, 0.95);
       padding: 7px 11px;
-      font-size: 13px;
-      color: #e5e7eb;
-      outline: none;
-    }
-
-    .chat-input::placeholder {
-      color: #64748b;
+      color: white;
     }
 
     .chat-send-btn {
       border-radius: 999px;
-      border: 1px solid rgba(96, 165, 250, 0.9);
-      background: radial-gradient(circle at 20% 0, #3b82f6, #1d4ed8);
-      color: #e5e7eb;
-      font-size: 13px;
       padding: 0 12px;
+      background: #3b82f6;
+      border: none;
       cursor: pointer;
-      white-space: nowrap;
-    }
-
-    @media (max-width: 768px) {
-      .app-shell {
-        max-height: none;
-      }
-      .sidebar.open {
-        width: 210px;
-      }
-      .chat-panel {
-        right: 10px;
-        left: 10px;
-        width: auto;
-      }
     }
   </style>
 </head>
 <body>
-  <div class="app-shell">
-    <!-- SIDEBAR ASCUNSĂ -->
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <div class="logo">SuperParty</div>
-      </div>
 
-      <div class="sidebar-footer">
-        <div><strong>Mod angajat</strong> · v1</div>
-        <div>ID utilizator: <strong>A23</strong></div>
-      </div>
-    </aside>
+  <!-- BUTON MENIU -->
+  <button id="menuToggle">
+    <div class="menu-toggle-lines">
+      <div class="menu-toggle-line"></div>
+      <div class="menu-toggle-line"></div>
+      <div class="menu-toggle-line"></div>
+    </div>
+  </button>
 
-    <!-- ZONA PRINCIPALĂ -->
-    <main class="main-area">
-      <div class="top-bar">
-        <button class="menu-toggle" id="menuToggle" aria-label="Deschide/închide meniul">
-          <div class="menu-toggle-lines">
-            <div class="menu-toggle-line"></div>
-            <div class="menu-toggle-line"></div>
-            <div class="menu-toggle-line"></div>
-          </div>
-        </button>
-
-        <div class="user-info">
-          <div class="user-avatar">A</div>
-          <div class="user-text">
-            <span class="hello">Salut, Andrei 👋</span>
-            <span class="name">Mod angajat activ</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- CENTRU GOL, DOAR ALBASTRU -->
-      <div class="center-empty"></div>
-
-      <!-- CHAT AI -->
-      <button class="chat-fab" id="chatFab" aria-label="Deschide chat AI">
-        <div class="chat-fab-icon">🤖</div>
-      </button>
-
-      <section class="chat-panel" id="chatPanel">
-        <header class="chat-header">
-          <div class="chat-header-left">
-            <div class="chat-bot-avatar">SP</div>
-            <div class="chat-bot-text">
-              <div class="chat-bot-name">SuperParty AI</div>
-              <div class="chat-bot-status">online · mod angajat</div>
-            </div>
-          </div>
-          <button class="chat-header-close" id="chatCloseBtn" aria-label="Închide chat">×</button>
-        </header>
-
-        <div class="chat-messages" id="chatMessages">
-          <div class="chat-msg bot">
-            Salut, Andrei! Sunt AI-ul SuperParty.<br />
-            Poți folosi comenzi secrete, de exemplu:
-            <br /><br />
-            <code>open mod andrei admin</code><br />
-            <code>open mod andrei gm</code>
-          </div>
-        </div>
-
-        <div class="chat-input-row">
-          <input
-            type="text"
-            id="chatInput"
-            class="chat-input"
-            placeholder="Scrie un mesaj către AI..."
-          />
-          <button class="chat-send-btn" id="chatSendBtn">Trimite</button>
-        </div>
-      </section>
-    </main>
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-footer">
+      Mod angajat · v1<br>
+      ID: A23
+    </div>
   </div>
 
-  <script>
-    // SIDEBAR TOGGLE
-    const sidebar = document.getElementById("sidebar");
-    const menuToggle = document.getElementById("menuToggle");
+  <!-- CHAT BUTTON -->
+  <button class="chat-fab" id="chatFab">🤖</button>
 
-    menuToggle.addEventListener("click", () => {
-      sidebar.classList.toggle("open");
-    });
+  <!-- CHAT PANEL -->
+  <div class="chat-panel" id="chatPanel">
+    <div class="chat-header">SuperParty AI</div>
 
-    // CHAT TOGGLE
-    const chatFab = document.getElementById("chatFab");
-    const chatPanel = document.getElementById("chatPanel");
-    const chatCloseBtn = document.getElementById("chatCloseBtn");
+    <!-- FĂRĂ NICIUN MESAJ AUTOMAT -->
+    <div class="chat-messages" id="chatMessages"></div>
 
-    chatFab.addEventListener("click", () => {
-      chatPanel.classList.toggle("open");
-    });
+    <div class="chat-input-row">
+      <input id="chatInput" class="chat-input" placeholder="scrie..." />
+      <button id="chatSendBtn" class="chat-send-btn">Trimite</button>
+    </div>
+  </div>
 
-    chatCloseBtn.addEventListener("click", () => {
-      chatPanel.classList.remove("open");
-    });
+<script>
+  // MENU
+  menuToggle.onclick = () => sidebar.classList.toggle("open");
 
-    // CHAT MINIMAL + COMENZI SECRETE
-    const chatInput = document.getElementById("chatInput");
-    const chatSendBtn = document.getElementById("chatSendBtn");
-    const chatMessages = document.getElementById("chatMessages");
+  // CHAT TOGGLE
+  chatFab.onclick = () => chatPanel.classList.toggle("open");
+  chatSendBtn.onclick = sendChat;
 
-    function addMessage(text, sender) {
-      const div = document.createElement("div");
-      div.classList.add("chat-msg", sender === "user" ? "user" : "bot");
-      div.textContent = text;
-      chatMessages.appendChild(div);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
+  chatInput.addEventListener("keydown", e => {
+    if (e.key === "Enter") sendChat();
+  });
+
+  function addMsg(text, sender) {
+    const div = document.createElement("div");
+    div.className = "chat-msg " + sender;
+    div.textContent = text;
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  function sendChat() {
+    const t = chatInput.value.trim();
+    if (!t) return;
+    addMsg(t, "user");
+    chatInput.value = "";
+
+    const cmd = t.toLowerCase();
+
+    if (cmd === "open mod andrei admin") {
+      alert("Comandă secretă: admin (momentan fără redirect)");
+      addMsg("OK, comandă secretă acceptată.", "bot");
+      return;
     }
 
-    function handleSecretCommand(trimmed) {
-      const cmd = trimmed.toLowerCase().trim();
-
-      if (cmd === "open mod andrei admin") {
-        console.log("SECRET CMD: open mod andrei admin");
-        alert("Comandă secretă detectată: MOD ANDREI ADMIN (deocamdată fără redirect).");
-        return true;
-      }
-
-      if (cmd === "open mod andrei gm") {
-        console.log("SECRET CMD: open mod andrei gm");
-        alert("Comandă secretă detectată: MOD ANDREI GM (deocamdată fără redirect).");
-        return true;
-      }
-
-      return false;
+    if (cmd === "open mod andrei gm") {
+      alert("Comandă secretă: gm (momentan fără redirect)");
+      addMsg("OK, comandă secretă acceptată.", "bot");
+      return;
     }
 
-    function handleSend() {
-      const text = chatInput.value;
-      if (!text.trim()) return;
-      const trimmed = text.trim();
+    addMsg("Răspuns AI demo.", "bot");
+  }
+</script>
 
-      addMessage(trimmed, "user");
-      chatInput.value = "";
-
-      if (handleSecretCommand(trimmed)) {
-        addMessage("Ok, am înțeles comanda secretă (momentan doar log).", "bot");
-        return;
-      }
-
-      const lower = trimmed.toLowerCase();
-      let reply = "Am primit mesajul tău. În versiunea finală voi fi legat la backend.";
-
-      if (lower.includes("buna") || lower.includes("salut")) {
-        reply = "Salut! Sunt aici să te ajut cu evenimente și dovezi.";
-      }
-
-      setTimeout(() => {
-        addMessage(reply, "bot");
-      }, 300);
-    }
-
-    chatSendBtn.addEventListener("click", handleSend);
-    chatInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        handleSend();
-      }
-    });
-  </script>
 </body>
 </html>
