@@ -1,65 +1,17 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SuperParty App</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; overflow-x: hidden; }
-        .page { display: none; min-height: 100vh; }
-        .page.active { display: flex !important; }
-        .login-page { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
-        .login-card { width: 100%; max-width: 500px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border: 2px solid rgba(255,255,255,0.1); border-radius: 30px; padding: 60px 40px; box-shadow: 0 30px 60px rgba(0,0,0,0.6); }
-        .login-title { font-size: 36px; font-weight: 700; color: #f1f5f9; text-align: center; margin-bottom: 40px; }
-        .register-page { background: linear-gradient(135deg, #10b981 0%, #059669 100%); flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
-        .register-card { width: 100%; max-width: 600px; background: white; border-radius: 30px; padding: 60px 40px; box-shadow: 0 30px 60px rgba(0,0,0,0.3); }
-        .kyc-page { background: #0f172a; flex-direction: column; align-items: center; padding: 60px 40px; }
-        .kyc-container { max-width: 1200px; width: 100%; background: rgba(15, 23, 42, 0.9); border: 2px solid #334155; border-radius: 30px; padding: 60px; color: #f1f5f9; }
-        .dashboard-page { background: #0f172a; flex-direction: column; padding: 40px; }
-        .dashboard-container { max-width: 1400px; margin: 0 auto; width: 100%; }
-        .dashboard-header { background: rgba(15, 23, 42, 0.9); border: 2px solid #334155; border-radius: 30px; padding: 40px; margin-bottom: 30px; color: #f1f5f9; }
-        .tasks-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; }
-        .task-card { background: rgba(15, 23, 42, 0.9); border: 2px solid #334155; border-radius: 20px; padding: 30px; color: #f1f5f9; transition: all 0.3s; }
-        .task-card:hover { border-color: #667eea; transform: translateY(-5px); }
-        .admin-page, .gm-page { background: #0f172a; flex-direction: column; padding: 40px; }
-        .form-group { margin-bottom: 25px; }
-        label { display: block; font-size: 13px; font-weight: 600; text-transform: uppercase; color: #e2e8f0; margin-bottom: 10px; }
-        input { width: 100%; padding: 16px 20px; background: rgba(15, 23, 42, 0.7); border: 2px solid #475569; border-radius: 16px; color: #f1f5f9; font-size: 16px; outline: none; }
-        input:focus { border-color: #818cf8; }
-        .btn { width: 100%; padding: 18px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 9999px; color: white; font-size: 18px; font-weight: 700; cursor: pointer; margin-top: 10px; transition: all 0.3s; }
-        .btn:hover { transform: scale(1.02); }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .error { background: rgba(239, 68, 68, 0.2); border: 2px solid rgba(239, 68, 68, 0.5); color: #fca5a5; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
-        .link-toggle { text-align: center; margin-top: 30px; color: rgba(255,255,255,0.8); font-size: 14px; }
-        .link-toggle a { color: white; text-decoration: none; font-weight: 600; border-bottom: 2px solid white; cursor: pointer; }
-        .link-toggle a:hover { opacity: 0.8; }
-        .register-card label { color: #374151; text-transform: none; }
-        .register-card input { background: white; border: 2px solid #e5e7eb; color: #1f2937; }
-        .register-card input:focus { border-color: #10b981; }
-        .register-card .link-toggle { color: #374151; }
-        .register-card .link-toggle a { color: #10b981; border-color: #10b981; }
-        .section { background: rgba(15, 23, 42, 0.8); border: 2px solid #334155; border-radius: 20px; padding: 30px; margin-bottom: 30px; }
-        .upload-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px; }
-        .upload-card { background: rgba(30, 41, 59, 0.6); border: 2px dashed #475569; border-radius: 16px; padding: 30px; text-align: center; cursor: pointer; transition: all 0.3s; }
-        .upload-card:hover { border-color: #818cf8; background: rgba(30, 41, 59, 0.8); }
-        .upload-card input[type="file"] { display: none; }
-        .driver-section { display: none; margin-top: 30px; padding-top: 30px; border-top: 2px solid #334155; }
-        .driver-section.show { display: block; }
-        .checkbox-large { display: flex; align-items: center; gap: 15px; cursor: pointer; padding: 20px; background: rgba(30, 41, 59, 0.6); border: 2px solid #475569; border-radius: 16px; transition: all 0.3s; }
-        .checkbox-large:hover { border-color: #818cf8; }
-        .checkbox-large input[type="checkbox"] { width: 24px; height: 24px; cursor: pointer; }
-        .checkbox-large span { font-size: 16px; font-weight: 600; text-transform: none; }
-        .card { background: rgba(15, 23, 42, 0.9); border: 2px solid #334155; border-radius: 30px; padding: 40px; margin-bottom: 30px; color: #f1f5f9; }
-        table { width: 100%; border-collapse: collapse; margin-top: 30px; }
-        th { padding: 18px; text-align: left; color: #94a3b8; border-bottom: 2px solid #334155; }
-        td { padding: 18px; border-bottom: 1px solid #334155; color: #f1f5f9; }
-        .badge { padding: 6px 14px; border-radius: 9999px; font-size: 13px; font-weight: 600; }
-        .badge-pending { background: rgba(251, 191, 36, 0.25); color: #fbbf24; }
-        .badge-active { background: rgba(34, 197, 94, 0.25); color: #22c55e; }
-        .logout-btn { position: fixed; top: 20px; right: 20px; padding: 12px 24px; background: rgba(239, 68, 68, 0.9); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; z-index: 1000; }
-    </style>
+  <meta charset="UTF-8" />
+  <title>SuperParty Angajat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    body { margin:0; font-family:Arial; background:#f9fafb; }
+    header { background:#6366f1; color:white; padding:16px; display:flex; justify-content:space-between; }
+    #logoutBtn { background:white; color:#4338ca; border:none; padding:8px 14px; border-radius:6px; cursor:pointer; }
+  </style>
 </head>
+
 <body>
     <div id="login" class="page active login-page">
         <div class="login-card">

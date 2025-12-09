@@ -23,7 +23,6 @@ export async function loginUser(
   email: string,
   password: string
 ): Promise<LoginResponse> {
-  
   const body = new URLSearchParams({
     action: "login",
     email,
@@ -33,7 +32,7 @@ export async function loginUser(
   const response = await fetch(WEBAPP_URL, {
     method: "POST",
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+      "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8;charset=UTF-8",
     },
     body,
   });
@@ -44,8 +43,8 @@ export async function loginUser(
 
   const data = await response.json();
 
-  if (!data.success) {
-    throw new Error(data.error || "Autentificare eșuată");
+  if (!(data as any).success) {
+    throw new Error((data as any).error || "Autentificare eșuată");
   }
 
   return data as LoginResponse;
