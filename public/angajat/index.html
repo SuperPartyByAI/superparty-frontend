@@ -21,7 +21,7 @@
       position: relative;
     }
 
-    /* ───── Sidebar îngust ASCUNS (apare doar cât ții degetul) ───── */
+    /* ───── Sidebar îngust ASCUNS ───── */
     .sidebar-wrapper {
       position: fixed;
       top: 0;
@@ -111,7 +111,7 @@
       margin-bottom: 6px;
     }
 
-    /* ───── "Handle" la mijloc pe stânga (de el tragi) ───── */
+    /* ───── "Handle" la mijloc pe stânga (de el ții degetul) ───── */
     .sidebar-handle {
       position: fixed;
       left: 0;
@@ -128,7 +128,7 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      z-index: 45; /* peste sidebar, să fie mereu atins */
+      z-index: 45;
     }
 
     .sidebar-handle-lines {
@@ -277,7 +277,7 @@
 </head>
 <body>
   <div class="app-root">
-    <!-- "Handle" la mijloc pe stânga -->
+    <!-- Handle la mijloc pe stânga -->
     <div class="sidebar-handle" id="sidebarHandle">
       <div class="sidebar-handle-lines"></div>
     </div>
@@ -369,11 +369,11 @@
       if (e.key === 'Enter') sendFakeMessage();
     });
 
-    // ───── Handle la mijloc: DESCHIDE CÂT ȚII DEGETUL, ÎNCHIDE CÂND IEI DEGETUL ─────
+    // ───── Handle: deschide pe touchstart, închide pe touchend (fără logica globală care o închidea instant) ─────
     const sidebarHandle = document.getElementById('sidebarHandle');
 
     // Desktop: mousedown -> deschis, mouseup -> închis
-    sidebarHandle.addEventListener('mousedown', () => {
+    sidebarHandle.addEventListener('mousedown', (e) => {
       document.body.classList.add('sidebar-open');
     });
     document.addEventListener('mouseup', () => {
@@ -382,20 +382,13 @@
 
     // Touch: touchstart -> deschis, touchend -> închis
     sidebarHandle.addEventListener('touchstart', (e) => {
+      e.stopPropagation();
       document.body.classList.add('sidebar-open');
     });
 
     sidebarHandle.addEventListener('touchend', (e) => {
+      e.stopPropagation();
       document.body.classList.remove('sidebar-open');
-    });
-
-    // Dacă atingi în altă parte pe ecran, închidem (just in case)
-    document.addEventListener('touchstart', (e) => {
-      if (!document.body.classList.contains('sidebar-open')) return;
-      const x = e.touches[0].clientX;
-      if (x > 120) {
-        document.body.classList.remove('sidebar-open');
-      }
     });
   </script>
 </body>
