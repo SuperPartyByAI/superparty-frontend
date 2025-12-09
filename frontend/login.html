@@ -91,14 +91,14 @@
     <p id="error"></p>
   </div>
 
-  <!-- SCRIPT LOGIN COMPLET -->
+
+  <!-- SCRIPT LOGIN COMPLET cu BACKEND CORECT -->
   <script>
     console.log("[LOGIN] Script încărcat");
 
     const BACKEND =
-      "https://script.google.com/macros/s/AKfycbxrDcyKQfGgfpQrNm4opWsbce_mR1a-w7EbCLYtrrMEc-gFQKQAH7TQiY_ivxf9wZCj/exec";
+      "https://script.google.com/macros/s/AKfycbxs819m4gt-tpTkAIIS91EnxhwYx-5wdbnh6Zi5_GcY14zs5XYqS9ykFuYCCcokhQ/exec";
 
-    // Selectăm formularul
     const form = document.getElementById("loginForm");
 
     if (!form) {
@@ -112,14 +112,11 @@
 
         console.log("[LOGIN] Trimit cerere JSONP...");
 
-        // Ștergem script JSONP vechi dacă există
         const oldScript = document.getElementById("jsonpScript");
         if (oldScript) oldScript.remove();
 
-        // Creăm nume callback
         const callbackName = "loginCallback_" + Date.now();
 
-        // Definim funcția callback globală
         window[callbackName] = function (response) {
           console.log("[JSONP] Răspuns primit:", response);
 
@@ -132,10 +129,8 @@
             return;
           }
 
-          // Salvăm userul în localStorage
           localStorage.setItem("user", JSON.stringify(response));
 
-          // Redirecționare în funcție de rol
           if (response.role === "admin") {
             window.location.href = "/frontend/admin/index.html";
           } else if (response.role === "gm") {
@@ -145,19 +140,17 @@
           }
         };
 
-        // Construim URL JSONP
         const url =
           `${BACKEND}?action=login&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&callback=${callbackName}`;
 
         console.log("[JSONP] Încarc URL:", url);
 
-        // Cream scriptul JSONP
         const script = document.createElement("script");
         script.src = url;
         script.id = "jsonpScript";
         script.onerror = () => {
           document.getElementById("error").innerText =
-            "Eroare de rețea – Backend indisponibil!";
+            "Network error – Backend indisponibil!";
           document.getElementById("error").style.display = "block";
         };
 
