@@ -1,1 +1,281 @@
-<!DOCTYPE html><html lang="ro"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Detalii eveniment - SuperParty</title><style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f8fafc;color:#1e293b;padding:16px;}.page{max-width:900px;margin:0 auto;}.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}.logo{font-weight:700;font-size:18px;color:#ea580c;}.back-btn{padding:8px 14px;border-radius:999px;border:none;background:#e5e7eb;cursor:pointer;font-size:14px;}.card{background:white;border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:0 1px 3px rgba(15,23,42,0.08);} .card-title{font-size:16px;font-weight:600;margin-bottom:8px;}.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}.label{font-size:12px;text-transform:uppercase;color:#6b7280;margin-bottom:4px;}.value{font-size:14px;font-weight:500;}.roles-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}.role-pill{padding:6px 10px;border-radius:999px;font-size:12px;background:#fee2e2;color:#b91c1c;}.role-pill.main{background:#dbeafe;color:#1d4ed8;}.actions{margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;}.btn{border:none;border-radius:999px;padding:8px 14px;font-size:13px;cursor:pointer;}.btn-primary{background:#ea580c;color:white;}.btn-secondary{background:#e5e7eb;color:#111827;}@media(max-width:768px){.grid-2{grid-template-columns:1fr;}}</style></head><body><div class="page"><div class="header"><div class="logo">SuperParty · Detalii eveniment</div><button class="back-btn" onclick="goBack()">⟵ Înapoi la listă</button></div><div class="card"><div class="card-title">Elsa 2h + Olaf 2h</div><div class="grid-2"><div><div class="label">Data</div><div class="value">07 decembrie 2024</div></div><div><div class="label">Interval orar</div><div class="value">15:00 - 17:00</div></div><div><div class="label">Adresa</div><div class="value">București, Sector 3 · Str. Florilor 23</div></div><div><div class="label">Client</div><div class="value">Maria Ionescu · 0722 456 789</div></div></div><div class="roles-list"><span class="role-pill main">Rol principal: ANIMAȚIE</span><span class="role-pill">Elsa 2h · A23</span><span class="role-pill">Olaf 2h · B15</span></div><div class="actions"><button class="btn btn-primary">Vezi / încarcă dovezi foto</button><button class="btn btn-secondary">Vezi cine face bagajul</button></div></div><div class="card"><div class="card-title">Plată & tips</div><div class="grid-2"><div><div class="label">Total</div><div class="value">650 lei (cash)</div></div><div><div class="label">Tips</div><div class="value">—</div></div><div><div class="label">Status încasare</div><div class="value">Neîncasată</div></div><div><div class="label">Necesită șofer</div><div class="value">NU</div></div></div><div class="actions"><button class="btn btn-primary">Marchează ca încasată</button><button class="btn btn-secondary">Adaugă tips</button></div></div><div class="card"><div class="card-title">Roluri & coduri</div><div class="grid-2"><div><div class="label">Bagaj</div><div class="value">A12 · (necompletat)</div></div><div><div class="label">Rol 1</div><div class="value">Elsa 2h · A23</div></div><div><div class="label">Rol 2</div><div class="value">Olaf 2h · B15</div></div></div><div class="actions"><button class="btn btn-primary">Setează cine face bagajul</button><button class="btn btn-secondary">Note interne</button></div></div></div><script>function goBack(){window.location.href="index.html";}</script></body></html>
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <title>SuperParty - Admin utilizatori</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #1d4ed8 0, #0f172a 45%, #020617 100%);
+      color: #e5e7eb;
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 16px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #9ca3af;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 16px;
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .card-main {
+      flex: 1;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .card-line {
+      font-size: 13px;
+      color: #cbd5f5;
+      margin-bottom: 2px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border: 1px solid rgba(96, 165, 250, 0.7);
+      color: #93c5fd;
+      margin-right: 4px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 13px;
+      cursor: pointer;
+      font-weight: 500;
+      background: #22c55e;
+      color: #022c22;
+      transition: transform 0.05s ease, box-shadow 0.05s ease, opacity 0.1s ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(34, 197, 94, 0.35);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      transform: none;
+      box-shadow: none;
+      cursor: default;
+    }
+
+    .empty {
+      font-size: 14px;
+      color: #9ca3af;
+      margin-top: 8px;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      gap: 12px;
+    }
+
+    .top-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: #9ca3af;
+    }
+
+    .refresh-link {
+      font-size: 13px;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .status-text {
+      font-size: 13px;
+      color: #a5b4fc;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="top-bar">
+      <div>
+        <h1>Admin utilizatori</h1>
+        <div class="subtitle">
+          Aici vezi conturile nou create (pending) și le poți aproba.
+        </div>
+      </div>
+      <div class="top-bar-right">
+        <span id="statusText" class="status-text">Se încarcă…</span>
+        <span class="refresh-link" onclick="loadPendingUsers()">Reîncarcă</span>
+      </div>
+    </div>
+
+    <div id="pendingList"></div>
+  </div>
+
+  <script>
+    // ⚠ Același URL ca în login.html
+    const BACKEND_URL = 'https://script.google.com/macros/s/XXXX/exec';
+
+    function setStatus(msg) {
+      const el = document.getElementById('statusText');
+      if (el) el.textContent = msg;
+    }
+
+    function renderPendingUsers(items) {
+      const container = document.getElementById('pendingList');
+      if (!container) return;
+
+      if (!items || !items.length) {
+        container.innerHTML = '<p class="empty">Nu există utilizatori în așteptare.</p>';
+        return;
+      }
+
+      container.innerHTML = items.map(function(item) {
+        return `
+          <div class="card" data-email="${item.email}">
+            <div class="card-main">
+              <div class="card-title">${item.fullname || '(fără nume)'}</div>
+              <div class="card-line">
+                <span class="badge">PENDING</span>
+                <span>${item.email || ''}</span> &middot; <span>${item.phone || '-'}</span>
+              </div>
+              <div class="card-line">
+                Rol: <strong>${item.role || 'angajat'}</strong> &middot;
+                Status: <strong>${item.status}</strong> &middot;
+                KYC: <strong>${item.kycStatus}</strong>
+              </div>
+            </div>
+            <div>
+              <button class="btn" onclick="approveUser('${item.id || ''}', '${item.email || ''}', this)">
+                Aprobă
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function loadPendingUsers() {
+      setStatus('Se încarcă…');
+
+      const callbackName = 'handlePending_' + Date.now();
+
+      window[callbackName] = function(resp) {
+        try {
+          if (!resp || resp.success === false) {
+            console.error('Eroare listPending:', resp);
+            setStatus('Eroare la încărcare.');
+            return;
+          }
+          renderPendingUsers(resp.items || []);
+          setStatus('Gata.');
+        } finally {
+          delete window[callbackName];
+        }
+      };
+
+      const s = document.createElement('script');
+      s.src = BACKEND_URL
+        + '?action=listPending'
+        + '&callback=' + encodeURIComponent(callbackName);
+      s.onerror = function() {
+        console.error('Network error la listPending');
+        setStatus('Network error.');
+        delete window[callbackName];
+      };
+      document.body.appendChild(s);
+    }
+
+    function approveUser(id, email, btn) {
+      if (btn) {
+        btn.disabled = true;
+        btn.dataset.textOriginal = btn.textContent;
+        btn.textContent = 'Se aprobă…';
+      }
+
+      const callbackName = 'handleApprove_' + Date.now();
+
+      window[callbackName] = function(resp) {
+        try {
+          if (!resp || resp.success === false) {
+            console.error('Eroare approveUser:', resp);
+            alert((resp && (resp.error || resp.message)) || 'Eroare la aprobare.');
+            if (btn) {
+              btn.disabled = false;
+              btn.textContent = btn.dataset.textOriginal || 'Aprobă';
+            }
+            return;
+          }
+
+          const card = btn && btn.closest('.card');
+          if (card && card.parentNode) {
+            card.parentNode.removeChild(card);
+          }
+
+          setStatus('User aprobat: ' + (resp.email || ''));
+        } finally {
+          delete window[callbackName];
+        }
+      };
+
+      const s = document.createElement('script');
+      s.src = BACKEND_URL
+        + '?action=approveUser'
+        + '&id=' + encodeURIComponent(id || '')
+        + '&email=' + encodeURIComponent(email || '')
+        + '&callback=' + encodeURIComponent(callbackName);
+      s.onerror = function() {
+        console.error('Network error la approveUser');
+        alert('Network error la aprobare.');
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = btn.dataset.textOriginal || 'Aprobă';
+        }
+        delete window[callbackName];
+      };
+      document.body.appendChild(s);
+    }
+
+    window.addEventListener('DOMContentLoaded', function() {
+      loadPendingUsers();
+    });
+  </script>
+</body>
+</html>
