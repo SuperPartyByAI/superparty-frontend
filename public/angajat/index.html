@@ -1,92 +1,136 @@
-<script>
-  (function () {
-    // URL-ul backend-ului tău pentru login ANGAJAT
-    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxs819m4gt-tpTkAIIS91EnxhwYx-5wdbnh6Zi5_GcY14zs5XYqS9ykFuYCCcokhQ/exec";
-
-    const form = document.getElementById("loginForm");
-    const emailInput = document.getElementById("loginEmail");
-    const passwordInput = document.getElementById("loginPassword");
-    const errorEl = document.getElementById("loginError");
-
-    if (!form) {
-      console.error("Nu găsesc formularul #loginForm în angajat/index.html");
-      return;
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <title>SuperParty - Panou angajat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top, #ff9a9e 0, #fad0c4 40%, #fbc2eb 100%);
+    }
 
-      const email = emailInput ? emailInput.value.trim() : "";
-      const pass = passwordInput ? passwordInput.value.trim() : "";
+    .page {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 24px 28px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.25);
+    }
 
-      if (!email || !pass) {
-        if (errorEl) {
-          errorEl.textContent = "Te rog introdu email și parolă.";
-          errorEl.style.display = "block";
-        } else {
-          alert("Te rog introdu email și parolă.");
-        }
-        return;
-      }
+    .title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 4px;
+      text-align: center;
+    }
 
-      const callbackName = "cb_login_" + Date.now();
+    .subtitle {
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 20px;
+      text-align: center;
+    }
 
-      // ⚠️ AICI calculăm URL-ul ÎNAINTE să-l folosim
-      const url =
-        BACKEND_URL +
-        "?action=login" +
-        "&email=" + encodeURIComponent(email) +
-        "&password=" + encodeURIComponent(pass) +
-        "&callback=" + callbackName;
+    .card {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
 
-      console.log("🔍 LOGIN - Email:", email);
-      console.log("🔍 LOGIN - Backend URL:", BACKEND_URL);
-      console.log("🔍 LOGIN - Full URL:", url);
+    .label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #94a3b8;
+      margin-bottom: 4px;
+    }
 
-      window[callbackName] = function (resp) {
-        console.log("✅ LOGIN JSONP RESP:", resp);
+    .value {
+      font-size: 15px;
+      color: #0f172a;
+      font-weight: 500;
+    }
 
-        if (!resp || !resp.success) {
-          const msg = resp && resp.error ? resp.error : "Email sau parolă incorecte.";
-          if (errorEl) {
-            errorEl.textContent = msg;
-            errorEl.style.display = "block";
-          } else {
-            alert(msg);
-          }
-          return;
-        }
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #ecfdf3;
+      color: #15803d;
+      font-size: 12px;
+      font-weight: 500;
+      margin-top: 8px;
+    }
 
-        // Salvăm utilizatorul în localStorage
-        try {
-          localStorage.setItem(
-            "superparty_user",
-            JSON.stringify({ email: resp.email, role: resp.role || "angajat" })
-          );
-        } catch (err) {
-          console.warn("Nu pot salva în localStorage:", err);
-        }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #22c55e;
+    }
 
-        // Redirect în funcție de rol
-        if (resp.role === "admin") {
-          window.location.href = "/admin/index.html";
-        } else {
-          window.location.href = "/angajat/index.html";
-        }
-      };
+    .note {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 8px;
+    }
 
-      const s = document.createElement("script");
-      s.src = url;
-      s.onerror = function (err) {
-        console.error("❌ Script JSONP NU s-a încărcat:", err);
-        if (errorEl) {
-          errorEl.textContent = "Nu s-a putut contacta serverul. Încearcă din nou.";
-          errorEl.style.display = "block";
-        } else {
-          alert("Nu s-a putut contacta serverul. Încearcă din nou.");
-        }
-      };
-      document.body.appendChild(s);
-    });
-  })();
-</script>
+    .footer-note {
+      margin-top: 14px;
+      font-size: 11px;
+      text-align: center;
+      color: #94a3b8;
+    }
+
+    .footer-note span {
+      font-weight: 600;
+      color: #6366f1;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1 class="title">SuperParty</h1>
+    <p class="subtitle">Panou angajat · versiune demo</p>
+
+    <div class="card">
+      <div class="label">Status autentificare</div>
+      <div class="value">Ești logat ca <strong>angajat</strong>.</div>
+      <div class="status-chip">
+        <span class="status-dot"></span>
+        Activ · pagina în construcție
+      </div>
+      <p class="note">
+        Ai intrat corect prin login. În această pagină vom afișa mai târziu
+        evenimentele, rolurile tale și sistemul de dovezi foto.
+      </p>
+    </div>
+
+    <p class="footer-note">
+      🛠️ Aceasta este o versiune minimală, fără scripturi de login. <br />
+      <span>Nu există niciun #loginForm aici → nu mai are ce să dea eroare.</span>
+    </p>
+  </div>
+
+  <script>
+    // Mic log doar ca să verificăm că totul e ok
+    console.log("Panou angajat încărcat fără loginForm. Totul e ok. 👍");
+  </script>
+</body>
+</html>
