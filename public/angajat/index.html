@@ -2,255 +2,411 @@
 <html lang="ro">
 <head>
   <meta charset="UTF-8" />
-  <title>SuperParty - Dashboard gol + sidebar ascuns + AI bot mic</title>
+  <title>SuperParty - Dashboard angajat minimal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       min-height: 100vh;
       background: radial-gradient(circle at top, #1d4ed8 0, #0f172a 45%, #020617 100%);
-      color: white;
+      color: #e5e7eb;
       overflow-x: hidden;
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* ───────────────── Sidebar ascuns ───────────────── */
+    /* ───────────── Layout gol ───────────── */
+    .app-root {
+      min-height: 100vh;
+      width: 100%;
+      position: relative;
+    }
 
+    /* ───────────── Sidebar îngust ascuns ───────────── */
     .sidebar-wrapper {
       position: fixed;
-      top: 0; left: 0; bottom: 0;
-      width: 240px;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 80px;
       transform: translateX(-100%);
-      transition: transform 0.25s ease-out;
-      background: rgba(15,23,42,0.96);
-      border-right: 1px solid rgba(148,163,184,0.35);
-      z-index: 50;
-      padding: 16px;
+      transition: transform 0.22s ease-out;
+      z-index: 40;
+      touch-action: none;
     }
 
     body.sidebar-open .sidebar-wrapper {
       transform: translateX(0);
     }
 
-    .sidebar-title {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 12px;
-    }
-
-    .sidebar-section-label {
-      font-size: 11px;
-      margin-top: 14px;
-      margin-bottom: 6px;
-      text-transform: uppercase;
-      color: #94a3b8;
-    }
-
-    .sidebar-item {
+    .sidebar {
+      height: 100%;
+      background: linear-gradient(180deg, rgba(15,23,42,0.98), rgba(15,23,42,0.94));
+      border-right: 1px solid rgba(148,163,184,0.45);
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 10px;
-      padding: 10px;
-      border-radius: 12px;
-      cursor: pointer;
-      background: rgba(255,255,255,0.03);
-      margin-bottom: 8px;
-      font-size: 14px;
-      transition: background 0.2s;
+      padding: 12px 8px;
+      gap: 16px;
     }
 
-    .sidebar-item:hover {
-      background: rgba(255,255,255,0.08);
-    }
-
-    .sidebar-ico {
-      font-size: 18px;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.06);
+    .sidebar-logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 0, #f97316, #ec4899);
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 22px;
+      margin-top: 4px;
     }
 
-    /* ───────────────── AI bot mic dreapta jos ───────────────── */
+    .sidebar-section-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #9ca3af;
+      margin-top: 4px;
+    }
+
+    .sidebar-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-top: 6px;
+      margin-bottom: 6px;
+    }
+
+    .sidebar-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      background: radial-gradient(circle at top, #1f2937, #020617);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .sidebar-btn.active {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 1px rgba(56,189,248,0.55), 0 12px 26px rgba(15,23,42,0.9);
+    }
+
+    .sidebar-btn:hover {
+      transform: translateY(-1px) scale(1.03);
+    }
+
+    .sidebar-spacer {
+      flex: 1;
+    }
+
+    .sidebar-footer-text {
+      font-size: 10px;
+      color: #6b7280;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    /* ───────────── Zone de swipe ───────────── */
+
+    .swipe-zone-left {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 35px;
+      height: 100vh;
+      z-index: 10;
+    }
+
+    .swipe-zone-right {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 40px;
+      height: 100vh;
+      z-index: 10;
+    }
+
+    /* ───────────── Bot AI mic colț dreapta jos ───────────── */
 
     .ai-bot {
       position: fixed;
-      bottom: 24px;
-      right: 24px;
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
+      bottom: 18px;
+      right: 18px;
+      width: 60px;
+      height: 60px;
+      border-radius: 999px;
       background: radial-gradient(circle at 30% 0, #38bdf8, #6366f1);
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 28px;
       cursor: pointer;
-      z-index: 60;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-      transition: transform 0.2s;
+      z-index: 50;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.55);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
-    .ai-bot:active { transform: scale(0.92); }
 
-    /* ───────────────── POPUP CHAT ───────────────── */
+    .ai-bot:active {
+      transform: scale(0.9);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.7);
+    }
+
+    /* ───────────── Chat popup FIX în colț dreapta jos ───────────── */
 
     .chat-popup {
       position: fixed;
-      bottom: 110px;
-      right: 24px;
-      width: 300px;
-      height: 380px;
-      background: rgba(15,23,42,0.95);
-      border: 1px solid rgba(148,163,184,0.35);
+      bottom: 16px;
+      right: 16px;
+      width: 320px;
+      max-width: calc(100% - 32px);
+      height: 360px;
+      max-height: calc(100vh - 32px);
+      background: rgba(15,23,42,0.97);
       border-radius: 16px;
+      border: 1px solid rgba(148,163,184,0.45);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.75);
       display: none;
       flex-direction: column;
-      z-index: 70;
       overflow: hidden;
+      z-index: 60;
+    }
+
+    .chat-popup.visible {
+      display: flex;
     }
 
     .chat-header {
-      padding: 12px;
-      border-bottom: 1px solid rgba(148,163,184,0.25);
-      font-size: 14px;
+      padding: 10px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(148,163,184,0.4);
+      font-size: 13px;
+    }
+
+    .chat-title {
       font-weight: 600;
+      font-size: 13px;
+    }
+
+    .chat-close {
+      border: none;
+      background: transparent;
+      color: #9ca3af;
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 4px;
     }
 
     .chat-body {
       flex: 1;
-      padding: 12px;
+      padding: 10px 12px;
       overflow-y: auto;
-      font-size: 13px;
+      font-size: 12px;
+    }
+
+    .msg {
+      padding: 7px 9px;
+      border-radius: 9px;
+      margin-bottom: 6px;
+      max-width: 85%;
+      line-height: 1.35;
+    }
+    .msg-ai {
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(148,163,184,0.6);
+      align-self: flex-start;
+    }
+    .msg-user {
+      background: radial-gradient(circle at top left, rgba(56,189,248,0.35), #0f172a);
+      border: 1px solid rgba(56,189,248,0.7);
+      align-self: flex-end;
     }
 
     .chat-input-row {
+      padding: 8px 8px 10px;
       display: flex;
-      padding: 8px;
       gap: 6px;
+      border-top: 1px solid rgba(148,163,184,0.4);
     }
 
     .chat-input {
       flex: 1;
-      padding: 8px;
-      border-radius: 10px;
-      border: none;
-      background: rgba(255,255,255,0.12);
-      color: white;
+      padding: 7px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      background: rgba(15,23,42,0.95);
+      color: #e5e7eb;
+      font-size: 12px;
       outline: none;
     }
 
     .chat-send {
-      background: #38bdf8;
+      border-radius: 999px;
       border: none;
-      color: #020617;
-      padding: 8px 12px;
-      border-radius: 10px;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top left, #38bdf8, #6366f1);
+      color: white;
+      font-size: 16px;
       cursor: pointer;
     }
 
-    /* ───────────────── Swipe area ───────────────── */
-
-    .swipe-zone {
-      position: fixed;
-      top: 0; left: 0;
-      width: 35px;
-      height: 100vh;
-      z-index: 20;
+    @media (max-width: 480px) {
+      .chat-popup {
+        width: calc(100% - 24px);
+        right: 12px;
+        bottom: 12px;
+        height: 320px;
+      }
+      .ai-bot {
+        bottom: 14px;
+        right: 14px;
+        width: 56px;
+        height: 56px;
+      }
     }
   </style>
 </head>
-
 <body>
+  <div class="app-root">
+    <!-- Zone de swipe -->
+    <div class="swipe-zone-left"></div>
+    <div class="swipe-zone-right"></div>
 
-  <!-- ZONA DE SWIPE STÂNGA -->
-  <div class="swipe-zone"></div>
-
-  <!-- SIDEBAR ASCUNS -->
-  <div class="sidebar-wrapper" id="sidebar">
-    <div class="sidebar-title">SuperParty</div>
-
-    <div class="sidebar-section-label">Meniu</div>
-    <div class="sidebar-item"><div class="sidebar-ico">🧸</div> Dashboard</div>
-    <div class="sidebar-item"><div class="sidebar-ico">📅</div> Evenimente</div>
-    <div class="sidebar-item"><div class="sidebar-ico">📸</div> Dovezi</div>
-    <div class="sidebar-item"><div class="sidebar-ico">⚙️</div> Setări</div>
-  </div>
-
-  <!-- AI BOT MIC -->
-  <div class="ai-bot" id="bot">🤖</div>
-
-  <!-- POP-UP CHAT -->
-  <div class="chat-popup" id="chatBox">
-    <div class="chat-header">SuperParty AI</div>
-    <div class="chat-body" id="chatMessages">
-      Salut! Sunt robotelul SuperParty. Cu ce te pot ajuta? 😊
+    <!-- Sidebar îngust ascuns -->
+    <div class="sidebar-wrapper">
+      <div class="sidebar">
+        <div class="sidebar-logo">🎈</div>
+        <div class="sidebar-section-label">Mod</div>
+        <div class="sidebar-group">
+          <button class="sidebar-btn active" title="Dashboard">🧸</button>
+          <button class="sidebar-btn" title="Evenimente">📅</button>
+          <button class="sidebar-btn" title="Dovezi">📸</button>
+        </div>
+        <div class="sidebar-spacer"></div>
+        <div class="sidebar-section-label">Altele</div>
+        <div class="sidebar-group">
+          <button class="sidebar-btn" title="Setări">⚙️</button>
+        </div>
+        <div class="sidebar-footer-text">SuperParty</div>
+      </div>
     </div>
 
-    <div class="chat-input-row">
-      <input type="text" id="chatInput" class="chat-input" placeholder="Scrie un mesaj..." />
-      <button class="chat-send" onclick="sendMsg()">Trimite</button>
+    <!-- Bot AI mic în colț dreapta jos -->
+    <button class="ai-bot" id="botBtn" aria-label="Deschide chat AI">
+      🤖
+    </button>
+
+    <!-- Chat popup chiar în colț dreapta jos -->
+    <div class="chat-popup" id="chatBox">
+      <div class="chat-header">
+        <div class="chat-title">SuperParty AI</div>
+        <button class="chat-close" id="chatCloseBtn" aria-label="Închide">×</button>
+      </div>
+      <div class="chat-body" id="chatBody">
+        <div class="msg msg-ai">
+          Salut! Sunt robotelul SuperParty 🤖<br />
+          Momentan îți răspund doar fake, dar aici vom conecta AI-ul real.
+        </div>
+      </div>
+      <div class="chat-input-row">
+        <input id="chatInput" class="chat-input" type="text" placeholder="Scrie un mesaj..." />
+        <button class="chat-send" id="chatSendBtn">➤</button>
+      </div>
     </div>
   </div>
 
-<script>
-/* ───────────── LOGICĂ POPUP CHAT ───────────── */
-document.getElementById("bot").onclick = function() {
-  const chat = document.getElementById("chatBox");
-  chat.style.display = chat.style.display === "flex" ? "none" : "flex";
-};
+  <script>
+    // ─────────── Logica chat: bot mic ↔ popup în colț ───────────
+    const botBtn = document.getElementById('botBtn');
+    const chatBox = document.getElementById('chatBox');
+    const chatCloseBtn = document.getElementById('chatCloseBtn');
+    const chatBody = document.getElementById('chatBody');
+    const chatInput = document.getElementById('chatInput');
+    const chatSendBtn = document.getElementById('chatSendBtn');
 
-function sendMsg() {
-  const input = document.getElementById("chatInput");
-  const text = input.value.trim();
-  if (!text) return;
+    function openChat() {
+      chatBox.classList.add('visible');
+      botBtn.style.display = 'none';
+      chatInput.focus();
+    }
 
-  const messages = document.getElementById("chatMessages");
-  messages.innerHTML += "<div><b>Tu:</b> " + text + "</div>";
+    function closeChat() {
+      chatBox.classList.remove('visible');
+      botBtn.style.display = 'flex';
+    }
 
-  setTimeout(() => {
-    messages.innerHTML += "<div><b>AI:</b> Îți răspundem în varianta finală reală 😊</div>";
-    messages.scrollTop = messages.scrollHeight;
-  }, 400);
+    botBtn.addEventListener('click', openChat);
+    chatCloseBtn.addEventListener('click', closeChat);
 
-  input.value = "";
-}
+    function sendFakeMessage() {
+      const text = (chatInput.value || '').trim();
+      if (!text) return;
+      const userMsg = document.createElement('div');
+      userMsg.className = 'msg msg-user';
+      userMsg.textContent = text;
+      chatBody.appendChild(userMsg);
+      chatInput.value = '';
 
-/* ───────────── SIDEBAR SWIPE DETECTION ───────────── */
+      setTimeout(() => {
+        const aiMsg = document.createElement('div');
+        aiMsg.className = 'msg msg-ai';
+        aiMsg.textContent = 'În varianta finală aici vine AI-ul real care știe de evenimentele tale 😉';
+        chatBody.appendChild(aiMsg);
+        chatBody.scrollTop = chatBody.scrollHeight;
+      }, 400);
 
-let startX = 0;
-let currentX = 0;
-let dragging = false;
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
 
-const swipeZone = document.querySelector(".swipe-zone");
+    chatSendBtn.addEventListener('click', sendFakeMessage);
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') sendFakeMessage();
+    });
 
-swipeZone.addEventListener("touchstart", (e) => {
-  startX = e.touches[0].clientX;
-  dragging = true;
-});
+    // ─────────── Swipe pentru sidebar ───────────
+    const swipeLeft = document.querySelector('.swipe-zone-left');
+    let startX = 0, currentX = 0, dragging = false;
 
-swipeZone.addEventListener("touchmove", (e) => {
-  if (!dragging) return;
-  currentX = e.touches[0].clientX;
+    swipeLeft.addEventListener('touchstart', (e) => {
+      startX = e.touches[0].clientX;
+      dragging = true;
+    });
 
-  const diff = currentX - startX;
-  if (diff > 20) {
-    document.body.classList.add("sidebar-open");
-  }
-});
+    swipeLeft.addEventListener('touchmove', (e) => {
+      if (!dragging) return;
+      currentX = e.touches[0].clientX;
+      const diff = currentX - startX;
+      if (diff > 25) {
+        document.body.classList.add('sidebar-open');
+        dragging = false;
+      }
+    });
 
-document.body.addEventListener("touchstart", (e) => {
-  if (!document.body.classList.contains("sidebar-open")) return;
+    swipeLeft.addEventListener('touchend', () => {
+      dragging = false;
+    });
 
-  if (e.touches[0].clientX > 240) {
-    document.body.classList.remove("sidebar-open");
-  }
-});
-</script>
-
+    document.addEventListener('touchstart', (e) => {
+      if (!document.body.classList.contains('sidebar-open')) return;
+      const x = e.touches[0].clientX;
+      // dacă atingi mai în dreapta de 120px, închide sidebar
+      if (x > 120) {
+        document.body.classList.remove('sidebar-open');
+      }
+    });
+  </script>
 </body>
 </html>
