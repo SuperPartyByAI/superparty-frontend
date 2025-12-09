@@ -1,380 +1,92 @@
-<!DOCTYPE html>
-<html lang="ro">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SuperParty App</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; overflow-x: hidden; }
-        .page { display: none; min-height: 100vh; }
-        .page.active { display: flex !important; }
-        .login-page { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
-        .login-card { width: 100%; max-width: 500px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border: 2px solid rgba(255,255,255,0.1); border-radius: 30px; padding: 60px 40px; box-shadow: 0 30px 60px rgba(0,0,0,0.6); }
-        .login-title { font-size: 36px; font-weight: 700; color: #f1f5f9; text-align: center; margin-bottom: 40px; }
-        .register-page { background: linear-gradient(135deg, #10b981 0%, #059669 100%); flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
-        .register-card { width: 100%; max-width: 600px; background: white; border-radius: 30px; padding: 60px 40px; box-shadow: 0 30px 60px rgba(0,0,0,0.3); }
-        .kyc-page { background: #0f172a; flex-direction: column; align-items: center; padding: 60px 40px; }
-        .kyc-container { max-width: 1200px; width: 100%; background: rgba(15, 23, 42, 0.9); border: 2px solid #334155; border-radius: 30px; padding: 60px; color: #f1f5f9; }
-        .dashboard-page { background: #0f172a; flex-direction: column; padding: 40px; }
-        .dashboard-container { max-width: 1400px; margin: 0 auto; width: 100%; }
-        .dashboard-header { background: rgba(15, 23, 42, 0.9); border: 2px solid #334155; border-radius: 30px; padding: 40px; margin-bottom: 30px; color: #f1f5f9; }
-        .tasks-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; }
-        .task-card { background: rgba(15, 23, 42, 0.9); border: 2px solid #334155; border-radius: 20px; padding: 30px; color: #f1f5f9; transition: all 0.3s; }
-        .task-card:hover { border-color: #667eea; transform: translateY(-5px); }
-        .admin-page, .gm-page { background: #0f172a; flex-direction: column; padding: 40px; }
-        .form-group { margin-bottom: 25px; }
-        label { display: block; font-size: 13px; font-weight: 600; text-transform: uppercase; color: #e2e8f0; margin-bottom: 10px; }
-        input { width: 100%; padding: 16px 20px; background: rgba(15, 23, 42, 0.7); border: 2px solid #475569; border-radius: 16px; color: #f1f5f9; font-size: 16px; outline: none; }
-        input:focus { border-color: #818cf8; }
-        .btn { width: 100%; padding: 18px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 9999px; color: white; font-size: 18px; font-weight: 700; cursor: pointer; margin-top: 10px; transition: all 0.3s; }
-        .btn:hover { transform: scale(1.02); }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .error { background: rgba(239, 68, 68, 0.2); border: 2px solid rgba(239, 68, 68, 0.5); color: #fca5a5; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
-        .link-toggle { text-align: center; margin-top: 30px; color: rgba(255,255,255,0.8); font-size: 14px; }
-        .link-toggle a { color: white; text-decoration: none; font-weight: 600; border-bottom: 2px solid white; cursor: pointer; }
-        .link-toggle a:hover { opacity: 0.8; }
-        .register-card label { color: #374151; text-transform: none; }
-        .register-card input { background: white; border: 2px solid #e5e7eb; color: #1f2937; }
-        .register-card input:focus { border-color: #10b981; }
-        .register-card .link-toggle { color: #374151; }
-        .register-card .link-toggle a { color: #10b981; border-color: #10b981; }
-        .section { background: rgba(15, 23, 42, 0.8); border: 2px solid #334155; border-radius: 20px; padding: 30px; margin-bottom: 30px; }
-        .upload-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px; }
-        .upload-card { background: rgba(30, 41, 59, 0.6); border: 2px dashed #475569; border-radius: 16px; padding: 30px; text-align: center; cursor: pointer; transition: all 0.3s; }
-        .upload-card:hover { border-color: #818cf8; background: rgba(30, 41, 59, 0.8); }
-        .upload-card input[type="file"] { display: none; }
-        .driver-section { display: none; margin-top: 30px; padding-top: 30px; border-top: 2px solid #334155; }
-        .driver-section.show { display: block; }
-        .checkbox-large { display: flex; align-items: center; gap: 15px; cursor: pointer; padding: 20px; background: rgba(30, 41, 59, 0.6); border: 2px solid #475569; border-radius: 16px; transition: all 0.3s; }
-        .checkbox-large:hover { border-color: #818cf8; }
-        .checkbox-large input[type="checkbox"] { width: 24px; height: 24px; cursor: pointer; }
-        .checkbox-large span { font-size: 16px; font-weight: 600; text-transform: none; }
-        .card { background: rgba(15, 23, 42, 0.9); border: 2px solid #334155; border-radius: 30px; padding: 40px; margin-bottom: 30px; color: #f1f5f9; }
-        table { width: 100%; border-collapse: collapse; margin-top: 30px; }
-        th { padding: 18px; text-align: left; color: #94a3b8; border-bottom: 2px solid #334155; }
-        td { padding: 18px; border-bottom: 1px solid #334155; color: #f1f5f9; }
-        .badge { padding: 6px 14px; border-radius: 9999px; font-size: 13px; font-weight: 600; }
-        .badge-pending { background: rgba(251, 191, 36, 0.25); color: #fbbf24; }
-        .badge-active { background: rgba(34, 197, 94, 0.25); color: #22c55e; }
-        .logout-btn { position: fixed; top: 20px; right: 20px; padding: 12px 24px; background: rgba(239, 68, 68, 0.9); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; z-index: 1000; }
-    </style>
-</head>
-<body>
-    <div id="login" class="page active login-page">
-        <div class="login-card">
-            <h1 class="login-title">🎉 SuperParty Login</h1>
-            <div id="loginError" class="error" style="display:none;"></div>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="loginEmail" placeholder="ex: ana@superparty.ro" required />
-                </div>
-                <div class="form-group">
-                    <label>Parolă</label>
-                    <input type="password" id="loginPassword" placeholder="Introdu parola" required />
-                </div>
-                <button type="submit" class="btn" id="loginBtn">🔓 Intră în aplicație</button>
-            </form>
-            <div class="link-toggle">
-                Nu ai cont? <a href="#" onclick="event.preventDefault(); showPage('register');">Înregistrează-te aici</a>
-            </div>
-        </div>
-    </div>
-    <div id="register" class="page register-page">
-        <div class="register-card">
-            <div style="text-align: center; margin-bottom: 40px;">
-                <div style="font-size: 64px; margin-bottom: 15px;">✨</div>
-                <h2 style="font-size: 36px; font-weight: 700; color: #1f2937;">Înregistrează-te</h2>
-            </div>
-            <div id="registerError" class="error" style="display:none;"></div>
-            <form id="registerForm">
-                <div class="form-group">
-                    <label>👨‍💼 Username</label>
-                    <input type="text" id="registerUsername" placeholder="Alege un username" required />
-                </div>
-                <div class="form-group">
-                    <label>📧 Email</label>
-                    <input type="email" id="registerEmail" placeholder="adresa@email.ro" required />
-                </div>
-                <div class="form-group">
-                    <label>🔒 Parolă</label>
-                    <input type="password" id="registerPassword" placeholder="Minim 8 caractere" required />
-                </div>
-                <button type="submit" class="btn" id="registerBtn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">✨ Creează cont</button>
-            </form>
-            <div class="link-toggle">
-                Ai deja cont? <a href="#" onclick="event.preventDefault(); showPage('login');">Login aici</a>
-            </div>
-        </div>
-    </div>
-    <div id="kyc" class="page kyc-page">
-        <div class="kyc-container">
-            <h1 style="font-size: 42px; margin-bottom: 40px;">🪪 KYC Onboarding</h1>
-            <div class="section">
-                <h2 style="font-size: 24px; margin-bottom: 20px;">📄 Contract de Colaborare</h2>
-                <label class="checkbox-large">
-                    <input type="checkbox" id="contractCheck" />
-                    <span>Am citit și accept contractul de colaborare SuperParty</span>
-                </label>
-            </div>
-            <div class="section">
-                <h2 style="font-size: 24px; margin-bottom: 20px;">👤 Documente de Identitate</h2>
-                <p style="color: #94a3b8; margin-bottom: 20px;">Obligatoriu pentru toți angajații</p>
-                <div class="upload-grid">
-                    <label class="upload-card" for="buletinUpload">
-                        <div style="font-size: 48px; margin-bottom: 10px;">🪪</div>
-                        <div style="font-weight: 600; margin-bottom: 5px;">Buletin / CI</div>
-                        <div style="font-size: 12px; color: #94a3b8;">Față + Spate</div>
-                        <input type="file" id="buletinUpload" accept="image/*,.pdf" />
-                    </label>
-                    <label class="upload-card" for="selfieUpload">
-                        <div style="font-size: 48px; margin-bottom: 10px;">🤳</div>
-                        <div style="font-weight: 600; margin-bottom: 5px;">Selfie cu Buletinul</div>
-                        <div style="font-size: 12px; color: #94a3b8;">Chip vizibil + CI</div>
-                        <input type="file" id="selfieUpload" accept="image/*" />
-                    </label>
-                </div>
-            </div>
-            <div class="section">
-                <h2 style="font-size: 24px; margin-bottom: 20px;">🚗 Doresc să fiu Șofer</h2>
-                <label class="checkbox-large">
-                    <input type="checkbox" id="driverCheck" onchange="toggleDriverSection()" />
-                    <span>✅ DA, vreau să fiu și șofer (livrări, transport echipamente)</span>
-                </label>
-                <div id="driverDocs" class="driver-section">
-                    <h3 style="font-size: 20px; margin-bottom: 20px; color: #818cf8;">📋 Documente Șofer (Obligatorii)</h3>
-                    <div class="upload-grid">
-                        <label class="upload-card" for="permisUpload">
-                            <div style="font-size: 48px; margin-bottom: 10px;">🪪</div>
-                            <div style="font-weight: 600; margin-bottom: 5px;">Permis de Conducere</div>
-                            <div style="font-size: 12px; color: #94a3b8;">Categoria B - Față + Spate</div>
-                            <input type="file" id="permisUpload" accept="image/*,.pdf" />
-                        </label>
-                        <label class="upload-card" for="cazierUpload">
-                            <div style="font-size: 48px; margin-bottom: 10px;">📄</div>
-                            <div style="font-weight: 600; margin-bottom: 5px;">Cazier Judiciar</div>
-                            <div style="font-size: 12px; color: #94a3b8;">Emis în ultimele 3 luni</div>
-                            <input type="file" id="cazierUpload" accept="image/*,.pdf" />
-                        </label>
-                    </div>
-                </div>
-            </div>
-            <button class="btn" onclick="completeKYC()" style="margin-top: 20px;">🚀 Finalizează Onboarding</button>
-        </div>
-    </div>
-    <div id="dashboard" class="page dashboard-page">
-        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
-        <div class="dashboard-container">
-            <div class="dashboard-header">
-                <h1 style="font-size: 42px; margin-bottom: 10px;">👋 Bine ai venit!</h1>
-                <p style="color: #94a3b8; font-size: 18px;" id="welcomeText">Loading...</p>
-            </div>
-            <div class="tasks-grid">
-                <div class="task-card">
-                    <div style="font-size: 48px; margin-bottom: 15px;">📅</div>
-                    <h3 style="font-size: 24px; margin-bottom: 10px;">Task-uri Astăzi</h3>
-                    <p style="color: #94a3b8;">0 task-uri programate</p>
-                </div>
-                <div class="task-card">
-                    <div style="font-size: 48px; margin-bottom: 15px;">💰</div>
-                    <h3 style="font-size: 24px; margin-bottom: 10px;">Profit Luna Asta</h3>
-                    <p style="color: #94a3b8;">0 RON</p>
-                </div>
-                <div class="task-card">
-                    <div style="font-size: 48px; margin-bottom: 15px;">⭐</div>
-                    <h3 style="font-size: 24px; margin-bottom: 10px;">Rating</h3>
-                    <p style="color: #94a3b8;">5.0 / 5.0</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div id="admin" class="page admin-page">
-        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
-        <div style="max-width: 1600px; margin: 0 auto; width: 100%;">
-            <div class="card">
-                <h1 style="font-size: 42px;">🔒 Admin Panel</h1>
-            </div>
-            <div class="card">
-                <h2 style="margin-bottom: 20px;">Utilizatori</h2>
-                <table>
-                    <thead><tr><th>Nume</th><th>Email</th><th>Rol</th><th>KYC</th></tr></thead>
-                    <tbody id="adminBody"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    <div id="gm" class="page gm-page">
-        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
-        <div style="max-width: 1600px; margin: 0 auto; width: 100%;">
-            <div class="card">
-                <h1 style="font-size: 42px;">👑 GM Panel</h1>
-                <p style="color: #94a3b8; margin-top: 20px;">Panel pentru General Manager</p>
-            </div>
-        </div>
-    </div>
-    <script>
-        const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbwpScVyziDaoVeuxcqdBQ3qx6j-QHy5FYoWtvlqMSsu15eXGI_l5fmo1Bg8zqP1BLyJ/exec';
-        let currentUser = null;
-        function showPage(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            const el = document.getElementById(pageId);
-            if (el) el.classList.add('active');
+<script>
+  (function () {
+    // URL-ul backend-ului tău pentru login ANGAJAT
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbwpScVyziDaoVeuxcqdBQ3qx6j-QHy5FYoWtvlqMSsu15eXGI_l5fmo1Bg8zqP1BLyJ/exec";
+
+    const form = document.getElementById("loginForm");
+    const emailInput = document.getElementById("loginEmail");
+    const passwordInput = document.getElementById("loginPassword");
+    const errorEl = document.getElementById("loginError");
+
+    if (!form) {
+      console.error("Nu găsesc formularul #loginForm în angajat/index.html");
+      return;
+    }
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const email = emailInput ? emailInput.value.trim() : "";
+      const pass = passwordInput ? passwordInput.value.trim() : "";
+
+      if (!email || !pass) {
+        if (errorEl) {
+          errorEl.textContent = "Te rog introdu email și parolă.";
+          errorEl.style.display = "block";
+        } else {
+          alert("Te rog introdu email și parolă.");
         }
-        function toggleDriverSection() {
-            const driverDocs = document.getElementById('driverDocs');
-            const driverCheck = document.getElementById('driverCheck');
-            if (driverCheck.checked) driverDocs.classList.add('show');
-            else driverDocs.classList.remove('show');
+        return;
+      }
+
+      const callbackName = "cb_login_" + Date.now();
+
+      // ⚠️ AICI calculăm URL-ul ÎNAINTE să-l folosim
+      const url =
+        BACKEND_URL +
+        "?action=login" +
+        "&email=" + encodeURIComponent(email) +
+        "&password=" + encodeURIComponent(pass) +
+        "&callback=" + callbackName;
+
+      console.log("🔍 LOGIN - Email:", email);
+      console.log("🔍 LOGIN - Backend URL:", BACKEND_URL);
+      console.log("🔍 LOGIN - Full URL:", url);
+
+      window[callbackName] = function (resp) {
+        console.log("✅ LOGIN JSONP RESP:", resp);
+
+        if (!resp || !resp.success) {
+          const msg = resp && resp.error ? resp.error : "Email sau parolă incorecte.";
+          if (errorEl) {
+            errorEl.textContent = msg;
+            errorEl.style.display = "block";
+          } else {
+            alert(msg);
+          }
+          return;
         }
-        function logout() {
-            currentUser = null;
-            localStorage.removeItem('superparty_user');
-            showPage('login');
+
+        // Salvăm utilizatorul în localStorage
+        try {
+          localStorage.setItem(
+            "superparty_user",
+            JSON.stringify({ email: resp.email, role: resp.role || "angajat" })
+          );
+        } catch (err) {
+          console.warn("Nu pot salva în localStorage:", err);
         }
-        async function completeKYC() {
-            if (!currentUser) return;
-            currentUser.kyc_status = true;
-            localStorage.setItem('superparty_user', JSON.stringify(currentUser));
-            showPage('dashboard');
-            document.getElementById('welcomeText').textContent = currentUser.name || currentUser.email;
+
+        // Redirect în funcție de rol
+        if (resp.role === "admin") {
+          window.location.href = "/admin/index.html";
+        } else {
+          window.location.href = "/angajat/index.html";
         }
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value.trim();
-            const password = document.getElementById('loginPassword').value;
-            const btn = document.getElementById('loginBtn');
-            const err = document.getElementById('loginError');
-            btn.disabled = true;
-            btn.textContent = 'Se încarcă...';
-            err.style.display = 'none';
-            try {
-                console.log('🔍 LOGIN - Email:', email);
-                console.log('🔍 LOGIN - Backend URL:', BACKEND_URL);
-                console.log('🔍 LOGIN - Request URL:', url);
-                const url = `${BACKEND_URL}?action=login&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
-                const response = await fetch(url);
-                console.log('🔍 LOGIN - Response status:', response.status);
-                console.log('🔍 LOGIN - Response headers:', response.headers);
-                const result = await response.json();
-                console.log('🔍 LOGIN - Backend result:', result);
-                if (result.success) {
-                    currentUser = result;
-                    localStorage.setItem('superparty_user', JSON.stringify(result));
-                    document.getElementById('welcomeText').textContent = result.name || result.email;
-                    const role = (result.role || '').toLowerCase();
-                    if (role === 'admin') {
-                        showPage('admin');
-                        loadAdminData();
-                    } else if (role === 'gm') {
-                        showPage('gm');
-                    } else if (!result.kyc_status) {
-                        showPage('kyc');
-                    } else {
-                        showPage('dashboard');
-                    }
-                } else {
-                    err.textContent = '⚠️ ' + (result.error || 'Email sau parolă greșită');
-                    err.style.display = 'block';
-                }
-            } catch (error) {
-                console.error('🔴 LOGIN - Error:', error);
-                console.error('🔴 LOGIN - Error stack:', error.stack);
-                err.textContent = '⚠️ Eroare de conexiune: ' + error.message;
-                err.style.display = 'block';
-            }
-            btn.disabled = false;
-            btn.textContent = '🔓 Intră în aplicație';
-        });
-        document.getElementById('registerForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const username = document.getElementById('registerUsername').value.trim();
-            const email = document.getElementById('registerEmail').value.trim();
-            const password = document.getElementById('registerPassword').value;
-            const btn = document.getElementById('registerBtn');
-            const err = document.getElementById('registerError');
-            btn.disabled = true;
-            btn.textContent = 'Se creează...';
-            err.style.display = 'none';
-            try {
-                console.log('🔍 LOGIN - Email:', email);
-                console.log('🔍 LOGIN - Backend URL:', BACKEND_URL);
-                console.log('🔍 LOGIN - Request URL:', url);
-                const url = `${BACKEND_URL}?action=register&name=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}&phone=0700000000&password=${encodeURIComponent(password)}`;
-                const response = await fetch(url);
-                console.log('🔍 LOGIN - Response status:', response.status);
-                console.log('🔍 LOGIN - Response headers:', response.headers);
-                const result = await response.json();
-                console.log('🔍 LOGIN - Backend result:', result);
-                if (result.success) {
-                    alert('✅ Cont creat! Așteaptă aprobarea administratorului.');
-                    showPage('login');
-                } else {
-                    err.textContent = '⚠️ ' + (result.error || 'Eroare la creare cont');
-                    err.style.display = 'block';
-                }
-            } catch (error) {
-                console.error('🔴 LOGIN - Error:', error);
-                console.error('🔴 LOGIN - Error stack:', error.stack);
-                err.textContent = '⚠️ Eroare de conexiune: ' + error.message;
-                err.style.display = 'block';
-            }
-            btn.disabled = false;
-            btn.textContent = '✨ Creează cont';
-        });
-        async function loadAdminData() {
-            const tbody = document.getElementById('adminBody');
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Se încarcă...</td></tr>';
-            try {
-                console.log('🔍 LOGIN - Email:', email);
-                console.log('🔍 LOGIN - Backend URL:', BACKEND_URL);
-                console.log('🔍 LOGIN - Request URL:', url);
-                const url = `${BACKEND_URL}?action=getAllUsers`;
-                const response = await fetch(url);
-                console.log('🔍 LOGIN - Response status:', response.status);
-                console.log('🔍 LOGIN - Response headers:', response.headers);
-                const result = await response.json();
-                console.log('🔍 LOGIN - Backend result:', result);
-                if (result.success && result.users) {
-                    tbody.innerHTML = result.users.map(u => `
-                        <tr>
-                            <td>${u.name}</td>
-                            <td>${u.email}</td>
-                            <td><span class="badge badge-active">${u.role}</span></td>
-                            <td>${u.kyc_status ? '✅' : '❌'}</td>
-                        </tr>
-                    `).join('');
-                }
-            } catch (error) {
-                console.error('🔴 LOGIN - Error:', error);
-                console.error('🔴 LOGIN - Error stack:', error.stack);
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Eroare la încărcare</td></tr>';
-            }
+      };
+
+      const s = document.createElement("script");
+      s.src = url;
+      s.onerror = function (err) {
+        console.error("❌ Script JSONP NU s-a încărcat:", err);
+        if (errorEl) {
+          errorEl.textContent = "Nu s-a putut contacta serverul. Încearcă din nou.";
+          errorEl.style.display = "block";
+        } else {
+          alert("Nu s-a putut contacta serverul. Încearcă din nou.");
         }
-        window.addEventListener('DOMContentLoaded', () => {
-            const saved = localStorage.getItem('superparty_user');
-            if (saved) {
-                try {
-                console.log('🔍 LOGIN - Email:', email);
-                console.log('🔍 LOGIN - Backend URL:', BACKEND_URL);
-                    currentUser = JSON.parse(saved);
-                    document.getElementById('welcomeText').textContent = currentUser.name || currentUser.email;
-                    const role = (currentUser.role || '').toLowerCase();
-                    if (role === 'admin') {
-                        showPage('admin');
-                        loadAdminData();
-                    } else if (role === 'gm') {
-                        showPage('gm');
-                    } else if (!currentUser.kyc_status) {
-                        showPage('kyc');
-                    } else {
-                        showPage('dashboard');
-                    }
-                } catch (e) {
-                    localStorage.removeItem('superparty_user');
-                }
-            }
-        });
-    </script>
-</body>
-</html>
+      };
+      document.body.appendChild(s);
+    });
+  })();
+</script>
