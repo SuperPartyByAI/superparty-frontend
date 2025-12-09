@@ -137,12 +137,9 @@
   </div>
 
   <script>
-    // URL backend Google Apps Script – JSONP
+    // URL BACKEND
     const BACKEND_URL =
       "https://script.google.com/macros/s/AKfycbxs819m4gt-tpTkAIIS91EnxhwYx-5wdbnh6Zi5_GcY14zs5XYqS9ykFuYCCcokhQ/exec";
-
-    // Domeniul de producție (Vercel)
-    const FRONTEND_BASE_URL = "https://superparty-frontend.vercel.app";
 
     function jsonpLogin(email, password) {
       return new Promise((resolve, reject) => {
@@ -150,7 +147,7 @@
 
         window[cbName] = function (response) {
           resolve(response);
-          try { delete window[cbName]; } catch (e) {}
+          try { delete window[cbName]; } catch {}
           script.remove();
         };
 
@@ -158,12 +155,9 @@
         const url =
           BACKEND_URL +
           "?action=login" +
-          "&email=" +
-          encodeURIComponent(email) +
-          "&password=" +
-          encodeURIComponent(password) +
-          "&callback=" +
-          encodeURIComponent(cbName);
+          "&email=" + encodeURIComponent(email) +
+          "&password=" + encodeURIComponent(password) +
+          "&callback=" + encodeURIComponent(cbName);
 
         script.src = url;
 
@@ -192,24 +186,24 @@
         jsonpLogin(email, password)
           .then((resp) => {
             if (!resp || !resp.success) {
-              errorEl.textContent = (resp && resp.error) || "Email sau parolă greșite.";
+              errorEl.textContent = resp.error || "Email sau parolă greșite.";
               errorEl.style.display = "block";
               return;
             }
 
             const role = (resp.role || "").toLowerCase();
 
+            // REDIRECT FINAL CORECT (fără /frontend/)
             if (role === "admin") {
-              window.location.href = FRONTEND_BASE_URL + "/admin/index.html";
+              window.location.href = "/admin/index.html";
             } else if (role === "gm") {
-              window.location.href = FRONTEND_BASE_URL + "/gm/index.html";
+              window.location.href = "/gm/index.html";
             } else {
-              window.location.href = FRONTEND_BASE_URL + "/angajat/index.html";
+              window.location.href = "/angajat/index.html";
             }
           })
           .catch(() => {
-            errorEl.textContent =
-              "Nu s-a putut contacta serverul. Încearcă din nou.";
+            errorEl.textContent = "Nu s-a putut contacta serverul. Încearcă din nou.";
             errorEl.style.display = "block";
           });
       });
