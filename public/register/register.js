@@ -1,4 +1,4 @@
-const BACKEND_URL = "https://script.google.com/macros/s/IDUL_TAU/exec";
+const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxs819m4gt-tpTkAIIS91EnxhwYx-5wdbnh6Zi5_GcY14zs5XYqS9ykFuYCCcokhQ/exec";
 
 function showError(msg) {
   const el = document.getElementById("error");
