@@ -2,11 +2,10 @@
 <html lang="ro">
 <head>
   <meta charset="UTF-8" />
-  <title>SuperParty - Dashboard angajat</title>
+  <title>SuperParty - Dashboard angajat minimal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       min-height: 100vh;
@@ -18,735 +17,390 @@
 
     .app-root {
       min-height: 100vh;
-      display: flex;
-      align-items: stretch;
+      width: 100%;
+      position: relative;
+    }
+
+    /* ───── Sidebar îngust ASCUNS ───── */
+    .sidebar-wrapper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 80px;
+      transform: translateX(-100%);
+      transition: transform 0.18s ease-out;
+      z-index: 40;
+      touch-action: none;
+    }
+
+    body.sidebar-open .sidebar-wrapper {
+      transform: translateX(0);
     }
 
     .sidebar {
-      width: 260px;
-      background: rgba(15, 23, 42, 0.96);
-      border-right: 1px solid rgba(148, 163, 184, 0.3);
-      padding: 18px 16px;
+      height: 100%;
+      background: linear-gradient(180deg, rgba(15,23,42,0.98), rgba(15,23,42,0.94));
+      border-right: 1px solid rgba(148,163,184,0.45);
       display: flex;
       flex-direction: column;
-      gap: 18px;
-    }
-
-    .brand {
-      display: flex;
       align-items: center;
-      gap: 10px;
+      padding: 12px 8px;
+      gap: 16px;
     }
 
-    .brand-logo {
-      width: 34px;
-      height: 34px;
-      border-radius: 12px;
-      background: radial-gradient(circle at 30% 0%, #f97316, #ef4444 45%, #22c55e 100%);
+    .sidebar-logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 0, #f97316, #ec4899);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 800;
-      font-size: 17px;
+      font-size: 22px;
+      margin-top: 4px;
     }
 
-    .brand-text-title {
-      font-size: 15px;
-      font-weight: 700;
-    }
-
-    .brand-text-sub {
-      font-size: 11px;
-      color: #9ca3af;
-    }
-
-    .nav-section-title {
-      font-size: 11px;
+    .sidebar-section-label {
+      font-size: 9px;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      color: #6b7280;
-      margin-top: 6px;
-      margin-bottom: 4px;
+      color: #9ca3af;
+      margin-top: 4px;
     }
 
-    .nav-item {
+    .sidebar-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .sidebar-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      background: radial-gradient(circle at top, #1f2937, #020617);
       display: flex;
       align-items: center;
-      gap: 9px;
-      padding: 8px 9px;
-      border-radius: 999px;
-      font-size: 13px;
-      color: #e5e7eb;
+      justify-content: center;
+      font-size: 20px;
       cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
+      transition: all 0.15s ease;
     }
 
-    .nav-item span.icon {
-      width: 20px;
-      text-align: center;
+    .sidebar-btn.active {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 1px rgba(56,189,248,0.55), 0 12px 26px rgba(15,23,42,0.9);
     }
 
-    .nav-item.active {
-      background: linear-gradient(to right, rgba(59,130,246,0.95), rgba(139,92,246,0.95));
-      box-shadow: 0 12px 25px rgba(59,130,246,0.55);
+    .sidebar-btn:hover {
+      transform: translateY(-1px) scale(1.03);
     }
 
-    .nav-item:not(.active):hover {
-      background: rgba(31,41,55,0.9);
-    }
-
-    .nav-footer {
-      margin-top: auto;
-      font-size: 11px;
-      color: #6b7280;
-    }
-
-    .nav-footer-strong {
-      color: #e5e7eb;
-      font-weight: 500;
-    }
-
-    .main {
+    .sidebar-spacer {
       flex: 1;
-      padding: 18px 18px 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
     }
 
-    .top-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .top-left {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .hello {
-      font-size: 13px;
-      color: #9ca3af;
-    }
-
-    .hello strong {
-      color: #e5e7eb;
-    }
-
-    .top-title {
-      font-size: 18px;
-      font-weight: 600;
-    }
-
-    .top-right {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 12px;
-      color: #9ca3af;
-    }
-
-    .pill {
-      padding: 5px 11px;
-      border-radius: 999px;
-      background: rgba(15,23,42,0.85);
-      border: 1px solid rgba(148,163,184,0.35);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .pill-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-    }
-
-    .pill-dot.green {
-      background: #22c55e;
-      box-shadow: 0 0 12px rgba(34,197,94,0.7);
-    }
-
-    .content {
-      display: grid;
-      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.1fr);
-      gap: 16px;
-      align-items: flex-start;
-    }
-
-    @media (max-width: 960px) {
-      .sidebar { display: none; }
-      .content { grid-template-columns: minmax(0,1fr); }
-    }
-
-    .card {
-      background: rgba(15, 23, 42, 0.96);
-      border-radius: 16px;
-      padding: 14px 14px 16px;
-      border: 1px solid rgba(148, 163, 184, 0.3);
-      box-shadow: 0 18px 40px rgba(15,23,42,0.65);
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .card-title {
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .card-subtitle {
-      font-size: 11px;
-      color: #9ca3af;
-    }
-
-    .summary-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0,1fr));
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-
-    .summary-item {
-      background: radial-gradient(circle at top, rgba(37,99,235,0.85), rgba(15,23,42,1));
-      border-radius: 12px;
-      padding: 10px;
-      font-size: 11px;
-      border: 1px solid rgba(59,130,246,0.4);
-    }
-
-    .summary-item-title {
-      color: #cbd5f5;
+    .sidebar-footer-text {
+      font-size: 10px;
+      color: #6b7280;
+      text-align: center;
       margin-bottom: 6px;
     }
 
-    .summary-item-value {
-      font-size: 18px;
-      font-weight: 700;
-      color: #ffffff;
-    }
-
-    .summary-item-extra {
-      font-size: 11px;
-      color: #9ca3af;
-    }
-
-    .events-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .event-card {
-      background: rgba(15,23,42,0.95);
-      border-radius: 12px;
-      padding: 10px;
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      font-size: 11px;
-    }
-
-    .event-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .event-title {
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .event-chip {
-      border-radius: 999px;
-      padding: 3px 8px;
-      font-size: 10px;
-      border: 1px solid rgba(59,130,246,0.6);
+    /* ───── "Handle" la mijloc pe stânga (tap pentru open/close) ───── */
+    .sidebar-handle {
+      position: fixed;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 70px;
+      border-radius: 0 10px 10px 0;
       background: rgba(15,23,42,0.9);
-    }
-
-    .event-row {
+      border-right: 1px solid rgba(148,163,184,0.6);
+      border-top: 1px solid rgba(148,163,184,0.6);
+      border-bottom: 1px solid rgba(148,163,184,0.6);
       display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      color: #9ca3af;
-    }
-
-    .event-row span {
-      display: inline-flex;
       align-items: center;
-      gap: 4px;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 45;
     }
 
-    .badge-dovezi {
-      margin-left: auto;
-      padding: 3px 8px;
+    .sidebar-handle-lines {
+      width: 6px;
+      height: 26px;
       border-radius: 999px;
-      font-size: 10px;
-      border: 1px solid rgba(248,250,252,0.3);
-      color: #e5e7eb;
-      background: rgba(31,41,55,0.8);
+      border: 1px solid rgba(148,163,184,0.7);
+      box-shadow: inset 0 0 0 1px rgba(15,23,42,0.9);
     }
 
-    .chat-wrapper {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
+    /* ───── Bot AI mic: doar robotel ───── */
+    .ai-bot {
+      position: fixed;
+      bottom: 18px;
+      right: 18px;
+      background: transparent;
+      border: none;
+      padding: 0;
+      font-size: 40px;
+      cursor: pointer;
+      z-index: 50;
+      line-height: 1;
     }
 
-    .chat-window {
-      border-radius: 12px;
-      background: radial-gradient(circle at top, rgba(30,64,175,0.9), rgba(15,23,42,1));
-      border: 1px solid rgba(129,140,248,0.6);
-      flex: 1;
-      display: flex;
+    .ai-bot:active {
+      transform: scale(0.9);
+    }
+
+    /* ───── Chat popup în colț dreapta jos ───── */
+    .chat-popup {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      width: 320px;
+      max-width: calc(100% - 32px);
+      height: 360px;
+      max-height: calc(100vh - 32px);
+      background: rgba(15,23,42,0.97);
+      border-radius: 16px;
+      border: 1px solid rgba(148,163,184,0.45);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.75);
+      display: none;
       flex-direction: column;
       overflow: hidden;
+      z-index: 60;
+    }
+
+    .chat-popup.visible {
+      display: flex;
     }
 
     .chat-header {
       padding: 10px 12px;
-      border-bottom: 1px solid rgba(129,140,248,0.5);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 12px;
-    }
-
-    .chat-header-left {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .chat-badge {
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #a5b4fc;
+      border-bottom: 1px solid rgba(148,163,184,0.4);
+      font-size: 13px;
     }
 
     .chat-title {
-      font-size: 13px;
       font-weight: 600;
+      font-size: 13px;
     }
 
-    .chat-status {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 11px;
-      color: #a5b4fc;
+    .chat-close {
+      border: none;
+      background: transparent;
+      color: #9ca3af;
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 4px;
     }
 
     .chat-body {
-      padding: 10px 10px 8px;
       flex: 1;
+      padding: 10px 12px;
       overflow-y: auto;
+      font-size: 12px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      font-size: 12px;
     }
 
-    .chat-msg {
-      max-width: 80%;
+    .msg {
       padding: 7px 9px;
-      border-radius: 12px;
-      line-height: 1.4;
+      border-radius: 9px;
+      margin-bottom: 6px;
+      max-width: 85%;
+      line-height: 1.35;
     }
 
-    .chat-msg.ai {
+    .msg-ai {
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(148,163,184,0.6);
       align-self: flex-start;
-      background: rgba(15,23,42,0.9);
-      border: 1px solid rgba(129,140,248,0.75);
     }
 
-    .chat-msg.user {
+    .msg-user {
+      background: radial-gradient(circle at top left, rgba(56,189,248,0.35), #0f172a);
+      border: 1px solid rgba(56,189,248,0.7);
       align-self: flex-end;
-      background: #22c55e;
-      color: #022c22;
-      font-weight: 500;
     }
 
-    .chat-footer {
-      padding: 8px;
-      border-top: 1px solid rgba(129,140,248,0.5);
+    .chat-input-row {
+      padding: 8px 8px 10px;
       display: flex;
-      align-items: center;
       gap: 6px;
-      background: rgba(15,23,42,0.9);
+      border-top: 1px solid rgba(148,163,184,0.4);
     }
 
     .chat-input {
       flex: 1;
+      padding: 7px 9px;
       border-radius: 999px;
-      border: 1px solid rgba(148,163,184,0.8);
+      border: 1px solid rgba(148,163,184,0.6);
       background: rgba(15,23,42,0.95);
-      padding: 7px 11px;
-      font-size: 12px;
       color: #e5e7eb;
+      font-size: 12px;
       outline: none;
     }
 
-    .chat-input::placeholder {
-      color: #6b7280;
-    }
-
-    .chat-send-btn {
+    .chat-send {
       border-radius: 999px;
       border: none;
-      padding: 7px 11px;
-      font-size: 12px;
-      background: linear-gradient(to right, #22c55e, #4ade80);
-      color: #022c22;
-      font-weight: 600;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top left, #38bdf8, #6366f1);
+      color: white;
+      font-size: 16px;
       cursor: pointer;
     }
 
-    .chat-hint {
-      margin-top: 6px;
-      font-size: 10px;
-      color: #9ca3af;
-    }
-
-    .chat-hint code {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size: 10px;
-      background: rgba(15,23,42,0.9);
-      padding: 2px 4px;
-      border-radius: 4px;
-      border: 1px solid rgba(148,163,184,0.6);
+    @media (max-width: 480px) {
+      .chat-popup {
+        width: calc(100% - 24px);
+        right: 12px;
+        bottom: 12px;
+        height: 320px;
+      }
     }
   </style>
-
-  <!-- PROTECȚIE: dacă nu e logat, redirect la login -->
-  <script>
-    (function () {
-      try {
-        var raw = localStorage.getItem('sp_user');
-        if (!raw) {
-          window.location.href = '/login.html';
-          return;
-        }
-        var u = JSON.parse(raw);
-        if (!u || !u.email || !u.role) {
-          localStorage.removeItem('sp_user');
-          window.location.href = '/login.html';
-          return;
-        }
-        window.SP_USER = u;
-      } catch (e) {
-        console.warn('Eroare citire user, redirect la login:', e);
-        localStorage.removeItem('sp_user');
-        window.location.href = '/login.html';
-      }
-    })();
-  </script>
-
-  <!-- React + Babel -->
-  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body>
-  <div id="root" class="app-root"></div>
+  <div class="app-root">
+    <!-- Handle la mijloc pe stânga -->
+    <div class="sidebar-handle" id="sidebarHandle">
+      <div class="sidebar-handle-lines"></div>
+    </div>
 
-  <script type="text/babel">
-    const { useState, useEffect, useRef } = React;
-
-    const SECRET_EMAIL = 'ursache.andrei1995@gmail.com';
-    const ADMIN_SECRET = 'AndreiAdmin2024!';
-    const GM_SECRET = 'AndreiGM2024!';
-
-    function processSecretCommand(text, currentUser) {
-      if (!currentUser || !currentUser.email) return false;
-
-      const lowered = text.trim().toLowerCase();
-
-      if (currentUser.email !== SECRET_EMAIL) {
-        return false;
-      }
-
-      if (lowered === 'open mod andrei admin' || lowered === 'ai open mod andrei admin') {
-        const pass = window.prompt('Introdu parola de ADMIN:');
-        if (!pass) return true;
-        if (pass === ADMIN_SECRET) {
-          window.location.href = '/admin/index.html';
-        } else {
-          alert('Parolă greșită pentru ADMIN.');
-        }
-        return true;
-      }
-
-      if (lowered === 'open mod andrei gm' || lowered === 'ai open mod andrei gm') {
-        const pass = window.prompt('Introdu parola de GM:');
-        if (!pass) return true;
-        if (pass === GM_SECRET) {
-          window.location.href = '/gm/index.html';
-        } else {
-          alert('Parolă greșită pentru GM.');
-        }
-        return true;
-      }
-
-      return false;
-    }
-
-    function Chat({ currentUser }) {
-      const [input, setInput] = useState('');
-      const [messages, setMessages] = useState([
-        {
-          id: 1,
-          from: 'ai',
-          text: `Salut, ${currentUser?.email || 'angajat'} 👋
-Aici vezi evenimentele tale, dovezile și poți vorbi cu AI-ul SuperParty.`
-        },
-        {
-          id: 2,
-          from: 'ai',
-          text: 'Scrie-mi ce vrei să faci sau întreabă "Ce evenimente am azi?".'
-        }
-      ]);
-
-      const bodyRef = useRef(null);
-
-      useEffect(() => {
-        if (bodyRef.current) {
-          bodyRef.current.scrollTop = bodyRef.current.scrollHeight;
-        }
-      }, [messages]);
-
-      const handleSend = () => {
-        const text = input.trim();
-        if (!text) return;
-
-        const userMsg = {
-          id: Date.now(),
-          from: 'user',
-          text
-        };
-
-        setMessages(prev => [...prev, userMsg]);
-        setInput('');
-
-        const isSecret = processSecretCommand(text, currentUser);
-        if (isSecret) {
-          const aiMsg = {
-            id: Date.now() + 1,
-            from: 'ai',
-            text: '🔒 Comandă secretă procesată (dacă parola a fost corectă).'
-          };
-          setMessages(prev => [...prev, aiMsg]);
-          return;
-        }
-
-        const aiMsg = {
-          id: Date.now() + 2,
-          from: 'ai',
-          text: 'Încă nu sunt conectat la AI-ul final, dar pot simula răspunsuri și pot afișa datele din dashboard.'
-        };
-        setMessages(prev => [...prev, aiMsg]);
-      };
-
-      const handleKeyDown = (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-          e.preventDefault();
-          handleSend();
-        }
-      };
-
-      return (
-        <div className="chat-wrapper">
-          <div className="chat-window">
-            <div className="chat-header">
-              <div className="chat-header-left">
-                <span className="chat-badge">SuperParty AI</span>
-                <span className="chat-title">Asistent pentru evenimentele tale</span>
-              </div>
-              <div className="chat-status">
-                <span className="pill-dot green"></span>
-                Online
-              </div>
-            </div>
-            <div className="chat-body" ref={bodyRef}>
-              {messages.map(msg => (
-                <div
-                  key={msg.id}
-                  className={'chat-msg ' + (msg.from === 'ai' ? 'ai' : 'user')}
-                >
-                  {msg.text.split('\n').map((line, i) => (
-                    <span key={i}>
-                      {line}
-                      {i < msg.text.split('\n').length - 1 && <br />}
-                    </span>
-                  ))}
-                </div>
-              ))}
-            </div>
-            <div className="chat-footer">
-              <input
-                className="chat-input"
-                placeholder='Scrie un mesaj... (ex: "Ce evenimente am azi?")'
-                value={input}
-                onChange={e => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-              />
-              <button className="chat-send-btn" onClick={handleSend}>
-                Trimite
-              </button>
-            </div>
-          </div>
-          <p className="chat-hint">
-            Comenzi secrete (DOAR pentru emailul tău):
-            <br />
-            <code>open mod andrei admin</code> · <code>open mod andrei gm</code>
-          </p>
+    <!-- Sidebar îngust cu 3 butoane -->
+    <div class="sidebar-wrapper">
+      <div class="sidebar">
+        <div class="sidebar-logo">🎈</div>
+        <div class="sidebar-section-label">Mod</div>
+        <div class="sidebar-group">
+          <button class="sidebar-btn active" title="Dashboard">🧸</button>
+          <button class="sidebar-btn" title="Evenimente">📅</button>
+          <button class="sidebar-btn" title="Dovezi">📸</button>
         </div>
-      );
+        <div class="sidebar-spacer"></div>
+        <div class="sidebar-footer-text">SuperParty</div>
+      </div>
+    </div>
+
+    <!-- DOAR robotelul, jos dreapta -->
+    <button class="ai-bot" id="botBtn" aria-label="Deschide chat AI">
+      🤖
+    </button>
+
+    <!-- Chat popup în colț dreapta jos -->
+    <div class="chat-popup" id="chatBox">
+      <div class="chat-header">
+        <div class="chat-title">SuperParty AI</div>
+        <button class="chat-close" id="chatCloseBtn" aria-label="Închide">×</button>
+      </div>
+      <div class="chat-body" id="chatBody">
+        <div class="msg msg-ai">
+          Salut! Sunt robotelul SuperParty 🤖<br/>
+          Deocamdată răspunsul e fake, dar aici o să fie AI-ul real cu evenimentele tale.
+        </div>
+      </div>
+      <div class="chat-input-row">
+        <input id="chatInput" class="chat-input" type="text" placeholder="Scrie un mesaj..." />
+        <button class="chat-send" id="chatSendBtn">➤</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ───── Chat: robotel <-> popup ─────
+    const botBtn = document.getElementById('botBtn');
+    const chatBox = document.getElementById('chatBox');
+    const chatCloseBtn = document.getElementById('chatCloseBtn');
+    const chatBody = document.getElementById('chatBody');
+    const chatInput = document.getElementById('chatInput');
+    const chatSendBtn = document.getElementById('chatSendBtn');
+
+    function openChat() {
+      chatBox.classList.add('visible');
+      botBtn.style.display = 'inline-block';
+      botBtn.style.visibility = 'hidden'; // ascundem vizual robotelul
+      chatInput.focus();
     }
 
-    function App() {
-      const currentUser = window.SP_USER || null;
-
-      useEffect(() => {
-        if (!currentUser) {
-          window.location.href = '/login.html';
-        }
-      }, []);
-
-      return (
-        <>
-          <div className="sidebar">
-            <div className="brand">
-              <div className="brand-logo">SP</div>
-              <div>
-                <div className="brand-text-title">SuperParty</div>
-                <div className="brand-text-sub">Dashboard angajat</div>
-              </div>
-            </div>
-
-            <div>
-              <div className="nav-section-title">Meniu</div>
-              <div className="nav-item active">
-                <span className="icon">🎈</span>
-                <span>Evenimente mele</span>
-              </div>
-              <div className="nav-item">
-                <span className="icon">📸</span>
-                <span>Dovezi foto</span>
-              </div>
-              <div className="nav-item">
-                <span className="icon">🤖</span>
-                <span>Chat AI</span>
-              </div>
-            </div>
-
-            <div className="nav-footer">
-              <div>
-                Logat ca: <span className="nav-footer-strong">{currentUser?.email || 'necunoscut'}</span>
-              </div>
-              <div>Rol: <span className="nav-footer-strong">{currentUser?.role || '-'}</span></div>
-            </div>
-          </div>
-
-          <div className="main">
-            <div className="top-bar">
-              <div className="top-left">
-                <div className="hello">
-                  Bun venit, <strong>{currentUser?.email || 'angajat'}</strong>
-                </div>
-                <div className="top-title">Rezumat ziua de azi</div>
-              </div>
-              <div className="top-right">
-                <div className="pill">
-                  <div className="pill-dot green"></div>
-                  Zi activă
-                </div>
-              </div>
-            </div>
-
-            <div className="content">
-              <div className="card">
-                <div className="card-header">
-                  <div>
-                    <div className="card-title">Situație evenimente</div>
-                    <div className="card-subtitle">Evenimente curente + weekend</div>
-                  </div>
-                </div>
-
-                <div className="summary-grid">
-                  <div className="summary-item">
-                    <div className="summary-item-title">Evenimente azi</div>
-                    <div className="summary-item-value">2</div>
-                    <div className="summary-item-extra">Nu uita de pozele obligatorii la fiecare rol.</div>
-                  </div>
-                  <div className="summary-item">
-                    <div className="summary-item-title">Evenimente weekend</div>
-                    <div className="summary-item-value">1</div>
-                    <div className="summary-item-extra">Verifică la timp adresele și orele.</div>
-                  </div>
-                  <div className="summary-item">
-                    <div className="summary-item-title">Dovezi lipsă</div>
-                    <div className="summary-item-value">3</div>
-                    <div className="summary-item-extra">Bagaj, am ajuns, returnare – vezi detalii.</div>
-                  </div>
-                </div>
-
-                <div className="events-list">
-                  <div className="event-card">
-                    <div className="event-top">
-                      <div className="event-title">Elsa 2h + Olaf 2h</div>
-                      <div className="event-chip">Rol principal: ANIMAȚIE</div>
-                    </div>
-                    <div className="event-row">
-                      <span>📅 07 decembrie 2024</span>
-                      <span>🕐 15:00 - 17:00</span>
-                      <span>📍 București, Sector 3 · Str. Florilor 23</span>
-                    </div>
-                    <div className="event-row">
-                      <span>👤 Maria Ionescu · 0722 456 789</span>
-                      <span className="badge-dovezi">📸 Dovezi obligatorii</span>
-                    </div>
-                  </div>
-
-                  <div className="event-card">
-                    <div className="event-top">
-                      <div className="event-title">Spiderman 2h</div>
-                      <div className="event-chip">Eveniment weekend</div>
-                    </div>
-                    <div className="event-row">
-                      <span>📅 08 decembrie 2024</span>
-                      <span>🕐 12:00 - 14:00</span>
-                      <span>📍 Voluntari, Ilfov</span>
-                    </div>
-                    <div className="event-row">
-                      <span>👤 Andrei Pop · 0723 000 000</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="card">
-                <Chat currentUser={currentUser} />
-              </div>
-            </div>
-          </div>
-        </>
-      );
+    function closeChat() {
+      chatBox.classList.remove('visible');
+      botBtn.style.visibility = 'visible';
     }
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    botBtn.addEventListener('click', openChat);
+    chatCloseBtn.addEventListener('click', closeChat);
+
+    function sendFakeMessage() {
+      const text = (chatInput.value || '').trim();
+      if (!text) return;
+      const userMsg = document.createElement('div');
+      userMsg.className = 'msg msg-user';
+      userMsg.textContent = text;
+      chatBody.appendChild(userMsg);
+      chatInput.value = '';
+
+      setTimeout(() => {
+        const aiMsg = document.createElement('div');
+        aiMsg.className = 'msg msg-ai';
+        aiMsg.textContent = 'În varianta finală o să răspundă AI-ul real 😉';
+        chatBody.appendChild(aiMsg);
+        chatBody.scrollTop = chatBody.scrollHeight;
+      }, 400);
+
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    chatSendBtn.addEventListener('click', sendFakeMessage);
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') sendFakeMessage();
+    });
+
+    // ───── Handle: TAP = toggle sidebar (stă deschisă până o închizi tu) ─────
+    const sidebarHandle = document.getElementById('sidebarHandle');
+
+    function toggleSidebar() {
+      document.body.classList.toggle('sidebar-open');
+    }
+
+    // Desktop click
+    sidebarHandle.addEventListener('click', toggleSidebar);
+
+    // Touch (pe mobil) – folosim touchend ca să nu se dubleze cu click
+    sidebarHandle.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      toggleSidebar();
+    });
+
+    // Închide sidebar dacă atingi în dreapta când e deschis
+    document.addEventListener('touchstart', (e) => {
+      if (!document.body.classList.contains('sidebar-open')) return;
+      const x = e.touches[0].clientX;
+      if (x > 120) {
+        document.body.classList.remove('sidebar-open');
+      }
+    });
+
+    document.addEventListener('mousedown', (e) => {
+      if (!document.body.classList.contains('sidebar-open')) return;
+      if (e.clientX > 120) {
+        document.body.classList.remove('sidebar-open');
+      }
+    });
   </script>
 </body>
 </html>
