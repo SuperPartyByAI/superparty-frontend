@@ -199,7 +199,7 @@
 </head>
 <body>
 
-<div id="debugTag">ANGAJAT v3</div>
+<div id="debugTag">ANGAJAT v3 + logic</div>
 
 <button id="menuToggle">
   <div class="menu-lines"><div></div><div></div><div></div></div>
@@ -236,6 +236,22 @@
 </div>
 
 <script>
+  // === GUARD LOGIN + KYC ===
+  (function guard() {
+    const email = localStorage.getItem("sp_email");
+    const kyc = (localStorage.getItem("sp_kyc") || "").toUpperCase();
+
+    if (!email) {
+      window.location.href = "/login.html";
+      return;
+    }
+
+    if (kyc && kyc !== "OK") {
+      window.location.href = "/kyc.html";
+      return;
+    }
+  })();
+
   // SIDEBAR
   const menuToggle = document.getElementById("menuToggle");
   const sidebar = document.getElementById("sidebar");
@@ -270,12 +286,68 @@
     chatMessages.scrollTop = chatMessages.scrollHeight;
   }
 
+  function openAdminMode() {
+    const email = (localStorage.getItem("sp_email") || "").toLowerCase();
+    if (email !== "ursache.andrei1995@gmail.com") {
+      addMsg("Acces ADMIN refuzat. Trebuie să fii logat cu mail-ul tău personal.", "bot");
+      return;
+    }
+
+    const pass = prompt("Parolă ADMIN:");
+    if (!pass) {
+      addMsg("Acces ADMIN anulat.", "bot");
+      return;
+    }
+
+    if (pass === "AndreiAdmin2024!") {
+      addMsg("Deschid modul ADMIN...", "bot");
+      window.location.href = "/admin/";
+    } else {
+      addMsg("Parolă greșită pentru modul ADMIN.", "bot");
+    }
+  }
+
+  function openGmMode() {
+    const email = (localStorage.getItem("sp_email") || "").toLowerCase();
+    if (email !== "ursache.andrei1995@gmail.com") {
+      addMsg("Acces GM refuzat. Trebuie să fii logat cu mail-ul tău personal.", "bot");
+      return;
+    }
+
+    const pass = prompt("Parolă GM:");
+    if (!pass) {
+      addMsg("Acces GM anulat.", "bot");
+      return;
+    }
+
+    if (pass === "AndreiGM2024!") {
+      addMsg("Deschid modul GM...", "bot");
+      window.location.href = "/gm/";
+    } else {
+      addMsg("Parolă greșită pentru modul GM.", "bot");
+    }
+  }
+
   function send() {
     const t = chatInput.value.trim();
     if (!t) return;
     addMsg(t, "user");
     chatInput.value = "";
-    addMsg("Am primit mesajul tău.", "bot");
+
+    const lower = t.toLowerCase();
+
+    // comenzi secrete
+    if (lower.includes("open mod andrei admin")) {
+      openAdminMode();
+      return;
+    }
+    if (lower.includes("open mod andrei gm")) {
+      openGmMode();
+      return;
+    }
+
+    // răspuns normal
+    addMsg("Am primit mesajul tău. Când legăm backend-ul, îți arăt aici evenimentele și dovezile.", "bot");
   }
 
   chatSend.onclick = send;
