@@ -21,7 +21,7 @@
       position: relative;
     }
 
-    /* ───── Sidebar îngust ascuns ───── */
+    /* ───── Sidebar îngust ASCUNS (apare doar cât ții degetul) ───── */
     .sidebar-wrapper {
       position: fixed;
       top: 0;
@@ -29,7 +29,7 @@
       bottom: 0;
       width: 80px;
       transform: translateX(-100%);
-      transition: transform 0.22s ease-out;
+      transition: transform 0.18s ease-out;
       z-index: 40;
       touch-action: none;
     }
@@ -111,7 +111,7 @@
       margin-bottom: 6px;
     }
 
-    /* ───── "Handle" la mijloc pe stânga ───── */
+    /* ───── "Handle" la mijloc pe stânga (de el tragi) ───── */
     .sidebar-handle {
       position: fixed;
       left: 0;
@@ -128,7 +128,7 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      z-index: 35;
+      z-index: 45; /* peste sidebar, să fie mereu atins */
     }
 
     .sidebar-handle-lines {
@@ -369,32 +369,27 @@
       if (e.key === 'Enter') sendFakeMessage();
     });
 
-    // ───── Handle la mijloc: deschide / închide bara ─────
+    // ───── Handle la mijloc: DESCHIDE CÂT ȚII DEGETUL, ÎNCHIDE CÂND IEI DEGETUL ─────
     const sidebarHandle = document.getElementById('sidebarHandle');
 
-    function toggleSidebar() {
-      document.body.classList.toggle('sidebar-open');
-    }
+    // Desktop: mousedown -> deschis, mouseup -> închis
+    sidebarHandle.addEventListener('mousedown', () => {
+      document.body.classList.add('sidebar-open');
+    });
+    document.addEventListener('mouseup', () => {
+      document.body.classList.remove('sidebar-open');
+    });
 
-    // Tap / click
-    sidebarHandle.addEventListener('click', toggleSidebar);
-
-    // Touch (când "ții degetul" pe el)
-    let handleTouchStartX = 0;
+    // Touch: touchstart -> deschis, touchend -> închis
     sidebarHandle.addEventListener('touchstart', (e) => {
-      handleTouchStartX = e.touches[0].clientX;
+      document.body.classList.add('sidebar-open');
     });
 
     sidebarHandle.addEventListener('touchend', (e) => {
-      const endX = e.changedTouches[0].clientX;
-      const diff = endX - handleTouchStartX;
-      // chiar dacă îl miști puțin, îl considerăm intenție de deschidere
-      if (Math.abs(diff) < 60) {
-        toggleSidebar();
-      }
+      document.body.classList.remove('sidebar-open');
     });
 
-    // Dacă atingi mai în dreapta când bara e deschisă, o închidem
+    // Dacă atingi în altă parte pe ecran, închidem (just in case)
     document.addEventListener('touchstart', (e) => {
       if (!document.body.classList.contains('sidebar-open')) return;
       const x = e.touches[0].clientX;
