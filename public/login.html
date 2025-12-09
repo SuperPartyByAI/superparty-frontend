@@ -4,262 +4,244 @@
   <meta charset="UTF-8" />
   <title>SuperParty - Autentificare</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: radial-gradient(circle at top, #1d4ed8 0, #0f172a 45%, #020617 100%);
-      color: #0f172a;
       padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: radial-gradient(circle at top, #1d4ed8 0%, #0f172a 45%, #020617 100%);
+      color: #e5e7eb;
     }
 
-    .login-card {
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 24px 28px;
-      max-width: 380px;
+    .card {
+      background: rgba(15, 23, 42, 0.96);
+      border-radius: 18px;
+      padding: 24px 26px;
       width: 100%;
-      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.45);
+      max-width: 420px;
+      box-shadow: 0 22px 60px rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(30, 64, 175, 0.5);
     }
 
-    .login-title {
+    .logo {
       font-size: 22px;
       font-weight: 700;
-      color: #0f172a;
+      letter-spacing: 0.04em;
       margin-bottom: 4px;
+      text-align: center;
     }
 
-    .login-subtitle {
+    .subtitle {
       font-size: 13px;
-      color: #6b7280;
-      margin-bottom: 20px;
+      color: #9ca3af;
+      text-align: center;
+      margin-bottom: 18px;
     }
 
     label {
       display: block;
       font-size: 13px;
-      font-weight: 500;
-      color: #374151;
       margin-bottom: 6px;
+      color: #cbd5e1;
     }
 
-    input {
+    input[type="email"],
+    input[type="password"] {
       width: 100%;
-      padding: 10px 11px;
+      padding: 11px 12px;
       border-radius: 10px;
-      border: 1px solid #e5e7eb;
+      border: 1px solid #1f2937;
+      background: #020617;
+      color: #e5e7eb;
       font-size: 14px;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-
-    input:focus {
-      border-color: #2563eb;
-      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.3);
-    }
-
-    .field {
       margin-bottom: 14px;
+      outline: none;
+      transition: border 0.15s, box-shadow 0.15s;
     }
 
-    .login-btn {
+    input[type="email"]:focus,
+    input[type="password"]:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.7);
+    }
+
+    .actions-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 4px;
+      margin-bottom: 10px;
+      font-size: 12px;
+      color: #9ca3af;
+    }
+
+    .link {
+      color: #60a5fa;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .link:hover {
+      text-decoration: underline;
+    }
+
+    button {
       width: 100%;
-      margin-top: 8px;
-      padding: 10px 14px;
+      padding: 11px 14px;
       border-radius: 999px;
       border: none;
-      font-size: 15px;
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      color: #f9fafb;
       font-weight: 600;
+      font-size: 15px;
       cursor: pointer;
-      background: linear-gradient(to right, #2563eb, #4f46e5);
-      color: white;
-      box-shadow: 0 12px 30px rgba(37, 99, 235, 0.4);
-      transition: transform 0.1s, box-shadow 0.1s, opacity 0.1s;
+      margin-top: 6px;
+      transition: transform 0.08s ease-out, box-shadow 0.08s ease-out, opacity 0.1s;
+      box-shadow: 0 12px 30px rgba(37, 99, 235, 0.55);
     }
 
-    .login-btn:disabled {
-      opacity: 0.7;
-      cursor: default;
-      box-shadow: none;
-      transform: none;
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 40px rgba(37, 99, 235, 0.7);
     }
 
-    .login-btn:not(:disabled):active {
-      transform: translateY(1px);
-      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.5);
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.5);
+      opacity: 0.95;
     }
 
     .error {
+      display: none;
       margin-top: 10px;
       font-size: 13px;
-      color: #b91c1c;
-      display: none;
+      color: #f97373;
     }
 
-    .small-hint {
-      margin-top: 14px;
-      font-size: 11px;
-      color: #9ca3af;
-      line-height: 1.4;
+    .footer {
+      margin-top: 16px;
+      font-size: 12px;
+      text-align: center;
+      color: #6b7280;
     }
 
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 8px;
-      border-radius: 999px;
-      background: #eff6ff;
-      color: #1d4ed8;
-      font-size: 11px;
-      font-weight: 500;
-      margin-bottom: 10px;
+    .footer a {
+      color: #60a5fa;
+      text-decoration: none;
     }
 
-    .badge-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #22c55e;
+    .footer a:hover {
+      text-decoration: underline;
     }
   </style>
-
-  <!-- Dacă e deja logat, nu mai arătăm login-ul -->
-  <script>
-    (function () {
-      try {
-        var raw = localStorage.getItem('sp_user');
-        if (!raw) return;
-        var u = JSON.parse(raw);
-        if (!u || !u.role) return;
-
-        if (u.role === 'admin') {
-          window.location.href = '/admin/index.html';
-        } else if (u.role === 'gm') {
-          window.location.href = '/gm/index.html';
-        } else {
-          window.location.href = '/angajat/index.html';
-        }
-      } catch (e) {
-        console.warn('Redirect auto login eșuat:', e);
-      }
-    })();
-  </script>
 </head>
 <body>
-  <div class="login-card">
-    <div class="badge">
-      <span class="badge-dot"></span>
-      SuperParty · Acces panou
-    </div>
-    <h1 class="login-title">Conectare</h1>
-    <p class="login-subtitle">Introdu emailul și parola pe care ți le-am trimis.</p>
+  <div class="card">
+    <div class="logo">SuperParty · Login</div>
+    <div class="subtitle">Autentificare angajați · acces la evenimente și AI</div>
 
     <form id="loginForm">
-      <div class="field">
-        <label for="email">Email</label>
-        <input id="email" type="email" autocomplete="email" required />
+      <label for="email">Email</label>
+      <input id="email" type="email" placeholder="ex: nume@superparty.ro" required />
+
+      <label for="password">Parolă</label>
+      <input id="password" type="password" placeholder="Parola ta" required />
+
+      <div class="actions-row">
+        <span></span>
+        <span class="link" onclick="goToRegister()">Creează cont nou</span>
       </div>
-      <div class="field">
-        <label for="password">Parola</label>
-        <input id="password" type="password" autocomplete="current-password" required />
-      </div>
-      <button type="submit" id="loginBtn" class="login-btn">
-        Autentificare
-      </button>
-      <p id="error" class="error"></p>
-      <p class="small-hint">
-        La login corect, aplicația salvează în siguranță doar emailul și rolul tău
-        (angajat / admin / gm) în browser, ca să te putem ține logat.
-      </p>
+
+      <button type="submit" id="loginBtn">Autentificare</button>
     </form>
+
+    <div id="error" class="error"></div>
+
+    <div class="footer">
+      SuperParty · acces doar pentru colaboratori validați.
+    </div>
   </div>
 
   <script>
-    const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxs819m4gt-tpTkAIIS91EnxhwYx-5wdbnh6Zi5_GcY14zs5XYqS9ykFuYCCcokhQ/exec';
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxs819m4gt-tpTkAIIS91EnxhwYx-5wdbnh6Zi5_GcY14zs5XYqS9ykFuYCCcokhQ/exec";
+
+    function showError(msg) {
+      const el = document.getElementById("error");
+      el.textContent = msg || "Eroare la autentificare.";
+      el.style.display = "block";
+    }
+
+    function hideError() {
+      const el = document.getElementById("error");
+      el.style.display = "none";
+    }
+
+    function setLoading(isLoading) {
+      const btn = document.getElementById("loginBtn");
+      btn.disabled = isLoading;
+      btn.textContent = isLoading ? "Se autentifică..." : "Autentificare";
+      btn.style.opacity = isLoading ? "0.7" : "1";
+    }
+
+    function goToRegister() {
+      window.location.href = "/register/";
+    }
 
     function handleLoginResponse(res) {
-      const errorEl = document.getElementById('error');
-      const btn = document.getElementById('loginBtn');
-      btn.disabled = false;
-      btn.textContent = 'Autentificare';
-
+      setLoading(false);
       if (!res || !res.success) {
-        errorEl.textContent = (res && res.error) || 'Email sau parolă greșite.';
-        errorEl.style.display = 'block';
+        showError(res && (res.error || res.message) ? (res.error || res.message) : "Email sau parolă incorecte.");
         return;
       }
 
-      const user = {
-        email: res.email,
-        role: res.role,
-        loggedInAt: Date.now()
-      };
-
-      try {
-        localStorage.setItem('sp_user', JSON.stringify(user));
-      } catch (e) {
-        console.warn('Nu pot salva user în localStorage:', e);
-      }
-
-      if (res.role === 'admin') {
-        window.location.href = '/admin/index.html';
-      } else if (res.role === 'gm') {
-        window.location.href = '/gm/index.html';
-      } else {
-        window.location.href = '/angajat/index.html';
-      }
+      hideError();
+      window.location.href = "/angajat/";
     }
 
-    function submitLogin(event) {
-      event.preventDefault();
+    document.getElementById("loginForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      hideError();
 
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value.trim();
-      const btn = document.getElementById('loginBtn');
-      const errorEl = document.getElementById('error');
-
-      errorEl.style.display = 'none';
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
 
       if (!email || !password) {
-        errorEl.textContent = 'Te rog completează email și parola.';
-        errorEl.style.display = 'block';
+        showError("Completează emailul și parola.");
         return;
       }
 
-      btn.disabled = true;
-      btn.textContent = 'Se autentifică...';
+      setLoading(true);
 
-      const old = document.getElementById('jsonpScript');
-      if (old) old.remove();
+      const cbName = "cbLogin_" + Date.now();
+      window[cbName] = function (res) {
+        try {
+          handleLoginResponse(res);
+        } finally {
+          delete window[cbName];
+        }
+      };
 
-      const callbackName = 'handleLoginResponse';
-      const src =
+      const url =
         BACKEND_URL +
-        '?action=login' +
-        '&email=' + encodeURIComponent(email) +
-        '&password=' + encodeURIComponent(password) +
-        '&callback=' + encodeURIComponent(callbackName);
+        "?action=login" +
+        "&email=" + encodeURIComponent(email) +
+        "&password=" + encodeURIComponent(password) +
+        "&callback=" + cbName;
 
-      const s = document.createElement('script');
-      s.id = 'jsonpScript';
-      s.src = src;
+      const s = document.createElement("script");
+      s.src = url;
       s.onerror = function () {
-        btn.disabled = false;
-        btn.textContent = 'Autentificare';
-        errorEl.textContent = 'Eroare de rețea. Încearcă din nou.';
-        errorEl.style.display = 'block';
+        setLoading(false);
+        showError("Nu se poate contacta serverul. Încearcă din nou.");
+        delete window[cbName];
       };
       document.body.appendChild(s);
-    }
-
-    document.addEventListener('DOMContentLoaded', function () {
-      document.getElementById('loginForm').addEventListener('submit', submitLogin);
     });
   </script>
 </body>
