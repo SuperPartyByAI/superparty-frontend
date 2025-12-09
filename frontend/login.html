@@ -1,171 +1,219 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-  <meta charset="UTF-8">
-  <title>SuperParty Login</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <meta charset="UTF-8" />
+  <title>SuperParty - Autentificare</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      background: #f0f4ff;
-      font-family: Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
       display: flex;
-      justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
+      justify-content: center;
+      background: radial-gradient(circle at top, #ff9a9e 0, #fad0c4 40%, #fbc2eb 100%);
     }
 
-    .login-box {
-      background: white;
-      padding: 28px;
-      border-radius: 14px;
-      width: 90%;
-      max-width: 360px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    .login-card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 24px 28px;
+      max-width: 380px;
+      width: 100%;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.25);
     }
 
-    h2 {
+    .login-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 4px;
       text-align: center;
+    }
+
+    .login-subtitle {
+      font-size: 13px;
+      color: #64748b;
       margin-bottom: 20px;
-      color: #1e293b;
+      text-align: center;
     }
 
     label {
-      font-weight: 600;
-      color: #334155;
+      font-size: 13px;
+      color: #0f172a;
+      display: block;
+      margin-bottom: 4px;
     }
 
-    input {
+    input[type="email"],
+    input[type="password"] {
       width: 100%;
-      padding: 10px;
-      margin-top: 6px;
-      margin-bottom: 16px;
+      padding: 9px 10px;
       border-radius: 8px;
-      border: 1px solid #94a3b8;
+      border: 1px solid #cbd5f5;
       font-size: 14px;
+      margin-bottom: 12px;
+      outline: none;
+      transition: border 0.15s, box-shadow 0.15s;
+    }
+
+    input[type="email"]:focus,
+    input[type="password"]:focus {
+      border-color: #6366f1;
+      box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.3);
     }
 
     button {
       width: 100%;
-      padding: 12px;
-      background: #3b82f6;
-      color: white;
-      font-size: 16px;
-      font-weight: 600;
+      padding: 10px 14px;
+      border-radius: 999px;
       border: none;
-      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      background: linear-gradient(135deg, #6366f1, #ec4899);
+      color: white;
       cursor: pointer;
-      transition: 0.2s;
+      margin-top: 4px;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.1s ease;
+      box-shadow: 0 12px 30px rgba(99, 102, 241, 0.4);
     }
 
     button:hover {
-      background: #2563eb;
+      transform: translateY(-1px);
+      box-shadow: 0 16px 40px rgba(99, 102, 241, 0.55);
+      opacity: 0.96;
     }
 
-    #error {
-      color: red;
-      text-align: center;
-      margin-top: 12px;
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 10px 26px rgba(99, 102, 241, 0.3);
+    }
+
+    .error-msg {
       display: none;
-      font-size: 14px;
+      margin-top: 10px;
+      font-size: 13px;
+      color: #b91c1c;
+      background: #fee2e2;
+      border-radius: 8px;
+      padding: 8px 10px;
+    }
+
+    .footer-note {
+      margin-top: 14px;
+      font-size: 11px;
+      text-align: center;
+      color: #94a3b8;
+    }
+
+    .footer-note span {
+      font-weight: 600;
+      color: #6366f1;
     }
   </style>
 </head>
-
 <body>
-
-  <div class="login-box">
-    <h2>SuperParty Login</h2>
+  <div class="login-card">
+    <h1 class="login-title">SuperParty</h1>
+    <p class="login-subtitle">Autentificare staff &amp; colaboratori</p>
 
     <form id="loginForm">
-      <label>Email:</label>
-      <input id="email" type="email" required>
+      <label for="email">Email</label>
+      <input id="email" type="email" placeholder="ex: nume@superparty.ro" required />
 
-      <label>Parola:</label>
-      <input id="password" type="password" required>
+      <label for="password">Parola</label>
+      <input id="password" type="password" placeholder="Parola ta" required />
 
-      <button type="submit">Autentificare</button>
+      <button type="submit" id="loginBtn">Autentificare</button>
     </form>
 
-    <p id="error"></p>
+    <p id="error" class="error-msg"></p>
+
+    <p class="footer-note">
+      Acces doar pentru <span>staff SuperParty</span>.
+    </p>
   </div>
 
-  <!-- SCRIPT LOGIN COMPLET cu BACKEND CORECT -->
   <script>
-    console.log("[LOGIN] Script încărcat");
-
-    // 🔹 URL-ul NOULUI backend Apps Script (cel pe care l-ai testat cu curl și merge)
-    const BACKEND =
+    // URL backend Google Apps Script – JSONP
+    const BACKEND_URL =
       "https://script.google.com/macros/s/AKfycbxs819m4gt-tpTkAIIS91EnxhwYx-5wdbnh6Zi5_GcY14zs5XYqS9ykFuYCCcokhQ/exec";
 
-    const form = document.getElementById("loginForm");
+    // Domeniul de producție (Vercel)
+    const FRONTEND_BASE_URL = "https://superparty-frontend.vercel.app";
 
-    if (!form) {
-      console.warn("[LOGIN] Pagina NU conține #loginForm. Script oprit.");
-    } else {
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
+    function jsonpLogin(email, password) {
+      return new Promise((resolve, reject) => {
+        const cbName = "SP_LOGIN_CB_" + Date.now();
 
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value.trim();
-
-        console.log("[LOGIN] Trimit cerere JSONP...");
-
-        // Ștergem un eventual script JSONP vechi
-        const oldScript = document.getElementById("jsonpScript");
-        if (oldScript) oldScript.remove();
-
-        // Callback unic
-        const callbackName = "loginCallback_" + Date.now();
-
-        // Definim callback-ul global
-        window[callbackName] = function (response) {
-          console.log("[JSONP] Răspuns primit:", response);
-
-          // curățăm callback-ul
-          delete window[callbackName];
-
-          if (!response || response.success !== true) {
-            const errorEl = document.getElementById("error");
-            errorEl.innerText = "Email sau parolă incorectă!";
-            errorEl.style.display = "block";
-            return;
-          }
-
-          // Salvăm user-ul în localStorage
-          localStorage.setItem("user", JSON.stringify(response));
-
-          // 🔹 Redirect în funcție de rol
-          // Folosim căi RELATIVE, ca să meargă și dacă root-ul este / sau /frontend
-          if (response.role === "admin") {
-            window.location.href = "admin/index.html";
-          } else if (response.role === "gm") {
-            window.location.href = "gm/index.html";
-          } else {
-            window.location.href = "angajat/index.html";
-          }
+        window[cbName] = function (response) {
+          resolve(response);
+          try { delete window[cbName]; } catch (e) {}
+          script.remove();
         };
 
-        // Construim URL-ul JSONP
-        const url =
-          `${BACKEND}?action=login&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&callback=${callbackName}`;
-
-        console.log("[JSONP] Încarc URL:", url);
-
         const script = document.createElement("script");
+        const url =
+          BACKEND_URL +
+          "?action=login" +
+          "&email=" +
+          encodeURIComponent(email) +
+          "&password=" +
+          encodeURIComponent(password) +
+          "&callback=" +
+          encodeURIComponent(cbName);
+
         script.src = url;
-        script.id = "jsonpScript";
-        script.onerror = () => {
-          const errorEl = document.getElementById("error");
-          errorEl.innerText = "Network error – backend indisponibil sau URL greșit.";
-          errorEl.style.display = "block";
+
+        script.onerror = function () {
+          reject(new Error("Network error"));
+          script.remove();
         };
 
         document.body.appendChild(script);
       });
     }
-  </script>
 
+    document.addEventListener("DOMContentLoaded", function () {
+      const form = document.getElementById("loginForm");
+      const emailInput = document.getElementById("email");
+      const passInput = document.getElementById("password");
+      const errorEl = document.getElementById("error");
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const email = emailInput.value.trim();
+        const password = passInput.value.trim();
+        errorEl.style.display = "none";
+
+        jsonpLogin(email, password)
+          .then((resp) => {
+            if (!resp || !resp.success) {
+              errorEl.textContent = (resp && resp.error) || "Email sau parolă greșite.";
+              errorEl.style.display = "block";
+              return;
+            }
+
+            const role = (resp.role || "").toLowerCase();
+
+            if (role === "admin") {
+              window.location.href = FRONTEND_BASE_URL + "/admin/index.html";
+            } else if (role === "gm") {
+              window.location.href = FRONTEND_BASE_URL + "/gm/index.html";
+            } else {
+              window.location.href = FRONTEND_BASE_URL + "/angajat/index.html";
+            }
+          })
+          .catch(() => {
+            errorEl.textContent =
+              "Nu s-a putut contacta serverul. Încearcă din nou.";
+            errorEl.style.display = "block";
+          });
+      });
+    });
+  </script>
 </body>
 </html>
