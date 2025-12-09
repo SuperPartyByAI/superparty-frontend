@@ -2,7 +2,7 @@
 <html lang="ro">
 <head>
   <meta charset="UTF-8" />
-  <title>SuperParty - Autentificare</title>
+  <title>SuperParty - Autentificare & Creare cont</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -14,30 +14,59 @@
       align-items: center;
       justify-content: center;
       background: radial-gradient(circle at top, #ff9a9e 0, #fad0c4 40%, #fbc2eb 100%);
+      padding: 16px;
     }
 
-    .login-card {
+    .card {
       background: #ffffff;
       border-radius: 16px;
-      padding: 24px 28px;
-      max-width: 380px;
+      padding: 20px 22px;
+      max-width: 420px;
       width: 100%;
       box-shadow: 0 18px 45px rgba(15, 23, 42, 0.25);
     }
 
-    .login-title {
-      font-size: 24px;
+    .title {
+      font-size: 22px;
       font-weight: 700;
       color: #0f172a;
       margin-bottom: 4px;
       text-align: center;
     }
 
-    .login-subtitle {
+    .subtitle {
       font-size: 13px;
       color: #64748b;
-      margin-bottom: 20px;
+      margin-bottom: 14px;
       text-align: center;
+    }
+
+    .tabs {
+      display: flex;
+      margin-bottom: 14px;
+      background: #e5e7eb;
+      border-radius: 999px;
+      padding: 3px;
+      gap: 3px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      border-radius: 999px;
+      border: none;
+      font-size: 13px;
+      padding: 7px 0;
+      cursor: pointer;
+      background: transparent;
+      color: #4b5563;
+      transition: 0.15s;
+    }
+
+    .tab-btn.active {
+      background: #ffffff;
+      color: #111827;
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.18);
+      font-weight: 600;
     }
 
     label {
@@ -48,24 +77,34 @@
     }
 
     input[type="email"],
-    input[type="password"] {
+    input[type="password"],
+    input[type="text"],
+    input[type="tel"] {
       width: 100%;
       padding: 9px 10px;
       border-radius: 8px;
       border: 1px solid #cbd5f5;
       font-size: 14px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       outline: none;
       transition: border 0.15s, box-shadow 0.15s;
     }
 
-    input[type="email"]:focus,
-    input[type="password"]:focus {
+    input:focus {
       border-color: #6366f1;
       box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.3);
     }
 
-    button {
+    textarea {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid #cbd5f5;
+      font-size: 12px;
+      resize: vertical;
+    }
+
+    button.primary {
       width: 100%;
       padding: 10px 14px;
       border-radius: 999px;
@@ -75,25 +114,25 @@
       background: linear-gradient(135deg, #6366f1, #ec4899);
       color: white;
       cursor: pointer;
-      margin-top: 4px;
+      margin-top: 6px;
       transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.1s ease;
       box-shadow: 0 12px 30px rgba(99, 102, 241, 0.4);
     }
 
-    button:hover {
+    button.primary:hover {
       transform: translateY(-1px);
       box-shadow: 0 16px 40px rgba(99, 102, 241, 0.55);
       opacity: 0.96;
     }
 
-    button:active {
+    button.primary:active {
       transform: translateY(0);
       box-shadow: 0 10px 26px rgba(99, 102, 241, 0.3);
     }
 
     .error-msg {
       display: none;
-      margin-top: 10px;
+      margin-top: 8px;
       font-size: 13px;
       color: #b91c1c;
       background: #fee2e2;
@@ -101,8 +140,18 @@
       padding: 8px 10px;
     }
 
+    .success-msg {
+      display: none;
+      margin-top: 8px;
+      font-size: 13px;
+      color: #166534;
+      background: #dcfce7;
+      border-radius: 8px;
+      padding: 8px 10px;
+    }
+
     .footer-note {
-      margin-top: 14px;
+      margin-top: 12px;
       font-size: 11px;
       text-align: center;
       color: #94a3b8;
@@ -112,24 +161,121 @@
       font-weight: 600;
       color: #6366f1;
     }
+
+    .small-info {
+      font-size: 11px;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+
+    .contract-box {
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      padding: 8px 10px;
+      max-height: 120px;
+      overflow-y: auto;
+      font-size: 11px;
+      color: #334155;
+      margin-bottom: 8px;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      margin-top: 4px;
+      margin-bottom: 6px;
+      font-size: 12px;
+      color: #111827;
+    }
+
+    .checkbox-row input {
+      margin-top: 2px;
+    }
+
+    .form-section {
+      display: none;
+    }
+
+    .form-section.active {
+      display: block;
+    }
   </style>
 </head>
 <body>
-  <div class="login-card">
-    <h1 class="login-title">SuperParty</h1>
-    <p class="login-subtitle">Autentificare staff &amp; colaboratori</p>
+  <div class="card">
+    <h1 class="title">SuperParty</h1>
+    <p class="subtitle">Autentificare &amp; creare cont pentru staff &amp; colaboratori</p>
 
-    <form id="loginForm">
-      <label for="email">Email</label>
-      <input id="email" type="email" placeholder="ex: nume@superparty.ro" required />
+    <div class="tabs">
+      <button id="tabLogin" class="tab-btn active">Autentificare</button>
+      <button id="tabRegister" class="tab-btn">Creare cont</button>
+    </div>
 
-      <label for="password">Parola</label>
-      <input id="password" type="password" placeholder="Parola ta" required />
+    <!-- FORM LOGIN -->
+    <form id="loginForm" class="form-section active">
+      <label for="loginEmail">Email</label>
+      <input id="loginEmail" type="email" placeholder="ex: nume@superparty.ro" required />
 
-      <button type="submit" id="loginBtn">Autentificare</button>
+      <label for="loginPassword">Parola</label>
+      <input id="loginPassword" type="password" placeholder="Parola ta" required />
+
+      <button type="submit" class="primary" id="loginBtn">Autentificare</button>
+
+      <p class="small-info">
+        Dacă nu ai cont, mergi pe tab-ul <strong>Creare cont</strong>.
+      </p>
+    </form>
+
+    <!-- FORM CREARE CONT + CONTRACT -->
+    <form id="registerForm" class="form-section">
+      <label for="regName">Nume complet</label>
+      <input id="regName" type="text" placeholder="ex: Andrei Ursache" />
+
+      <label for="regEmail">Email</label>
+      <input id="regEmail" type="email" placeholder="Email de lucru" />
+
+      <label for="regPhone">Telefon</label>
+      <input id="regPhone" type="tel" placeholder="ex: 07xx xxx xxx" />
+
+      <label for="regPassword">Parolă</label>
+      <input id="regPassword" type="password" placeholder="Minim 8 caractere" />
+
+      <label for="regPassword2">Confirmă parola</label>
+      <input id="regPassword2" type="password" placeholder="Repetă parola" />
+
+      <label>Contract de colaborare</label>
+      <div class="contract-box" id="contractBox">
+        <strong>CONTRACT DE COLABORARE SUPERPARTY (versiune demo)</strong><br /><br />
+        1. Colaboratorul se obligă să ajungă la evenimente la ora stabilită și să
+        respecte instrucțiunile coordonatorului SuperParty.<br />
+        2. Plata se face doar dacă există dovezi foto complete și validate
+        conform sistemului intern (bagaj, am ajuns, făcut, recuperare / retur).<br />
+        3. Colaboratorul este responsabil pentru recuzita primită și se obligă
+        să o returneze în starea primită, conform fișei de bagaj.<br />
+        4. Orice încălcare gravă a regulilor poate duce la suspendarea
+        colaborării și reținerea sumelor nejustificate.<br />
+        5. Aceasta este o versiune simplificată pentru test. Varianta oficială
+        va fi semnată digital în aplicație.
+      </div>
+
+      <div class="checkbox-row">
+        <input type="checkbox" id="acceptContract" />
+        <label for="acceptContract">
+          Confirm că am citit și sunt de acord cu contractul de colaborare SuperParty.
+        </label>
+      </div>
+
+      <button type="button" class="primary" id="registerBtn">Creează cont nou</button>
+
+      <p class="small-info">
+        După creare, te vei putea autentifica normal din tab-ul <strong>Autentificare</strong>.
+      </p>
     </form>
 
     <p id="error" class="error-msg"></p>
+    <p id="success" class="success-msg"></p>
 
     <p class="footer-note">
       Acces doar pentru <span>staff SuperParty</span>.
@@ -137,9 +283,11 @@
   </div>
 
   <script>
+    // ===== CONFIG BACKEND EXISTENT (NU-l schimbăm) =====
     const BACKEND_URL =
       "https://script.google.com/macros/s/AKfycbxs819m4gt-tpTkAIIS91EnxhwYx-5wdbnh6Zi5_GcY14zs5XYqS9ykFuYCCcokhQ/exec";
 
+    // JSONP LOGIN - lăsăm logica EXACT cum era, doar am mutat id-urile
     function jsonpLogin(email, password) {
       return new Promise((resolve, reject) => {
         const cbName = "SP_LOGIN_CB_" + Date.now();
@@ -154,9 +302,12 @@
         const url =
           BACKEND_URL +
           "?action=login" +
-          "&email=" + encodeURIComponent(email) +
-          "&password=" + encodeURIComponent(password) +
-          "&callback=" + encodeURIComponent(cbName);
+          "&email=" +
+          encodeURIComponent(email) +
+          "&password=" +
+          encodeURIComponent(password) +
+          "&callback=" +
+          encodeURIComponent(cbName);
 
         script.src = url;
 
@@ -169,29 +320,110 @@
       });
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      const form = document.getElementById("loginForm");
-      const emailInput = document.getElementById("email");
-      const passInput = document.getElementById("password");
+    // JSONP REGISTER - presupune că ai un endpoint ?action=register în backend
+    function jsonpRegister(data) {
+      return new Promise((resolve, reject) => {
+        const cbName = "SP_REGISTER_CB_" + Date.now();
+
+        window[cbName] = function (response) {
+          resolve(response);
+          try { delete window[cbName]; } catch {}
+          script.remove();
+        };
+
+        const params =
+          "&name=" + encodeURIComponent(data.name) +
+          "&email=" + encodeURIComponent(data.email) +
+          "&phone=" + encodeURIComponent(data.phone) +
+          "&password=" + encodeURIComponent(data.password);
+
+        const script = document.createElement("script");
+        const url =
+          BACKEND_URL +
+          "?action=register" +
+          params +
+          "&callback=" +
+          encodeURIComponent(cbName);
+
+        script.src = url;
+
+        script.onerror = function () {
+          reject(new Error("Network error"));
+          script.remove();
+        };
+
+        document.body.appendChild(script);
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const tabLogin = document.getElementById("tabLogin");
+      const tabRegister = document.getElementById("tabRegister");
+      const loginForm = document.getElementById("loginForm");
+      const registerForm = document.getElementById("registerForm");
+
+      const loginEmail = document.getElementById("loginEmail");
+      const loginPassword = document.getElementById("loginPassword");
+
+      const regName = document.getElementById("regName");
+      const regEmail = document.getElementById("regEmail");
+      const regPhone = document.getElementById("regPhone");
+      const regPassword = document.getElementById("regPassword");
+      const regPassword2 = document.getElementById("regPassword2");
+      const acceptContract = document.getElementById("acceptContract");
+      const registerBtn = document.getElementById("registerBtn");
+
       const errorEl = document.getElementById("error");
+      const successEl = document.getElementById("success");
 
-      form.addEventListener("submit", (e) => {
-        e.preventDefault();
-
-        const email = emailInput.value.trim();
-        const password = passInput.value.trim();
+      // Switch tab
+      function showLogin() {
+        tabLogin.classList.add("active");
+        tabRegister.classList.remove("active");
+        loginForm.classList.add("active");
+        registerForm.classList.remove("active");
         errorEl.style.display = "none";
+        successEl.style.display = "none";
+      }
+
+      function showRegister() {
+        tabRegister.classList.add("active");
+        tabLogin.classList.remove("active");
+        registerForm.classList.add("active");
+        loginForm.classList.remove("active");
+        errorEl.style.display = "none";
+        successEl.style.display = "none";
+      }
+
+      tabLogin.addEventListener("click", showLogin);
+      tabRegister.addEventListener("click", showRegister);
+
+      // LOGIN SUBMIT
+      loginForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        errorEl.style.display = "none";
+        successEl.style.display = "none";
+
+        const email = loginEmail.value.trim();
+        const password = loginPassword.value.trim();
+
+        if (!email || !password) {
+          errorEl.textContent = "Te rog introdu email și parolă.";
+          errorEl.style.display = "block";
+          return;
+        }
 
         jsonpLogin(email, password)
           .then((resp) => {
             if (!resp || !resp.success) {
-              errorEl.textContent = resp.error || "Email sau parolă greșite.";
+              errorEl.textContent = resp && resp.error
+                ? resp.error
+                : "Email sau parolă greșite.";
               errorEl.style.display = "block";
               return;
             }
 
             const role = (resp.role || "").toLowerCase();
-
             if (role === "admin") {
               window.location.href = "/admin/index.html";
             } else if (role === "gm") {
@@ -201,7 +433,74 @@
             }
           })
           .catch(() => {
-            errorEl.textContent = "Nu s-a putut contacta serverul. Încearcă din nou.";
+            errorEl.textContent =
+              "Nu s-a putut contacta serverul. Încearcă din nou.";
+            errorEl.style.display = "block";
+          });
+      });
+
+      // REGISTER CLICK
+      registerBtn.addEventListener("click", function () {
+        errorEl.style.display = "none";
+        successEl.style.display = "none";
+
+        const name = regName.value.trim();
+        const email = regEmail.value.trim();
+        const phone = regPhone.value.trim();
+        const pass1 = regPassword.value.trim();
+        const pass2 = regPassword2.value.trim();
+        const accepted = acceptContract.checked;
+
+        if (!name || !email || !phone || !pass1 || !pass2) {
+          errorEl.textContent = "Te rog completează toate câmpurile.";
+          errorEl.style.display = "block";
+          return;
+        }
+
+        if (pass1.length < 8) {
+          errorEl.textContent = "Parola trebuie să aibă minim 8 caractere.";
+          errorEl.style.display = "block";
+          return;
+        }
+
+        if (pass1 !== pass2) {
+          errorEl.textContent = "Parolele nu coincid.";
+          errorEl.style.display = "block";
+          return;
+        }
+
+        if (!accepted) {
+          errorEl.textContent = "Trebuie să accepți contractul pentru a continua.";
+          errorEl.style.display = "block";
+          return;
+        }
+
+        // APELĂM BACKEND REGISTER (dacă e implementat)
+        jsonpRegister({
+          name: name,
+          email: email,
+          phone: phone,
+          password: pass1,
+        })
+          .then((resp) => {
+            if (!resp || !resp.success) {
+              errorEl.textContent = resp && resp.error
+                ? resp.error
+                : "Nu s-a putut crea contul. Verifică datele sau contactează un admin.";
+              errorEl.style.display = "block";
+              return;
+            }
+
+            successEl.textContent =
+              "Cont creat cu succes! Te poți autentifica acum din tab-ul Autentificare.";
+            successEl.style.display = "block";
+
+            // opțional: comutăm automat pe login
+            showLogin();
+          })
+          .catch(() => {
+            errorEl.textContent =
+              "Nu s-a putut contacta serverul pentru creare cont. Încearcă din nou.";
             errorEl.style.display = "block";
           });
       });
