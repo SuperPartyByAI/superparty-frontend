@@ -146,12 +146,12 @@
       if (sender === "AI") {
         div.innerHTML =
           '<div style="background:#1e293b; padding:8px; border-radius:8px; max-width:85%;">' +
-          safeText.replace(/\\n/g, "<br>") +
+          safeText.replace(/\n/g, "<br>") +
           "</div>";
       } else {
         div.innerHTML =
           '<div style="background:#1d4ed8; padding:8px; border-radius:8px; max-width:85%; margin-left:auto;">' +
-          safeText.replace(/\\n/g, "<br>") +
+          safeText.replace(/\n/g, "<br>") +
           "</div>";
       }
 
