@@ -297,27 +297,44 @@
       return "Te rog scrie o întrebare sau un cod de eveniment.";
     }
 
+    // SALUT / CE FACI / SMALL TALK
+    if (
+      t === "ce faci" ||
+      t === "ce faci?" ||
+      t.includes("ce mai faci") ||
+      t.startsWith("salut") ||
+      t.startsWith("salut,") ||
+      t.startsWith("buna") ||
+      t.startsWith("bună")
+    ) {
+      return "Sunt aici să te ajut cu tot ce ține de evenimente, dovezi, KYC și statusul contului tău SuperParty. Întreabă-mă, de exemplu: „ce dovezi trebuie la EVT_001?” sau „cum îmi activez contul?”.";
+    }
+
     if (t.includes("kyc")) {
-      return "Pentru KYC trebuie: poză CI față, CI verso, selfie cu buletinul și bifă pe contract. După ce le trimiți, un admin aprobă contul.";
+      return "Pentru KYC trebuie: poză CI față, CI verso, selfie cu buletinul și bifă pe contract. După ce le trimiți, un admin verifică și aprobă contul.";
     }
 
     if (t.includes("evt_001") || t.includes("evt 001")) {
-      return "La EVT_001 ai 3 dovezi obligatorii: 1) poză cu pregătirea, 2) poză cu copiii la activitate, 3) poză de final cu tort / personaj.";
+      return "La EVT_001 ai 3 dovezi obligatorii: 1) poză cu pregătirea (bagaj / setare), 2) poză cu copiii la activitate, 3) poză de final cu tort / personaj.";
+    }
+
+    if (t.includes("evt_002") || t.includes("evt 002")) {
+      return "La EVT_002 se aplică aceeași regulă: minim 3 poze – pregătire, în timpul activității și final. Dacă evenimentul are și alt rol (ex: șofer), pot exista și poze suplimentare.";
     }
 
     if (t.includes("dovezi") || t.includes("poze")) {
-      return "Regula generală la dovezi: minim 3 poze / rol – pregătire, în timpul activității și final. La unele pachete pot fi mai multe, AI-ul și adminul le verifică.";
+      return "Regula generală la dovezi: minim 3 poze / rol – pregătire, în timpul activității și final. La unele pachete pot fi mai multe, AI-ul și adminul le verifică și pot respinge dovezi neclare sau reciclate.";
     }
 
     if (t.includes("contract")) {
-      return "Contractul SuperParty se acceptă din pagina de KYC. Confirmi că datele sunt reale și că respecți procedurile pentru evenimente și dovezi.";
+      return "Contractul SuperParty se acceptă din pagina de KYC. Acolo confirmi că datele sunt reale, că respecți procedurile și că îți asumi responsabilitatea pentru evenimentele la care mergi.";
     }
 
-    if (t.includes("activ") || t.includes("activez contul")) {
-      return "Contul devine ACTIV după ce KYC este APROBAT și statusul tău în backend este setat pe ACTIVE de către admin.";
+    if (t.includes("activ") || t.includes("activez contul") || t.includes("activare cont")) {
+      return "Contul devine ACTIV după ce: 1) KYC este APROBAT, 2) un admin setează statusul tău pe ACTIVE în backend. Dacă ceva nu este clar, poți întreba direct un admin sau poți scrie aici ce status vezi.";
     }
 
-    return "Am notat întrebarea ta. În versiunea DEMO îți pot da doar răspunsuri generale. Backend-ul AI complet (cu Apps Script + OpenAI) se leagă pe același endpoint ca la celelalte funcții.";
+    return "Am notat întrebarea ta. În versiunea DEMO îți pot da doar răspunsuri generale și reguli. Pentru integrarea completă cu backend (Apps Script + OpenAI), AI-ul va citi direct evenimentele tale, statusul KYC și dovezile din sistem.";
   }
 
   // -----------------------------
