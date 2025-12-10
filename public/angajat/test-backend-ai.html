@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <title>Test SuperParty AI – Backend Railway</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #020617;
+      color: #e5e7eb;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .card {
+      background: #020617;
+      border-radius: 16px;
+      padding: 20px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 18px 45px rgba(15,23,42,0.7);
+      border: 1px solid #1f2937;
+    }
+    .card h1 {
+      font-size: 20px;
+      margin-bottom: 12px;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 6px;
+      color: #9ca3af;
+    }
+    input, textarea {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid #1f2937;
+      background: #020617;
+      color: #e5e7eb;
+      padding: 8px 10px;
+      font-size: 14px;
+      margin-bottom: 12px;
+      outline: none;
+    }
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+    button {
+      width: 100%;
+      border-radius: 999px;
+      border: none;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      background: #2563eb;
+      color: white;
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+    .log {
+      margin-top: 14px;
+      font-size: 13px;
+      white-space: pre-wrap;
+      background: #020617;
+      border-radius: 10px;
+      border: 1px solid #1f2937;
+      padding: 10px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Test SuperParty AI (Railway)</h1>
+    <label for="email">Email angajat (obligatoriu)</label>
+    <input id="email" type="email" placeholder="ex: ursache.andrei1995@gmail.com" />
+
+    <label for="mode">Mod (employee/admin/gm)</label>
+    <input id="mode" type="text" placeholder="employee (default)" />
+
+    <label for="message">Mesaj către AI</label>
+    <textarea id="message" placeholder="ex: ce dovezi trebuie la EVT_001?"></textarea>
+
+    <button id="sendBtn">Trimite la AI</button>
+
+    <div class="log" id="logBox">Răspuns AI va apărea aici...</div>
+  </div>
+
+  <script>
+    const API_URL = "https://superparty-ai-backend-production.up.railway.app/api/ai";
+
+    const emailInput = document.getElementById("email");
+    const modeInput = document.getElementById("mode");
+    const messageInput = document.getElementById("message");
+    const sendBtn = document.getElementById("sendBtn");
+    const logBox = document.getElementById("logBox");
+
+    async function callAI() {
+      const email = emailInput.value.trim();
+      const mode = modeInput.value.trim() || "employee";
+      const message = messageInput.value.trim();
+
+      if (!email) {
+        alert("Te rog completează emailul (obligatoriu).");
+        return;
+      }
+      if (!message) {
+        alert("Scrie un mesaj pentru AI.");
+        return;
+      }
+
+      sendBtn.disabled = true;
+      sendBtn.textContent = "Se trimite...";
+
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, mode, message })
+        });
+
+        const data = await res.json();
+        const reply = data.reply || JSON.stringify(data);
+
+        logBox.textContent = "TU: " + message + "\n\nAI: " + reply;
+      } catch (err) {
+        logBox.textContent = "Eroare la apel AI:\n" + err.message;
+      } finally {
+        sendBtn.disabled = false;
+        sendBtn.textContent = "Trimite la AI";
+      }
+    }
+
+    sendBtn.addEventListener("click", callAI);
+  </script>
+</body>
+</html>
