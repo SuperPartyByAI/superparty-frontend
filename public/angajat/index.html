@@ -431,11 +431,11 @@
         <div class="kyc-box">
           <strong>KYC & Contract</strong>
           <br />
-          - Poza buletin: încărcată ✅<br />
-          - Contract digital: acceptat ✅<br />
-          - Status verificare: în regulă ✅
+          - Poza buletin: încărcată ✅ (demo)<br />
+          - Contract digital: acceptat ✅ (demo)<br />
+          - Status verificare: în regulă ✅ (după ce finalizezi KYC real)
           <br /><br />
-          Pentru întrebări, poți întreba AI: „explică-mi KYC” sau „explică-mi contractul meu”.
+          În varianta reală, această secțiune va reflecta statusul din sistem.
         </div>
       </div>
     </div>
@@ -483,6 +483,36 @@
     if (!localStorage.getItem("userEmail")) {
       localStorage.setItem("userEmail", userEmail);
     }
+
+    // ================== GATE KYC (doar pentru useri aprobați local) ==================
+    (function enforceKycGate() {
+      try {
+        const email = userEmail || "";
+        if (!email) return;
+
+        // Nu blocăm nimic pentru tine (Andrei) sau alte cazuri speciale,
+        // pentru a nu încurca dezvoltarea.
+        if (email.toLowerCase() === "ursache.andrei1995@gmail.com") {
+          return;
+        }
+
+        const raw = localStorage.getItem("sp_approved_users");
+        if (!raw) return;
+
+        const approved = JSON.parse(raw);
+        if (!Array.isArray(approved)) return;
+
+        const user = approved.find(u => (u.email || "").toLowerCase() === email.toLowerCase());
+        if (!user) return;
+
+        if (user.kycStatus && user.kycStatus !== "ok") {
+          // user aprobat, dar fără KYC ok -> îl trimitem la pagina de KYC
+          window.location.href = "/angajat/kyc.html";
+        }
+      } catch (e) {
+        console.error("Eroare la enforceKycGate:", e);
+      }
+    })();
 
     // ================== UI ==================
     const aiToggleBtn = document.getElementById("aiToggleBtn");

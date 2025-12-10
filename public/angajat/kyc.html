@@ -2,211 +2,179 @@
 <html lang="ro">
 <head>
   <meta charset="UTF-8" />
-  <title>SuperParty - KYC & Contract</title>
+  <title>SuperParty - KYC angajat</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: radial-gradient(circle at top, #1d4ed8 0, #0f172a 45%, #020617 100%);
-      color: #e5e7eb;
       min-height: 100vh;
-      padding: 24px;
       display: flex;
+      align-items: center;
       justify-content: center;
-      align-items: flex-start;
+      background: radial-gradient(circle at top, #1d4ed8 0, #0f172a 45%, #020617 100%);
+      padding: 16px;
+      color: #e5e7eb;
     }
 
-    .container {
-      width: 100%;
-      max-width: 780px;
-      background: rgba(15, 23, 42, 0.95);
-      padding: 28px;
+    .card {
+      background: #020617;
       border-radius: 18px;
-      border: 1px solid rgba(255,255,255,0.05);
-      box-shadow: 0 22px 50px rgba(0,0,0,0.45);
+      padding: 22px 24px 24px;
+      max-width: 520px;
+      width: 100%;
+      box-shadow: 0 24px 60px rgba(15,23,42,0.85);
+      border: 1px solid rgba(148,163,184,0.35);
     }
 
-    h1 {
-      font-size: 26px;
-      margin-bottom: 10px;
-      color: #fff;
-      text-align: center;
-    }
-
-    p.desc {
-      text-align: center;
-      color: #9ca3af;
-      margin-bottom: 20px;
-    }
-
-    .section-title {
-      font-size: 18px;
-      margin: 20px 0 8px;
+    .title {
+      font-size: 20px;
       font-weight: 600;
-      color: #3b82f6;
+      margin-bottom: 4px;
     }
 
-    .upload-box {
-      background: #0f172a;
-      border: 2px dashed #334155;
-      padding: 20px;
-      border-radius: 14px;
-      text-align: center;
-      cursor: pointer;
+    .subtitle {
+      font-size: 13px;
+      color: #9ca3af;
       margin-bottom: 16px;
-      transition: 0.3s;
     }
 
-    .upload-box:hover {
-      border-color: #3b82f6;
-      background: rgba(59,130,246,0.1);
+    .field {
+      margin-bottom: 12px;
     }
 
-    .upload-box input {
+    .label {
+      font-size: 12px;
+      margin-bottom: 4px;
+      color: #e5e7eb;
+    }
+
+    input[type="file"],
+    input[type="text"] {
+      width: 100%;
+      padding: 9px 11px;
+      border-radius: 10px;
+      border: 1px solid #1f2937;
+      background: #020617;
+      color: #e5e7eb;
+      font-size: 14px;
+      outline: none;
+    }
+
+    input::placeholder {
+      color: #6b7280;
+    }
+
+    .contract-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .contract-row input[type="checkbox"] {
+      margin-top: 2px;
+    }
+
+    .contract-row a {
+      color: #60a5fa;
+      text-decoration: none;
+    }
+
+    .contract-row a:hover {
+      text-decoration: underline;
+    }
+
+    .btn {
+      width: 100%;
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      box-shadow: 0 18px 40px rgba(22,163,74,0.6);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: default;
+      box-shadow: none;
+    }
+
+    .msg {
+      margin-top: 10px;
+      font-size: 12px;
+      border-radius: 10px;
+      padding: 8px 10px;
       display: none;
     }
 
-    .preview {
-      margin-top: 10px;
-      font-size: 14px;
-      color: #22c55e;
+    .msg.error {
+      background: rgba(239,68,68,0.12);
+      border: 1px solid rgba(248,113,113,0.9);
+      color: #fecaca;
     }
 
-    .checkbox-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: 14px 0;
+    .msg.success {
+      background: rgba(34,197,94,0.12);
+      border: 1px solid rgba(74,222,128,0.9);
+      color: #bbf7d0;
     }
 
-    button {
-      width: 100%;
-      padding: 14px;
-      background: #3b82f6;
-      color: #fff;
-      font-size: 16px;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      margin-top: 20px;
-      opacity: 0.5;
-      pointer-events: none;
-      transition: 0.3s;
+    .info {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: 8px;
     }
-
-    button.active {
-      opacity: 1;
-      pointer-events: auto;
-      background: #2563eb;
-    }
-
   </style>
 </head>
-
 <body>
-<div class="container">
+  <div class="card">
+    <div class="title">Verificare identitate (KYC)</div>
+    <div class="subtitle">
+      Pentru a-ți activa contul, este nevoie să încarci poza buletinului și să accepți contractul de colaborare.
+    </div>
 
-  <h1>Verificare Identitate (KYC)</h1>
-  <p class="desc">Completează toți pașii pentru a activa contul SuperParty</p>
+    <form id="kycForm">
+      <div class="field">
+        <div class="label">Email</div>
+        <input type="text" id="kycEmail" readonly />
+        <div class="info">Acesta este emailul cu care ești logat / aprobat.</div>
+      </div>
 
-  <!-- POZA BULETIN FAȚĂ -->
-  <div class="section-title">1. Buletin - față</div>
-  <label class="upload-box">
-    Încarcă poză
-    <input type="file" accept="image/*" id="idFront">
-  </label>
-  <div id="prevFront" class="preview"></div>
+      <div class="field">
+        <div class="label">Poză buletin (față sau față-verso)</div>
+        <input type="file" id="idPhoto" accept="image/*" />
+        <div class="info">Demo: nu trimitem poza nicăieri acum, doar verificăm că ai selectat un fișier.</div>
+      </div>
 
-  <!-- POZA BULETIN VERSO -->
-  <div class="section-title">2. Buletin - verso</div>
-  <label class="upload-box">
-    Încarcă poză
-    <input type="file" accept="image/*" id="idBack">
-  </label>
-  <div id="prevBack" class="preview"></div>
+      <div class="field">
+        <div class="label">Contract de colaborare</div>
+        <div class="contract-row">
+          <input type="checkbox" id="acceptContract" />
+          <div>
+            Confirm că am citit și sunt de acord cu
+            <a href="#" target="_blank">contractul de colaborare SuperParty</a>.
+          </div>
+        </div>
+      </div>
 
-  <!-- SELFIE CU BULETIN -->
-  <div class="section-title">3. Selfie cu buletinul în mână</div>
-  <label class="upload-box">
-    Încarcă poză
-    <input type="file" accept="image/*" id="selfie">
-  </label>
-  <div id="prevSelfie" class="preview"></div>
+      <button type="submit" class="btn" id="kycBtn">Trimite KYC</button>
 
-  <!-- CONTRACT -->
-  <div class="section-title">4. Contract</div>
-  <div class="checkbox-row">
-    <input type="checkbox" id="acceptContract">
-    <label for="acceptContract">Confirm că am citit și accept contractul SuperParty.</label>
+      <div id="kycMessage" class="msg"></div>
+
+      <div class="info">
+        După validare, vei fi redirecționat în dashboardul de angajat.
+      </div>
+    </form>
   </div>
 
-  <div class="checkbox-row">
-    <input type="checkbox" id="realPhotos">
-    <label for="realPhotos">Confirm că pozele încărcate sunt reale și mă reprezintă.</label>
-  </div>
-
-  <button id="submitBtn">Finalizează KYC</button>
-
-</div>
-
-<script>
-  const idFront = document.getElementById("idFront");
-  const idBack = document.getElementById("idBack");
-  const selfie = document.getElementById("selfie");
-  const c1 = document.getElementById("acceptContract");
-  const c2 = document.getElementById("realPhotos");
-  const btn = document.getElementById("submitBtn");
-
-  const previews = {
-    idFront: document.getElementById("prevFront"),
-    idBack: document.getElementById("prevBack"),
-    selfie: document.getElementById("prevSelfie"),
-  };
-
-  function updatePreview(input, previewBox) {
-    if (input.files.length > 0) {
-      previewBox.textContent = "Poză încărcată ✔";
-    } else {
-      previewBox.textContent = "";
-    }
-    checkAll();
-  }
-
-  idFront.addEventListener("change", () => updatePreview(idFront, previews.idFront));
-  idBack.addEventListener("change", () => updatePreview(idBack, previews.idBack));
-  selfie.addEventListener("change", () => updatePreview(selfie, previews.selfie));
-
-  c1.addEventListener("change", checkAll);
-  c2.addEventListener("change", checkAll);
-
-  function checkAll() {
-    const ok =
-      idFront.files.length > 0 &&
-      idBack.files.length > 0 &&
-      selfie.files.length > 0 &&
-      c1.checked &&
-      c2.checked;
-
-    if (ok) {
-      btn.classList.add("active");
-    } else {
-      btn.classList.remove("active");
-    }
-  }
-
-  btn.addEventListener("click", () => {
-    if (!btn.classList.contains("active")) return;
-
-    // Salvăm că KYC este finalizat
-    localStorage.setItem("kyc_completed", "yes");
-
-    // Direcționăm către dashboard (ATENȚIE: FĂRĂ /public în față)
-    window.location.href = "/angajat/index.html";
-  });
-</script>
-
+  <script src="./kyc.js"></script>
 </body>
 </html>
