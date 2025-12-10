@@ -476,11 +476,10 @@
     // ================== CONFIG ==================
     const AI_API_URL = "https://superparty-ai-backend-production.up.railway.app/api/ai";
 
-    // Email + mod utilizator - citim din localStorage dacă există (setat de login)
     const userEmail = localStorage.getItem("userEmail") || "ursache.andrei1995@gmail.com";
     const userMode = localStorage.getItem("userMode") || "employee";
 
-    // ================== UI ELEMENTE ==================
+    // ================== UI ==================
     const aiToggleBtn = document.getElementById("aiToggleBtn");
     const aiChat = document.getElementById("aiChat");
     const aiCloseBtn = document.getElementById("aiCloseBtn");
@@ -488,31 +487,16 @@
     const aiInput = document.getElementById("aiInput");
     const aiSendBtn = document.getElementById("aiSendBtn");
 
-    function openAIChat() {
+    aiToggleBtn.addEventListener("click", () => {
       aiChat.style.display = "flex";
       aiToggleBtn.style.display = "none";
       aiInput.focus();
-    }
+    });
 
-    function closeAIChat() {
+    aiCloseBtn.addEventListener("click", () => {
       aiChat.style.display = "none";
       aiToggleBtn.style.display = "flex";
-    }
-
-    aiToggleBtn.addEventListener("click", openAIChat);
-    aiCloseBtn.addEventListener("click", closeAIChat);
-
-    // Deschide AI cu un mesaj presetat (din butonul de la evenimente)
-    function openAIWithPrompt(promptText) {
-      openAIChat();
-      if (promptText) {
-        aiInput.value = promptText;
-        sendMessageToAI();
-      }
-    }
-    window.openAIWithPrompt = openAIWithPrompt;
-
-    // ================== LOGICA TRIMITERE MESAJ ==================
+    });
 
     function addMessage(text, from) {
       const div = document.createElement("div");
@@ -526,14 +510,8 @@
       const message = aiInput.value.trim();
       if (!message) return;
 
-      if (!userEmail) {
-        addMessage("Eroare: nu ești logat corect (lipsește emailul).", "ai");
-        return;
-      }
-
       addMessage(message, "user");
       aiInput.value = "";
-      aiInput.focus();
 
       aiSendBtn.disabled = true;
       aiSendBtn.textContent = "Se trimite...";
@@ -550,28 +528,25 @@
         });
 
         const data = await res.json();
-        let reply = data.reply || JSON.stringify(data);
+        let reply = data.reply || "";
 
-        // === Detectăm comenzi speciale din răspunsul AI ===
-
-        // Mod GM (token __MODE_GM__)
+        // === Mod GM ===
         if (reply.includes("__MODE_GM__")) {
-          addMessage("Acces GM permis. Deschid modul GM din interfață.", "ai");
+          addMessage("Acces GM permis. Deschid modul GM...", "ai");
           openGmMode();
           return;
         }
 
-        // Mod ADMIN (token __MODE_ADMIN__), dacă vei folosi și acest marker
+        // === Mod ADMIN ===
         if (reply.includes("__MODE_ADMIN__")) {
-          addMessage("Acces ADMIN permis. Deschid modul ADMIN din interfață.", "ai");
+          addMessage("Acces ADMIN permis. Deschid modul ADMIN...", "ai");
           openAdminMode();
           return;
         }
 
-        // Răspuns normal
         addMessage(reply, "ai");
       } catch (err) {
-        addMessage("Eroare la conectarea cu AI: " + err.message, "ai");
+        addMessage("Eroare AI: " + err.message, "ai");
       } finally {
         aiSendBtn.disabled = false;
         aiSendBtn.textContent = "Trimite";
@@ -579,23 +554,26 @@
     }
 
     aiSendBtn.addEventListener("click", sendMessageToAI);
-    aiInput.addEventListener("keydown", function (e) {
+    aiInput.addEventListener("keydown", e => {
       if (e.key === "Enter") {
         e.preventDefault();
         sendMessageToAI();
       }
     });
 
-    // ================== FUNCȚII MODURI SPECIALE ==================
+    function openAIWithPrompt(promptText) {
+      aiChat.style.display = "flex";
+      aiToggleBtn.style.display = "none";
+      aiInput.value = promptText;
+      sendMessageToAI();
+    }
+    window.openAIWithPrompt = openAIWithPrompt;
 
     function openGmMode() {
-      // Aici decizi tu unde este modul GM.
-      // De exemplu, o pagină separată:
       window.location.href = "/gm/index.html";
     }
 
     function openAdminMode() {
-      // Similar pentru modul ADMIN:
       window.location.href = "/admin/index.html";
     }
   </script>
