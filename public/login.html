@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       min-height: 100vh;
@@ -13,22 +14,40 @@
       align-items: center;
       justify-content: center;
       background: radial-gradient(circle at top, #1d4ed8 0, #0f172a 45%, #020617 100%);
-      padding: 16px;
       color: #e5e7eb;
     }
-    .card {
-      background: rgba(15, 23, 42, 0.95);
-      border-radius: 18px;
+
+    .login-card {
+      background: #020617;
+      border-radius: 16px;
       padding: 24px 28px;
       max-width: 380px;
       width: 100%;
-      box-shadow: 0 22px 60px rgba(15, 23, 42, 0.65);
-      border: 1px solid rgba(148, 163, 184, 0.35);
-      font-size: 14px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(148, 163, 184, 0.4);
     }
-    .title { font-size: 22px; font-weight: 600; margin-bottom: 4px; }
-    .subtitle { font-size: 13px; color: #9ca3af; margin-bottom: 18px; }
-    label { font-size: 13px; margin-bottom: 4px; display: block; }
+
+    .login-title {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .login-subtitle {
+      font-size: 13px;
+      color: #9ca3af;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 4px;
+      color: #e5e7eb;
+    }
+
     input {
       width: 100%;
       padding: 10px 11px;
@@ -40,105 +59,179 @@
       margin-bottom: 12px;
       outline: none;
     }
+
+    input::placeholder {
+      color: #6b7280;
+    }
+
     input:focus {
       border-color: #3b82f6;
-      box-shadow: 0 0 0 1px rgba(59,130,246,0.6);
+      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.6);
     }
-    .btn {
+
+    button {
       width: 100%;
-      border: none;
+      padding: 10px 12px;
       border-radius: 999px;
-      padding: 10px 0;
-      font-size: 14px;
-      font-weight: 500;
+      border: none;
+      font-size: 15px;
+      font-weight: 600;
       cursor: pointer;
-      background: linear-gradient(135deg,#2563eb,#38bdf8);
+      background: linear-gradient(135deg, #3b82f6, #22c55e);
       color: white;
-      margin-top: 4px;
-      margin-bottom: 8px;
+      margin-top: 8px;
+      transition: transform 0.08s ease, box-shadow 0.08s ease, opacity 0.08s ease;
     }
-    .btn:disabled { opacity: .6; cursor: default; }
-    .error { color:#f97373; font-size:13px; min-height:18px; }
-    .row {
-      font-size: 13px; color:#9ca3af; margin-top:4px;
-      display:flex; justify-content:space-between; align-items:center; gap:8px;
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.7);
+      opacity: 0.96;
     }
-    .row a { color:#60a5fa; text-decoration:none; font-weight:500; }
-    .row a:hover { text-decoration:underline; }
+
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.7);
+      opacity: 0.9;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: default;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .error {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #fecaca;
+      background: rgba(127, 29, 29, 0.4);
+      border-radius: 8px;
+      padding: 8px 10px;
+      display: none;
+    }
+
+    .meta {
+      margin-top: 12px;
+      font-size: 11px;
+      color: #6b7280;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="title">SuperParty · Angajat</div>
-    <div class="subtitle">Autentifică-te cu email și parolă.</div>
+  <div class="login-card">
+    <h1 class="login-title">SuperParty · Angajat</h1>
+    <p class="login-subtitle">Autentificare în dashboard-ul de evenimente</p>
 
     <form id="loginForm">
       <label for="email">Email</label>
-      <input id="email" type="email" autocomplete="email" required />
+      <input
+        id="email"
+        type="email"
+        autocomplete="email"
+        required
+        placeholder="ex: nume@superparty.ro"
+      />
 
-      <label for="password">Parola</label>
-      <input id="password" type="password" autocomplete="current-password" required />
+      <label for="password">Parolă</label>
+      <input
+        id="password"
+        type="password"
+        autocomplete="current-password"
+        required
+        placeholder="Parola ta"
+      />
 
-      <button type="submit" class="btn" id="loginBtn">Autentificare</button>
+      <button type="submit" id="loginBtn">Autentificare</button>
       <div id="error" class="error"></div>
-
-      <div class="row">
-        <span>Nu ai încă un cont?</span>
-        <a href="/angajat/register.html">Creează cont</a>
-      </div>
     </form>
+
+    <p class="meta">
+      Probleme la autentificare? Contactează managerul SuperParty.
+    </p>
   </div>
 
   <script>
-    const BACKEND_URL = '/api/login';
+    // ❗ Backend Apps Script (URL-ul tău care deja dă success:true)
+    const APPS_SCRIPT_URL =
+      'https://script.google.com/macros/s/AKfycbxs819m4gt-tpTkAIIS91EnxhwYx-5wdbnh6Zi5_GcY14zs5XYqS9ykFuYCCcokhQ/exec';
 
-    function setError(msg) {
-      document.getElementById('error').textContent = msg || '';
-    }
-    function setLoading(isLoading) {
-      const btn = document.getElementById('loginBtn');
-      btn.disabled = isLoading;
-      btn.textContent = isLoading ? 'Se autentifică…' : 'Autentificare';
-    }
-    function handleLoginResponse(resp) {
-      setLoading(false);
-      if (!resp || resp.success === false) {
-        setError(resp && (resp.error || resp.message) || 'Eroare la autentificare.');
+    const form   = document.getElementById('loginForm');
+    const emailI = document.getElementById('email');
+    const passI  = document.getElementById('password');
+    const errEl  = document.getElementById('error');
+    const btn    = document.getElementById('loginBtn');
+
+    function loginCB(response) {
+      form.dataset.loading = 'false';
+      btn.disabled = false;
+      btn.textContent = 'Autentificare';
+
+      if (!response || !response.success) {
+        const msg =
+          (response && (response.error || response.message)) ||
+          'Email sau parolă incorecte.';
+        errEl.textContent = msg;
+        errEl.style.display = 'block';
         return;
       }
-      const role = (resp.role || 'angajat').toLowerCase();
-      if (role === 'admin')      window.location.href = '/admin/index.html';
-      else if (role === 'gm')    window.location.href = '/gm/index.html';
-      else                       window.location.href = '/angajat/index.html';
-    }
 
-    document.getElementById('loginForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      setError('');
-      setLoading(true);
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value.trim();
+      errEl.style.display = 'none';
 
       try {
-        const resp = await fetch(BACKEND_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password }),
-        });
-
-        if (!resp.ok) {
-          setLoading(false);
-          setError('Network error la login (status ' + resp.status + ').');
-          return;
-        }
-
-        const data = await resp.json();
-        handleLoginResponse(data);
-      } catch (err) {
-        console.error('Eroare fetch login:', err);
-        setLoading(false);
-        setError('Network error la login.');
+        localStorage.setItem('sp_user_email', response.email || '');
+        localStorage.setItem('sp_user_role',  response.role  || '');
+        localStorage.setItem('sp_user_status',response.status|| '');
+      } catch (e) {
+        console.warn('localStorage error', e);
       }
+
+      // Redirect în dashboard-ul angajatului
+      window.location.href = '/angajat/index.html';
+    }
+
+    window.loginCB = loginCB;
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (form.dataset.loading === 'true') return;
+
+      const email = emailI.value.trim();
+      const pass  = passI.value.trim();
+
+      if (!email || !pass) {
+        errEl.textContent = 'Te rog completează email și parola.';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      errEl.style.display = 'none';
+      form.dataset.loading = 'true';
+      btn.disabled = true;
+      btn.textContent = 'Se conectează...';
+
+      const script = document.createElement('script');
+      const params = new URLSearchParams({
+        action: 'login',
+        email: email,
+        password: pass,
+        callback: 'loginCB',
+        ts: Date.now().toString()
+      });
+
+      script.src = APPS_SCRIPT_URL + '?' + params.toString();
+
+      script.onerror = function () {
+        form.dataset.loading = 'false';
+        btn.disabled = false;
+        btn.textContent = 'Autentificare';
+        errEl.textContent = 'Eroare de rețea la login.';
+        errEl.style.display = 'block';
+      };
+
+      document.body.appendChild(script);
     });
   </script>
 </body>
