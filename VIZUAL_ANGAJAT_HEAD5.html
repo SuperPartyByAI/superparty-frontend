@@ -1,0 +1,92 @@
+<script>
+  (function () {
+    // URL-ul backend-ului tău pentru login ANGAJAT
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxs819m4gt-tpTkAIIS91EnxhwYx-5wdbnh6Zi5_GcY14zs5XYqS9ykFuYCCcokhQ/exec";
+
+    const form = document.getElementById("loginForm");
+    const emailInput = document.getElementById("loginEmail");
+    const passwordInput = document.getElementById("loginPassword");
+    const errorEl = document.getElementById("loginError");
+
+    if (!form) {
+      console.error("Nu găsesc formularul #loginForm în angajat/index.html");
+      return;
+    }
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const email = emailInput ? emailInput.value.trim() : "";
+      const pass = passwordInput ? passwordInput.value.trim() : "";
+
+      if (!email || !pass) {
+        if (errorEl) {
+          errorEl.textContent = "Te rog introdu email și parolă.";
+          errorEl.style.display = "block";
+        } else {
+          alert("Te rog introdu email și parolă.");
+        }
+        return;
+      }
+
+      const callbackName = "cb_login_" + Date.now();
+
+      // ⚠️ AICI calculăm URL-ul ÎNAINTE să-l folosim
+      const url =
+        BACKEND_URL +
+        "?action=login" +
+        "&email=" + encodeURIComponent(email) +
+        "&password=" + encodeURIComponent(pass) +
+        "&callback=" + callbackName;
+
+      console.log("🔍 LOGIN - Email:", email);
+      console.log("🔍 LOGIN - Backend URL:", BACKEND_URL);
+      console.log("🔍 LOGIN - Full URL:", url);
+
+      window[callbackName] = function (resp) {
+        console.log("✅ LOGIN JSONP RESP:", resp);
+
+        if (!resp || !resp.success) {
+          const msg = resp && resp.error ? resp.error : "Email sau parolă incorecte.";
+          if (errorEl) {
+            errorEl.textContent = msg;
+            errorEl.style.display = "block";
+          } else {
+            alert(msg);
+          }
+          return;
+        }
+
+        // Salvăm utilizatorul în localStorage
+        try {
+          localStorage.setItem(
+            "superparty_user",
+            JSON.stringify({ email: resp.email, role: resp.role || "angajat" })
+          );
+        } catch (err) {
+          console.warn("Nu pot salva în localStorage:", err);
+        }
+
+        // Redirect în funcție de rol
+        if (resp.role === "admin") {
+          window.location.href = "/admin/index.html";
+        } else {
+          window.location.href = "/angajat/index.html";
+        }
+      };
+
+      const s = document.createElement("script");
+      s.src = url;
+      s.onerror = function (err) {
+        console.error("❌ Script JSONP NU s-a încărcat:", err);
+        if (errorEl) {
+          errorEl.textContent = "Nu s-a putut contacta serverul. Încearcă din nou.";
+          errorEl.style.display = "block";
+        } else {
+          alert("Nu s-a putut contacta serverul. Încearcă din nou.");
+        }
+      };
+      document.body.appendChild(s);
+    });
+  })();
+</script>
