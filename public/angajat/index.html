@@ -6,110 +6,1051 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       min-height: 100vh;
       background: radial-gradient(circle at top, #1d4ed8 0, #0f172a 45%, #020617 100%);
       color: #e5e7eb;
-      padding: 24px;
+      display: flex;
+      justify-content: center;
+      padding: 24px 12px;
     }
-    .card {
-      max-width: 600px;
-      margin: 0 auto;
-      background: rgba(15, 23, 42, 0.9);
-      border-radius: 16px;
-      padding: 24px 28px;
-      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.8);
-      border: 1px solid rgba(148, 163, 184, 0.4);
+
+    .hidden { display: none !important; }
+
+    .shell {
+      width: 100%;
+      max-width: 1080px;
+      display: flex;
+      gap: 16px;
     }
-    h1 {
+
+    /* BARA LATERALĂ (ascunsă pe mobil) */
+    .sidebar {
+      width: 62px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.82);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 18px 45px rgba(0,0,0,0.55);
+      padding: 16px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .sidebar-logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 12px;
+      background: radial-gradient(circle at 20% 0, #60a5fa, #1d4ed8 45%, #4f46e5 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .sidebar-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 10px rgba(34,197,94,0.8);
+      margin-top: 4px;
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .sidebar-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      border: 0;
+      background: rgba(15, 23, 42, 0.7);
+      color: #9ca3af;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 18px;
+      transition: all 0.18s ease;
+    }
+
+    .sidebar-btn:hover {
+      background: rgba(37, 99, 235, 0.9);
+      color: #f9fafb;
+      transform: translateY(-1px) scale(1.02);
+    }
+
+    .sidebar-btn.active {
+      background: linear-gradient(135deg, #2563eb, #4f46e5);
+      color: #f9fafb;
+      box-shadow: 0 0 0 1px rgba(191,219,254,0.4);
+    }
+
+    .sidebar-bottom {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      font-size: 10px;
+      color: #6b7280;
+    }
+
+    .sidebar-small {
+      font-size: 10px;
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    /* CONȚINUT PRINCIPAL */
+    .main {
+      flex: 1;
+      border-radius: 24px;
+      background: radial-gradient(circle at top left, rgba(59,130,246,0.38), rgba(15,23,42,0.95));
+      box-shadow:
+        0 22px 55px rgba(15, 23, 42, 0.85),
+        0 0 0 1px rgba(148,163,184,0.25);
+      padding: 20px 20px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .main::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 120% -10%, rgba(56,189,248,0.2), transparent 55%);
+      pointer-events: none;
+    }
+
+    .main-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .hello {
+      max-width: 480px;
+    }
+
+    .hello-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.8);
+      border: 1px solid rgba(148,163,184,0.45);
+      font-size: 11px;
+      color: #cbd5f5;
+      margin-bottom: 10px;
+    }
+
+    .hello-badge span.dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 10px rgba(34,197,94,0.9);
+    }
+
+    .hello-title {
       font-size: 22px;
-      margin-bottom: 8px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      margin-bottom: 2px;
     }
-    p {
-      font-size: 14px;
+
+    .hello-sub {
+      font-size: 13px;
+      color: #9ca3af;
+    }
+
+    .user-card {
+      margin-top: 14px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(15,23,42,0.86);
+      border: 1px solid rgba(148,163,184,0.6);
+      font-size: 12px;
+      display: grid;
+      grid-template-columns: 1.3fr 0.9fr 0.8fr;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .user-label {
+      color: #9ca3af;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 3px;
+    }
+
+    .user-value {
+      font-size: 12px;
+      color: #e5e7eb;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .kyc-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(22,163,74,0.12);
+      color: #bbf7d0;
+      font-size: 11px;
+      border: 1px solid rgba(34,197,94,0.4);
+    }
+
+    .kyc-pill-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #22c55e;
+    }
+
+    .logout-btn {
+      justify-self: end;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 0;
+      background: rgba(220,38,38,0.07);
+      color: #fecaca;
+      font-size: 11px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.18s ease;
+    }
+
+    .logout-btn:hover {
+      background: rgba(248,113,113,0.18);
+      transform: translateY(-0.5px);
+    }
+
+    /* CARD REZUMAT */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1.6fr 1.1fr;
+      gap: 14px;
+      margin-bottom: 18px;
+      margin-top: 6px;
+    }
+
+    .card {
+      border-radius: 18px;
+      background: radial-gradient(circle at 0 -40%, rgba(59,130,246,0.5), rgba(15,23,42,0.98));
+      border: 1px solid rgba(148,163,184,0.55);
+      padding: 14px 14px 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 110% 130%, rgba(56,189,248,0.15), transparent 60%);
+      pointer-events: none;
+    }
+
+    .card-inner { position: relative; z-index: 1; }
+
+    .card-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #9ca3af;
+      margin-bottom: 6px;
+    }
+
+    .big-number {
+      font-size: 26px;
+      font-weight: 600;
+      margin-right: 4px;
+    }
+
+    .card-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .pill {
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      border: 1px solid rgba(148,163,184,0.5);
+      color: #e5e7eb;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pill-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+    }
+
+    .pill-dot.green { background: #22c55e; }
+    .pill-dot.amber { background: #fbbf24; }
+    .pill-dot.red   { background: #ef4444; }
+
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .mini-card {
+      border-radius: 12px;
+      background: rgba(15,23,42,0.85);
+      border: 1px solid rgba(51,65,85,0.85);
+      padding: 8px 9px;
+      font-size: 11px;
+    }
+
+    .mini-label {
       color: #9ca3af;
       margin-bottom: 4px;
     }
-    .badge {
-      display: inline-flex;
+
+    .mini-value {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .mini-value span {
+      font-size: 11px;
+      color: #9ca3af;
+      font-weight: 400;
+      margin-left: 2px;
+    }
+
+    /* CARD EVENIMENTE */
+    .events-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 10px;
+      font-size: 12px;
+    }
+
+    .event-line {
+      display: flex;
       align-items: center;
-      padding: 4px 10px;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 6px 7px;
+      border-radius: 10px;
+      background: rgba(15,23,42,0.8);
+      border: 1px solid rgba(51,65,85,0.85);
+    }
+
+    .event-main {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .event-title {
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .event-meta {
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
+    .event-tag {
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      border: 1px solid rgba(148,163,184,0.6);
+      color: #e5e7eb;
+      white-space: nowrap;
+    }
+
+    /* SECȚIUNE DREAPTA */
+    .right-col {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .right-card {
+      border-radius: 18px;
+      background: rgba(15,23,42,0.92);
+      border: 1px solid rgba(148,163,184,0.55);
+      padding: 12px 12px 13px;
+      font-size: 12px;
+    }
+
+    .right-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .right-title {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #9ca3af;
+    }
+
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .status-badge {
+      padding: 3px 8px;
       border-radius: 999px;
       font-size: 11px;
-      background: rgba(34, 197, 94, 0.1);
-      color: #bbf7d0;
-      border: 1px solid rgba(34, 197, 94, 0.4);
-      margin-top: 8px;
-      margin-bottom: 12px;
-    }
-    .label {
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: #6b7280;
-      margin-top: 12px;
-      margin-bottom: 4px;
-    }
-    .value {
-      font-size: 14px;
+      background: rgba(30,64,175,0.7);
+      border: 1px solid rgba(129,140,248,0.7);
       color: #e5e7eb;
     }
-    .btn {
-      margin-top: 20px;
-      display: inline-flex;
-      align-items: center;
-      padding: 8px 14px;
+
+    .status-dots {
+      display: flex;
+      gap: 4px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
       border-radius: 999px;
-      border: none;
-      font-size: 13px;
-      font-weight: 500;
+      background: rgba(148,163,184,0.7);
+    }
+
+    .status-dot.active {
+      background: #22c55e;
+      box-shadow: 0 0 8px rgba(34,197,94,0.7);
+    }
+
+    .right-note {
+      font-size: 11px;
+      color: #9ca3af;
+      line-height: 1.5;
+    }
+
+    .link-inline {
+      color: #93c5fd;
+      text-decoration: underline;
       cursor: pointer;
-      background: rgba(239, 68, 68, 0.1);
-      color: #fecaca;
-      border: 1px solid rgba(239, 68, 68, 0.5);
+    }
+
+    .chips-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .chip {
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px dashed rgba(148,163,184,0.6);
+      font-size: 11px;
+      color: #e5e7eb;
+    }
+
+    /* CHAT AI */
+    .chat-button {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      width: 58px;
+      height: 58px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 0, #bfdbfe, #2563eb 55%, #4f46e5 100%);
+      box-shadow:
+        0 12px 28px rgba(15,23,42,0.9),
+        0 0 0 2px rgba(59,130,246,0.45);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 30;
+      transition: transform 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    .chat-button:hover {
+      transform: translateY(-1px) scale(1.03);
+      box-shadow:
+        0 18px 38px rgba(15,23,42,0.95),
+        0 0 0 2px rgba(96,165,250,0.7);
+    }
+
+    .chat-button-inner {
+      position: relative;
+      width: 34px;
+      height: 34px;
+      border-radius: 18px;
+      background: #020617;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .chat-face-eye {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      box-shadow: 12px 0 0 #e5e7eb;
+    }
+
+    .chat-face-mouth {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 18px;
+      height: 8px;
+      border-radius: 999px;
+      border-bottom: 2px solid #22c55e;
+      border-left: 2px solid transparent;
+      border-right: 2px solid transparent;
+    }
+
+    .chat-online-dot {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 10px rgba(34,197,94,0.9);
+    }
+
+    .chat-window {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      width: 360px;
+      max-width: calc(100vw - 32px);
+      height: 460px;
+      border-radius: 18px;
+      background: radial-gradient(circle at top, #0f172a, #020617 60%);
+      box-shadow:
+        0 24px 55px rgba(15,23,42,0.98),
+        0 0 0 1px rgba(148,163,184,0.6);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 40;
+    }
+
+    .chat-header {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(51,65,85,0.9);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(135deg, #1d4ed8, #4f46e5);
+    }
+
+    .chat-header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #e5e7eb;
+    }
+
+    .chat-header-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      background: #020617;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .chat-header-avatar-eye {
+      width: 5px;
+      height: 5px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      box-shadow: 8px 0 0 #e5e7eb;
+    }
+
+    .chat-header-avatar-dot {
+      position: absolute;
+      bottom: -1px;
+      right: -1px;
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 8px rgba(34,197,94,0.9);
+    }
+
+    .chat-header-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .chat-header-title {
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .chat-header-sub {
+      font-size: 11px;
+      color: #bfdbfe;
+    }
+
+    .chat-close {
+      border: none;
+      background: rgba(15,23,42,0.7);
+      color: #e5e7eb;
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.16s ease;
+    }
+
+    .chat-close:hover {
+      background: rgba(15,23,42,0.95);
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 10px 10px 8px;
+      overflow-y: auto;
+      font-size: 12px;
+    }
+
+    .msg {
+      max-width: 82%;
+      padding: 7px 9px;
+      border-radius: 12px;
+      margin-bottom: 6px;
+      line-height: 1.45;
+    }
+
+    .msg-bot {
+      background: rgba(15,23,42,0.95);
+      border: 1px solid rgba(55,65,81,0.9);
+      border-bottom-left-radius: 2px;
+    }
+
+    .msg-user {
+      background: #2563eb;
+      border-bottom-right-radius: 2px;
+      margin-left: auto;
+    }
+
+    .msg-meta {
+      font-size: 10px;
+      color: #6b7280;
+      margin-top: 2px;
+    }
+
+    .chat-input-area {
+      padding: 8px 10px 10px;
+      border-top: 1px solid rgba(31,41,55,0.95);
+      background: rgba(15,23,42,0.98);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .chat-tips {
+      font-size: 10px;
+      color: #6b7280;
+    }
+
+    .chat-input-row {
+      display: flex;
+      gap: 6px;
+    }
+
+    .chat-input {
+      flex: 1;
+      resize: none;
+      min-height: 34px;
+      max-height: 70px;
+      border-radius: 10px;
+      border: 1px solid rgba(55,65,81,0.95);
+      background: #020617;
+      color: #e5e7eb;
+      padding: 7px 9px;
+      font-size: 12px;
+      outline: none;
+    }
+
+    .chat-send-btn {
+      width: 40px;
+      border-radius: 12px;
+      border: none;
+      background: #2563eb;
+      color: #e5e7eb;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.16s ease, transform 0.1s ease;
+    }
+
+    .chat-send-btn:hover {
+      background: #1d4ed8;
+      transform: translateY(-0.5px);
+    }
+
+    @media (max-width: 900px) {
+      .shell {
+        max-width: 100%;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .shell {
+        max-width: 100%;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .main {
+        padding: 16px 14px 18px;
+      }
+
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .chat-window {
+        right: 10px;
+        left: 10px;
+        width: auto;
+        height: 65vh;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Salut, <span id="userName">angajat</span> 👋</h1>
-    <p>Ai intrat în dashboard-ul SuperParty.</p>
-    <div class="badge">
-      Logat ca <span id="userEmail" style="margin-left:6px;font-weight:600;"></span>
-    </div>
+  <div class="shell">
+    <!-- Bara laterală albastră -->
+    <aside class="sidebar">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <div class="sidebar-logo">
+          <span style="font-size:14px;">SP</span>
+        </div>
+        <div class="sidebar-dot"></div>
+      </div>
 
-    <div class="label">Rol</div>
-    <div class="value" id="userRole">—</div>
+      <div class="sidebar-nav">
+        <button class="sidebar-btn active" title="Dashboard">
+          🏠
+        </button>
+        <button class="sidebar-btn" title="Evenimente">
+          🎈
+        </button>
+        <button class="sidebar-btn" title="Dovezi">
+          📸
+        </button>
+        <button class="sidebar-btn" title="Plăți">
+          💸
+        </button>
+      </div>
 
-    <div class="label">Status KYC</div>
-    <div class="value" id="userKyc">—</div>
+      <div class="sidebar-bottom">
+        <div class="sidebar-small">
+          SuperParty
+          <br/>by AI
+        </div>
+      </div>
+    </aside>
 
-    <button class="btn" id="logoutBtn">Ieșire din cont</button>
+    <!-- Conținut principal -->
+    <main class="main">
+      <div class="main-inner">
+        <div class="top-row">
+          <section class="hello">
+            <div class="hello-badge">
+              <span class="dot"></span>
+              <span>Salut, ești conectat în SuperParty</span>
+            </div>
+            <h1 class="hello-title">Salut, Ursache andrei1995 👋</h1>
+            <p class="hello-sub">
+              Aici vezi evenimentele tale, dovezile foto și poți vorbi cu AI-ul SuperParty.
+            </p>
+
+            <div class="user-card">
+              <div>
+                <div class="user-label">Logat ca</div>
+                <div class="user-value">ursache.andrei1995@gmail.com</div>
+              </div>
+              <div>
+                <div class="user-label">Rol</div>
+                <div class="user-value">angajat</div>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;">
+                <span class="kyc-pill">
+                  <span class="kyc-pill-dot"></span>
+                  KYC: active
+                </span>
+                <button class="logout-btn" onclick="handleLogout()">
+                  ⏻ Ieșire
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Rezumat + carduri -->
+        <section class="summary-grid">
+          <!-- Card stânga mare -->
+          <article class="card">
+            <div class="card-inner">
+              <div class="card-title">Rezumat ziua de azi</div>
+              <div class="card-row">
+                <div>
+                  <span class="big-number">2</span>
+                  <span style="font-size:12px;color:#cbd5f5;">evenimente active azi</span>
+                </div>
+                <span class="pill">
+                  <span class="pill-dot.green pill-dot"></span>
+                  Pregătit de party
+                </span>
+              </div>
+
+              <div class="mini-grid">
+                <div class="mini-card">
+                  <div class="mini-label">Evenimente azi</div>
+                  <div class="mini-value">2 <span>roluri</span></div>
+                </div>
+                <div class="mini-card">
+                  <div class="mini-label">Evenimente weekend</div>
+                  <div class="mini-value">1 <span>programat</span></div>
+                </div>
+                <div class="mini-card">
+                  <div class="mini-label">Dovezi lipsă</div>
+                  <div class="mini-value">3 <span>obligatorii</span></div>
+                </div>
+              </div>
+
+              <div class="events-list">
+                <div class="event-line">
+                  <div class="event-main">
+                    <div class="event-title">🎈 Animație copii - Elsa 2h</div>
+                    <div class="event-meta">Astăzi · 15:00 - 17:00 · București, Sector 3</div>
+                  </div>
+                  <div class="event-tag">📸 Etapa 2 lipsă</div>
+                </div>
+
+                <div class="event-line">
+                  <div class="event-main">
+                    <div class="event-title">🎁 Olaf 2h</div>
+                    <div class="event-meta">Astăzi · 11:00 - 13:00 · Voluntari</div>
+                  </div>
+                  <div class="event-tag">✅ Dovezi ok</div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Col dreapta -->
+          <div class="right-col">
+            <div class="right-card">
+              <div class="right-header">
+                <div class="right-title">Stare generală</div>
+                <div class="status-dots">
+                  <div class="status-dot active"></div>
+                  <div class="status-dot"></div>
+                </div>
+              </div>
+              <div class="status-row">
+                <span class="status-badge">🚗 Fără șofer azi</span>
+              </div>
+              <p class="right-note">
+                Nu ai evenimente care necesită șofer în această zi.
+                Dacă apare un eveniment nou, îl vei vedea aici.
+              </p>
+              <div class="chips-row">
+                <span class="chip">🪪 Contract semnat</span>
+                <span class="chip">✅ KYC validat</span>
+                <span class="chip">🤝 0 conflicte astăzi</span>
+              </div>
+            </div>
+
+            <div class="right-card">
+              <div class="right-header">
+                <div class="right-title">Cum folosești AI-ul?</div>
+              </div>
+              <p class="right-note">
+                În colțul din dreapta jos ai robotul SuperParty AI. Apasă pe el și poți scrie:
+              </p>
+              <ul style="margin-top:6px;margin-left:16px;color:#e5e7eb;font-size:11px;line-height:1.5;">
+                <li>&bdquo;Explică-mi evenimentele mele de azi&rdquo;</li>
+                <li>&bdquo;Ce dovezi îmi lipsesc?&rdquo;</li>
+                <li>&bdquo;Ajută-mă cu regulile SuperParty&rdquo;</li>
+              </ul>
+              <p class="right-note" style="margin-top:6px;">
+                Mai târziu, de aici vei putea deschide și modul <span class="link-inline">admin</span> sau
+                <span class="link-inline">gm</span> (când îl activăm real).
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
   </div>
 
-  <script>
-    // citim din localStorage ce a setat login.html
-    const email   = localStorage.getItem('sp_user_email')   || '';
-    const role    = localStorage.getItem('sp_user_role')    || 'angajat';
-    const status  = localStorage.getItem('sp_user_status')  || '';
-    
-    document.getElementById('userEmail').textContent = email || '(necunoscut)';
-    document.getElementById('userRole').textContent  = role;
-    document.getElementById('userKyc').textContent   = status || '(necunoscut)';
+  <!-- Buton robot AI -->
+  <button id="chatToggle" class="chat-button" aria-label="Deschide chatul AI SuperParty">
+    <div class="chat-button-inner">
+      <div class="chat-face-eye"></div>
+      <div class="chat-face-mouth"></div>
+      <div class="chat-online-dot"></div>
+    </div>
+  </button>
 
-    // nume "din burtă" din email
-    if (email) {
-      const namePart = email.split('@')[0].replace('.', ' ');
-      document.getElementById('userName').textContent =
-        namePart.charAt(0).toUpperCase() + namePart.slice(1);
+  <!-- Fereastră chat AI -->
+  <section id="chatWindow" class="chat-window hidden" aria-label="Chat AI SuperParty">
+    <header class="chat-header">
+      <div class="chat-header-left">
+        <div class="chat-header-avatar">
+          <div class="chat-header-avatar-eye"></div>
+          <div class="chat-header-avatar-dot"></div>
+        </div>
+        <div class="chat-header-text">
+          <div class="chat-header-title">SuperParty AI</div>
+          <div class="chat-header-sub">online · răspunde la întrebări despre evenimente</div>
+        </div>
+      </div>
+      <button class="chat-close" id="chatClose" aria-label="Închide chatul">×</button>
+    </header>
+
+    <div class="chat-messages" id="chatMessages">
+      <div class="msg msg-bot">
+        Hei, Ursache andrei1995 👋<br/>
+        Sunt robotul SuperParty AI. În versiunea asta fac doar demo la interfață, dar în curând
+        vei putea vorbi cu mine despre evenimentele tale reale.
+        <div class="msg-meta">AI · acum</div>
+      </div>
+      <div class="msg msg-bot">
+        Poți încerca să scrii, de exemplu:<br/>
+        <strong>„Explică-mi evenimentele mele de azi”</strong> sau
+        <strong>„Ce dovezi foto îmi lipsesc?”</strong>
+        <div class="msg-meta">AI · acum</div>
+      </div>
+    </div>
+
+    <div class="chat-input-area">
+      <div class="chat-tips">
+        💡 În versiunea curentă, răspunsul este doar de test (nu e încă legat la backend-ul AI real).
+      </div>
+      <div class="chat-input-row">
+        <textarea id="chatInput" class="chat-input" placeholder="Scrie un mesaj pentru AI SuperParty..."></textarea>
+        <button id="chatSend" class="chat-send-btn">➤</button>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    function handleLogout() {
+      // Aici poți adapta la ce aveai înainte (ștergere localStorage / redirect).
+      window.location.href = '/login.html';
     }
 
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      localStorage.removeItem('sp_user_email');
-      localStorage.removeItem('sp_user_role');
-      localStorage.removeItem('sp_user_status');
-      window.location.href = '/login.html';
+    const chatToggle = document.getElementById('chatToggle');
+    const chatWindow = document.getElementById('chatWindow');
+    const chatClose  = document.getElementById('chatClose');
+    const chatInput  = document.getElementById('chatInput');
+    const chatSend   = document.getElementById('chatSend');
+    const chatMessages = document.getElementById('chatMessages');
+
+    function openChat() {
+      chatToggle.classList.add('hidden');
+      chatWindow.classList.remove('hidden');
+      setTimeout(() => chatInput.focus(), 50);
+    }
+
+    function closeChat() {
+      chatWindow.classList.add('hidden');
+      chatToggle.classList.remove('hidden');
+    }
+
+    chatToggle.addEventListener('click', openChat);
+    chatClose.addEventListener('click', closeChat);
+
+    function appendMessage(text, from = 'user') {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'msg ' + (from === 'user' ? 'msg-user' : 'msg-bot');
+      wrapper.innerHTML = text + '<div class="msg-meta">' +
+        (from === 'user' ? 'tu · acum' : 'AI demo · acum') +
+        '</div>';
+      chatMessages.appendChild(wrapper);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function handleSend() {
+      const value = (chatInput.value || '').trim();
+      if (!value) return;
+      appendMessage(value, 'user');
+      chatInput.value = '';
+
+      setTimeout(() => {
+        appendMessage('Acesta este doar un răspuns de test din UI. Integrarea reală cu AI-ul SuperParty o facem separat. 🤖', 'bot');
+      }, 500);
+    }
+
+    chatSend.addEventListener('click', handleSend);
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleSend();
+      }
     });
   </script>
 </body>
