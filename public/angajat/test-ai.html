@@ -16,7 +16,7 @@
       </code>
     </p>
     <p style="margin-top:8px; font-size:14px;">
-      Logat ca: <strong>ursache.andrei1995@gmail.com</strong> (hardcodat aici, doar pentru test).
+      Logat ca: <strong>ursache.andrei1995@gmail.com</strong>
     </p>
   </div>
 
@@ -125,13 +125,13 @@
     const sendBtn = document.getElementById("ai-chat-send");
     const messages = document.getElementById("ai-chat-messages");
 
-    // deschide chat-ul
+    // Deschide chat-ul
     btn.onclick = () => {
       btn.style.display = "none";
       box.style.display = "flex";
     };
 
-    // inchide chat-ul
+    // Închide chat-ul
     closeBtn.onclick = () => {
       box.style.display = "none";
       btn.style.display = "flex";
@@ -141,14 +141,18 @@
       const div = document.createElement("div");
       div.style.marginBottom = "10px";
 
+      const safeText = String(text || "").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
       if (sender === "AI") {
-        div.innerHTML = '<div style="background:#1e293b; padding:8px; border-radius:8px; max-width:85%;">'
-          + text.replace(/\\n/g, "<br>")
-          + '</div>';
+        div.innerHTML =
+          '<div style="background:#1e293b; padding:8px; border-radius:8px; max-width:85%;">' +
+          safeText.replace(/\\n/g, "<br>") +
+          "</div>";
       } else {
-        div.innerHTML = '<div style="background:#1d4ed8; padding:8px; border-radius:8px; max-width:85%; margin-left:auto;">'
-          + text.replace(/\\n/g, "<br>")
-          + '</div>';
+        div.innerHTML =
+          '<div style="background:#1d4ed8; padding:8px; border-radius:8px; max-width:85%; margin-left:auto;">' +
+          safeText.replace(/\\n/g, "<br>") +
+          "</div>";
       }
 
       messages.appendChild(div);
