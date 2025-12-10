@@ -13,160 +13,208 @@
 
     :root {
       --bg-main: #020617;
-      --bg-elevated: #020617;
-      --bg-sidebar: rgba(15, 23, 42, 0.98);
+      --bg-gradient: radial-gradient(circle at top, #1d4ed8 0, #0f172a 45%, #020617 100%);
+      --bg-card: #020617;
+      --bg-card-soft: #020617;
       --accent-blue: #3b82f6;
       --accent-blue-soft: #1d4ed8;
+      --accent-green: #22c55e;
+      --accent-red: #ef4444;
+      --accent-yellow: #facc15;
       --text-main: #e5e7eb;
       --text-muted: #9ca3af;
       --border-subtle: #1f2937;
-      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.8);
-      --radius-lg: 18px;
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.55);
+      --radius-lg: 16px;
       --radius-md: 12px;
+      --radius-pill: 999px;
     }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       min-height: 100vh;
-      background: radial-gradient(circle at top, #1d4ed8 0, #0f172a 45%, #020617 100%);
+      background: var(--bg-gradient);
       color: var(--text-main);
       display: flex;
       align-items: stretch;
-      justify-content: center;
-      padding: 16px;
+      justify-content: stretch;
     }
 
     .app-shell {
-      width: 100%;
-      max-width: 1120px;
-      min-height: calc(100vh - 32px);
-      background: radial-gradient(circle at top, rgba(37, 99, 235, 0.45) 0, #020617 52%, #020617 100%);
-      border-radius: 24px;
-      border: 1px solid rgba(15, 23, 42, 0.9);
-      box-shadow: var(--shadow-soft);
       display: flex;
-      overflow: hidden;
-      position: relative;
+      width: 100%;
+      min-height: 100vh;
+      padding: 16px;
+      gap: 16px;
     }
 
-    /* SIDEBAR */
+    /* ========== SIDEBAR ========== */
 
     .sidebar {
-      width: 230px;
-      background: var(--bg-sidebar);
-      border-right: 1px solid var(--border-subtle);
-      padding: 14px 10px 14px 14px;
+      width: 260px;
+      max-width: 260px;
+      background: rgba(15, 23, 42, 0.95);
+      border-radius: 20px;
+      padding: 18px 16px;
+      box-shadow: var(--shadow-soft);
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      transition: transform 0.25s ease, opacity 0.2s ease;
-    }
-
-    .sidebar.collapsed {
-      transform: translateX(-100%);
-      opacity: 0;
-      pointer-events: none;
+      border: 1px solid rgba(15, 23, 42, 0.9);
     }
 
     .sidebar-header {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
+      margin-bottom: 20px;
     }
 
     .sidebar-logo {
       width: 34px;
       height: 34px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 25% 0, #38bdf8 0, #1d4ed8 40%, #020617 100%);
+      border-radius: 12px;
+      background: radial-gradient(circle at 30% 20%, #60a5fa, #1d4ed8 40%, #0b1120 100%);
       display: flex;
       align-items: center;
       justify-content: center;
+      font-weight: 800;
       font-size: 18px;
-      font-weight: 700;
+      color: #e5e7eb;
+      box-shadow: 0 0 25px rgba(59, 130, 246, 0.7);
     }
 
-    .sidebar-brand {
+    .sidebar-title {
       display: flex;
       flex-direction: column;
-      gap: 2px;
     }
 
-    .sidebar-brand-title {
-      font-size: 14px;
+    .sidebar-title-main {
+      font-size: 16px;
       font-weight: 600;
     }
 
-    .sidebar-brand-sub {
+    .sidebar-title-sub {
       font-size: 11px;
       color: var(--text-muted);
+    }
+
+    .sidebar-section-label {
+      margin: 12px 0 8px;
+      font-size: 11px;
+      text-transform: uppercase;
+      color: #6b7280;
+      letter-spacing: 0.08em;
     }
 
     .sidebar-nav {
       display: flex;
       flex-direction: column;
       gap: 6px;
-      margin-top: 4px;
     }
 
-    .nav-section-label {
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: #6b7280;
-      margin-bottom: 2px;
-    }
-
-    .nav-btn {
-      width: 100%;
-      border-radius: 12px;
-      border: 1px solid transparent;
-      padding: 7px 9px;
-      background: transparent;
-      color: var(--text-main);
-      font-size: 13px;
+    .nav-item {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 13px;
+      color: var(--text-muted);
       cursor: pointer;
+      transition: background 0.18s ease, color 0.18s ease, transform 0.1s ease;
     }
 
-    .nav-btn span.icon {
-      font-size: 15px;
-      width: 18px;
+    .nav-item span.icon {
+      font-size: 16px;
+      width: 22px;
       text-align: center;
     }
 
-    .nav-btn-primary {
-      background: radial-gradient(circle at 0 0, rgba(59, 130, 246, 0.25) 0, #020617 55%);
-      border-color: rgba(59, 130, 246, 0.6);
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.9), rgba(59, 130, 246, 0.9));
+      color: #f9fafb;
     }
 
-    .nav-btn:hover {
-      background: rgba(15, 23, 42, 0.95);
-      border-color: rgba(55, 65, 81, 0.8);
+    .nav-item:hover {
+      background: rgba(15, 23, 42, 0.9);
+      color: #e5e7eb;
+      transform: translateY(-1px);
     }
 
     .sidebar-footer {
       margin-top: auto;
-      font-size: 11px;
+      padding-top: 12px;
+      border-top: 1px solid #111827;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 12px;
       color: var(--text-muted);
     }
 
-    .sidebar-footer strong {
-      color: #e5e7eb;
+    .sidebar-user {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
     }
 
-    /* MAIN CONTENT */
+    .sidebar-user-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .sidebar-user-name {
+      font-size: 13px;
+      color: var(--text-main);
+    }
+
+    .badge-role {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(22, 163, 74, 0.12);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.4);
+    }
+
+    .btn-logout {
+      background: rgba(15, 23, 42, 0.95);
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      padding: 6px 10px;
+      font-size: 11px;
+      color: #9ca3af;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.16s ease;
+    }
+
+    .btn-logout:hover {
+      background: #111827;
+      color: #f9fafb;
+      border-color: #374151;
+    }
+
+    /* ========== MAIN ========== */
 
     .main {
       flex: 1;
       display: flex;
+      align-items: stretch;
+      justify-content: center;
+    }
+
+    .main-inner {
+      max-width: 960px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
       flex-direction: column;
-      padding: 14px 16px 16px 16px;
-      gap: 12px;
-      position: relative;
-      overflow: hidden;
+      gap: 16px;
     }
 
     .top-bar {
@@ -178,687 +226,1043 @@
 
     .top-left {
       display: flex;
-      align-items: center;
-      gap: 8px;
+      flex-direction: column;
+      gap: 6px;
     }
 
-    .sidebar-toggle {
-      width: 32px;
-      height: 32px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.3);
-      background: rgba(15, 23, 42, 0.7);
-      color: var(--text-main);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
+    .hello-text {
+      font-size: 13px;
+      color: #9ca3af;
     }
 
-    .greeting-title {
-      font-size: 18px;
+    .hello-name {
+      font-size: 22px;
       font-weight: 600;
+      letter-spacing: 0.01em;
     }
 
-    .greeting-sub {
-      font-size: 12px;
-      color: var(--text-muted);
+    .hello-name span.gradient {
+      background: linear-gradient(135deg, #60a5fa, #a855f7);
+      -webkit-background-clip: text;
+      color: transparent;
     }
 
-    .user-pill {
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      padding: 4px 10px;
-      font-size: 12px;
+    .top-right {
       display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      color: #9ca3af;
+    }
+
+    .pill {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(55, 65, 81, 0.8);
+      background: rgba(15, 23, 42, 0.8);
+      display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: rgba(15, 23, 42, 0.75);
     }
 
-    .user-pill span.dot {
+    .pill-dot {
       width: 8px;
       height: 8px;
-      border-radius: 999px;
+      border-radius: 50%;
       background: #22c55e;
-    }
-
-    .user-pill span.mail {
-      color: var(--text-muted);
+      box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.2);
     }
 
     .summary-row {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
+      gap: 12px;
     }
 
     .summary-card {
-      border-radius: 14px;
-      border: 1px solid rgba(15, 23, 42, 0.9);
-      background: radial-gradient(circle at top, rgba(37, 99, 235, 0.25) 0, #020617 55%);
-      padding: 10px 11px;
+      background: rgba(15, 23, 42, 0.92);
+      border-radius: 16px;
+      padding: 12px 14px;
+      border: 1px solid rgba(31, 41, 55, 0.9);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      box-shadow: 0 14px 40px rgba(15, 23, 42, 0.6);
+    }
+
+    .summary-label {
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
+    .summary-value {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .summary-tag {
+      font-size: 11px;
+      color: #9ca3af;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .summary-tag span.dot-red {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #ef4444;
+    }
+
+    .summary-tag span.dot-yellow {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #facc15;
+    }
+
+    .events-section {
+      background: rgba(15, 23, 42, 0.96);
+      border-radius: 20px;
+      padding: 16px 16px 20px;
+      border: 1px solid #1f2937;
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .events-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .events-title {
       display: flex;
       flex-direction: column;
       gap: 4px;
     }
 
-    .summary-label {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .summary-value {
-      font-size: 16px;
+    .events-title h2 {
+      font-size: 15px;
       font-weight: 600;
     }
 
-    .summary-extra {
-      font-size: 11px;
+    .events-title span {
+      font-size: 12px;
       color: #9ca3af;
     }
 
-    .content-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1.1fr);
-      gap: 12px;
-      margin-top: 4px;
+    .events-filters {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      font-size: 11px;
     }
 
-    .card-main,
-    .card-side {
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--border-subtle);
-      background: rgba(2, 6, 23, 0.94);
-      padding: 12px;
+    .tag-filter {
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      background: #020617;
+      color: #9ca3af;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.18s ease;
+    }
+
+    .tag-filter.active {
+      background: #1d4ed8;
+      border-color: #3b82f6;
+      color: #e5e7eb;
+    }
+
+    .tag-filter:hover {
+      border-color: #334155;
+      color: #e5e7eb;
+    }
+
+    .events-list {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
     }
 
-    .section-title {
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 2px;
+    .event-card {
+      background: #020617;
+      border-radius: 14px;
+      padding: 12px 12px;
+      border: 1px solid #1f2937;
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .event-card:hover {
+      border-color: #1d4ed8;
+      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.8);
+      transform: translateY(-1px);
+    }
+
+    .event-main {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .event-title-row {
       display: flex;
       align-items: center;
       gap: 6px;
     }
 
-    .section-title span.icon {
-      font-size: 15px;
+    .event-personaj {
+      font-size: 14px;
+      font-weight: 600;
     }
 
-    .event-item {
-      border-radius: 10px;
-      border: 1px solid rgba(31, 41, 55, 0.9);
-      padding: 8px 9px;
-      font-size: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
+    .event-id-pill {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      color: #9ca3af;
       background: rgba(15, 23, 42, 0.9);
-    }
-
-    .event-title {
-      font-size: 13px;
-      font-weight: 500;
     }
 
     .event-meta {
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
-      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .event-chip {
       font-size: 11px;
-    }
-
-    .tag {
+      padding: 3px 7px;
       border-radius: 999px;
-      border: 1px solid rgba(55, 65, 81, 0.9);
-      padding: 1px 7px;
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
+      border: 1px solid #111827;
+      background: #020617;
+      color: #9ca3af;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
     }
 
-    .tag-warning {
-      border-color: #f97316;
-      color: #f97316;
+    .event-chip span.icon {
+      font-size: 13px;
     }
 
-    .tag-ok {
-      border-color: #22c55e;
-      color: #22c55e;
-    }
-
-    .small-note {
+    .event-middle {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
       font-size: 11px;
-      color: var(--text-muted);
+      color: #9ca3af;
     }
 
-    @media (max-width: 900px) {
-      .summary-row {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-      .content-grid {
-        grid-template-columns: minmax(0, 1fr);
-      }
-      .sidebar {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        z-index: 10;
-      }
+    .event-middle strong {
+      color: #e5e7eb;
     }
 
-    @media (max-width: 640px) {
-      .summary-row {
-        grid-template-columns: minmax(0, 1fr);
-      }
+    .event-dovezi {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
     }
 
-    /* ========== WIDGET AI ÎN COLȚ DREAPTA JOS ========== */
+    .dovezi-label {
+      font-size: 11px;
+      color: #9ca3af;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
 
-    .sp-ai-floating-btn {
-      position: fixed;
-      right: 22px;
-      bottom: 22px;
-      width: 54px;
-      height: 54px;
+    .dovezi-steps {
+      display: flex;
+      gap: 6px;
+    }
+
+    .dovezi-step {
+      width: 26px;
+      height: 26px;
       border-radius: 999px;
-      border: none;
-      cursor: pointer;
-      background: radial-gradient(circle at 20% 0, #38bdf8 0, #2563eb 40%, #020617 100%);
-      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.9);
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 9999;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.16s ease;
     }
 
-    .sp-ai-floating-btn span {
-      font-size: 24px;
+    .dovezi-step.valid {
+      background: #22c55e;
+      color: white;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.26);
     }
 
-    .sp-ai-panel {
+    .dovezi-step.missing {
+      background: #ef4444;
+      color: white;
+      animation: pulse 1.6s infinite;
+    }
+
+    .dovezi-step.locked {
+      background: #111827;
+      color: #6b7280;
+      cursor: not-allowed;
+    }
+
+    .btn-small {
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      background: #020617;
+      color: #e5e7eb;
+      font-size: 11px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.16s ease;
+    }
+
+    .btn-small:hover {
+      border-color: #3b82f6;
+      color: #bfdbfe;
+      background: #020617;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.75);
+      }
+      50% {
+        box-shadow: 0 0 0 9px rgba(239, 68, 68, 0);
+      }
+    }
+
+    /* ============ AI WIDGET ============ */
+
+    .ai-launcher {
       position: fixed;
       right: 22px;
       bottom: 22px;
-      width: 360px;
-      max-width: 100%;
-      height: 430px;
-      background: #020617;
-      border-radius: 18px;
-      border: 1px solid #1f2937;
-      box-shadow: 0 22px 55px rgba(15, 23, 42, 0.95);
-      display: none;
-      flex-direction: column;
-      z-index: 9999;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 20%, #60a5fa, #1d4ed8 45%, #020617 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.9), 0 0 25px rgba(59, 130, 246, 0.8);
+      border: 1px solid rgba(37, 99, 235, 0.8);
+      cursor: pointer;
+      z-index: 30;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease;
+    }
+
+    .ai-launcher:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 20px 55px rgba(15, 23, 42, 1), 0 0 35px rgba(59, 130, 246, 1);
+    }
+
+    .ai-launcher-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid rgba(15, 23, 42, 0.8);
+      background: radial-gradient(circle at 30% 20%, #bfdbfe, #1e40af 55%, #020617 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: white;
+      position: relative;
       overflow: hidden;
     }
 
-    .sp-ai-panel-header {
-      padding: 10px 12px 8px;
+    .ai-launcher-eyes {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+    }
+
+    .ai-launcher-eye {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #0f172a;
+      box-shadow: 0 0 0 2px rgba(191, 219, 254, 0.9);
+    }
+
+    .ai-launcher-mouth {
+      position: absolute;
+      bottom: 7px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 14px;
+      height: 6px;
+      border-radius: 999px;
+      border: 2px solid rgba(191, 219, 254, 0.9);
+      border-top: none;
+    }
+
+    .ai-widget {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      width: 340px;
+      max-width: calc(100vw - 32px);
+      height: 380px;
+      max-height: calc(100vh - 80px);
+      background: #020617;
+      border-radius: 20px;
+      box-shadow: 0 22px 60px rgba(15, 23, 42, 0.95);
+      border: 1px solid #1d4ed8;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 40;
+    }
+
+    .ai-widget.visible {
+      display: flex;
+    }
+
+    .ai-header {
+      padding: 10px 12px;
+      border-bottom: 1px solid #1f2937;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid #1f2937;
-      background: radial-gradient(circle at top, #1d4ed8 0, #020617 75%);
+      gap: 8px;
+      background: radial-gradient(circle at top, rgba(37, 99, 235, 0.7), #020617 55%);
     }
 
-    .sp-ai-panel-title {
+    .ai-header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ai-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 12px;
+      background: radial-gradient(circle at 30% 20%, #93c5fd, #1d4ed8 50%, #020617 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: #0b1120;
+      font-weight: 800;
+      box-shadow: 0 0 18px rgba(59, 130, 246, 0.9);
+    }
+
+    .ai-title {
       display: flex;
       flex-direction: column;
       gap: 2px;
     }
 
-    .sp-ai-panel-title-main {
-      font-size: 14px;
+    .ai-title-main {
+      font-size: 13px;
       font-weight: 600;
     }
 
-    .sp-ai-panel-title-sub {
+    .ai-title-sub {
       font-size: 11px;
-      color: #9ca3af;
+      color: #bfdbfe;
     }
 
-    .sp-ai-panel-close {
-      border: none;
-      background: transparent;
-      color: #9ca3af;
+    .ai-status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 5px rgba(34, 197, 94, 0.3);
+    }
+
+    .ai-btn-close {
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
       cursor: pointer;
-      font-size: 18px;
-      line-height: 1;
+      color: #9ca3af;
+      transition: all 0.16s ease;
     }
 
-    .sp-ai-panel-body {
+    .ai-btn-close:hover {
+      background: #111827;
+      color: #e5e7eb;
+      border-color: #374151;
+    }
+
+    .ai-body {
       flex: 1;
+      padding: 10px 10px 6px;
       display: flex;
       flex-direction: column;
-      padding: 8px 10px 10px;
+      gap: 8px;
+      overflow: hidden;
+    }
+
+    .ai-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 4px;
+      scrollbar-width: thin;
+      scrollbar-color: #1f2937 #020617;
+      display: flex;
+      flex-direction: column;
       gap: 6px;
     }
 
-    .sp-ai-email-row {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-      margin-bottom: 2px;
+    .ai-messages::-webkit-scrollbar {
+      width: 6px;
     }
 
-    .sp-ai-email-row label {
+    .ai-messages::-webkit-scrollbar-track {
+      background: #020617;
+    }
+
+    .ai-messages::-webkit-scrollbar-thumb {
+      background: #1f2937;
+      border-radius: 999px;
+    }
+
+    .ai-message {
+      max-width: 90%;
+      font-size: 12px;
+      line-height: 1.4;
+      padding: 7px 9px;
+      border-radius: 10px;
+      border: 1px solid #1f2937;
+    }
+
+    .ai-message.ai {
+      align-self: flex-start;
+      background: #020617;
+      color: #e5e7eb;
+    }
+
+    .ai-message.user {
+      align-self: flex-end;
+      background: #1d4ed8;
+      color: #f9fafb;
+      border-color: #2563eb;
+    }
+
+    .ai-hint {
       font-size: 11px;
       color: #9ca3af;
+      padding: 4px 2px 0;
     }
 
-    .sp-ai-email-row input {
-      width: 100%;
-      border-radius: 10px;
-      border: 1px solid #1f2937;
-      background: #020617;
-      color: #e5e7eb;
-      font-size: 12px;
-      padding: 6px 8px;
-      outline: none;
-    }
-
-    .sp-ai-chat-log {
-      flex: 1;
-      border-radius: 12px;
-      border: 1px solid #1f2937;
-      background: #020617;
-      padding: 8px;
-      overflow-y: auto;
-      font-size: 12px;
-    }
-
-    .sp-ai-msg {
-      margin-bottom: 6px;
-      line-height: 1.4;
-      white-space: pre-wrap;
-    }
-
-    .sp-ai-msg-user {
-      text-align: right;
-    }
-
-    .sp-ai-msg-user span {
-      display: inline-block;
-      background: #1d4ed8;
-      color: #e5e7eb;
-      padding: 4px 8px;
-      border-radius: 999px 0 999px 999px;
-      max-width: 90%;
-    }
-
-    .sp-ai-msg-ai span {
-      display: inline-block;
-      background: #020617;
-      border: 1px solid #1f2937;
-      padding: 4px 8px;
-      border-radius: 0 999px 999px 999px;
-      max-width: 90%;
-    }
-
-    .sp-ai-input-row {
+    .ai-input-area {
+      padding: 6px 8px 8px;
+      border-top: 1px solid #1f2937;
       display: flex;
       flex-direction: column;
-      gap: 4px;
-      margin-top: 4px;
+      gap: 6px;
+      background: #020617;
     }
 
-    .sp-ai-input-row textarea {
-      width: 100%;
-      border-radius: 10px;
+    .ai-input-row {
+      display: flex;
+      gap: 6px;
+    }
+
+    .ai-input {
+      flex: 1;
+      border-radius: 999px;
       border: 1px solid #1f2937;
       background: #020617;
       color: #e5e7eb;
       font-size: 12px;
-      padding: 6px 8px;
+      padding: 7px 10px;
       outline: none;
       resize: none;
-      min-height: 50px;
-      max-height: 80px;
+      height: 34px;
     }
 
-    .sp-ai-input-actions {
-      display: flex;
-      justify-content: flex-end;
-      margin-top: 4px;
+    .ai-input::placeholder {
+      color: #6b7280;
     }
 
-    .sp-ai-send-btn {
+    .ai-send-btn {
+      width: 34px;
+      height: 34px;
       border-radius: 999px;
-      border: none;
-      padding: 6px 12px;
-      font-size: 12px;
-      font-weight: 500;
+      border: 1px solid #1d4ed8;
+      background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
-      background: linear-gradient(90deg, #2563eb, #4f46e5);
-      color: white;
-      min-width: 80px;
+      font-size: 16px;
+      color: #e5e7eb;
+      transition: all 0.16s ease;
     }
 
-    .sp-ai-send-btn:disabled {
-      opacity: 0.5;
-      cursor: default;
+    .ai-send-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 25px rgba(37, 99, 235, 0.7);
     }
 
-    .sp-ai-status {
-      margin-top: 4px;
-      font-size: 10px;
+    .ai-typing {
+      font-size: 11px;
       color: #9ca3af;
-      min-height: 12px;
+      min-height: 14px;
+    }
+
+    /* ============ RESPONSIVE ============ */
+
+    @media (max-width: 960px) {
+      .app-shell {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        flex-direction: row;
+        width: 100%;
+        max-width: 100%;
+        padding: 10px 12px;
+        border-radius: 14px;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .sidebar-header {
+        margin-bottom: 0;
+      }
+
+      .sidebar-section-label {
+        display: none;
+      }
+
+      .sidebar-nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+      }
+
+      .sidebar-footer {
+        margin-top: 0;
+        margin-left: auto;
+        border-top: none;
+        padding-top: 0;
+        align-items: flex-end;
+      }
+
+      .sidebar-user-name {
+        display: none;
+      }
+
+      .main-inner {
+        max-width: 100%;
+      }
+
+      .event-card {
+        grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.2fr);
+        grid-template-rows: auto auto;
+      }
+
+      .event-dovezi {
+        grid-column: 1 / -1;
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .summary-row {
+        grid-template-columns: 1fr;
+      }
+
+      .events-section {
+        padding: 12px 10px 14px;
+      }
+
+      .ai-widget {
+        right: 8px;
+        left: 8px;
+        width: auto;
+      }
     }
   </style>
 </head>
 <body>
   <div class="app-shell">
     <!-- SIDEBAR -->
-    <aside class="sidebar" id="sidebar">
+    <aside class="sidebar">
       <div class="sidebar-header">
         <div class="sidebar-logo">SP</div>
-        <div class="sidebar-brand">
-          <div class="sidebar-brand-title">SuperParty</div>
-          <div class="sidebar-brand-sub">Dashboard angajat</div>
+        <div class="sidebar-title">
+          <span class="sidebar-title-main">SuperParty</span>
+          <span class="sidebar-title-sub">Dashboard angajat</span>
         </div>
       </div>
 
-      <div>
-        <div class="nav-section-label">Evenimente</div>
-        <button class="nav-btn nav-btn-primary">
+      <div class="sidebar-section-label">Navigare</div>
+      <nav class="sidebar-nav">
+        <div class="nav-item active">
           <span class="icon">🎈</span>
-          <span>Evenimentele mele</span>
-        </button>
-        <button class="nav-btn">
+          <span>Evenimente mele</span>
+        </div>
+        <div class="nav-item">
           <span class="icon">📸</span>
-          <span>Dovezi & upload poze</span>
-        </button>
-        <button class="nav-btn">
-          <span class="icon">🧾</span>
+          <span>Dovezi & poze</span>
+        </div>
+        <div class="nav-item">
+          <span class="icon">📄</span>
+          <span>Contract & KYC</span>
+        </div>
+        <div class="nav-item">
+          <span class="icon">💰</span>
           <span>Plăți & tips</span>
-        </button>
-      </div>
-
-      <div>
-        <div class="nav-section-label">Cont</div>
-        <button class="nav-btn">
-          <span class="icon">🪪</span>
-          <span>KYC & contract</span>
-        </button>
-        <button class="nav-btn">
-          <span class="icon">⚙️</span>
-          <span>Setări profil</span>
-        </button>
-      </div>
+        </div>
+      </nav>
 
       <div class="sidebar-footer">
-        Logat ca: <strong>angajat SuperParty</strong><br />
-        Pentru acces admin/GM folosește comanda secretă în AI.
+        <div class="sidebar-user">
+          <div class="sidebar-user-info">
+            <span class="sidebar-user-name">Andrei Ursache</span>
+            <span class="badge-role">Angajat activ</span>
+          </div>
+          <button class="btn-logout" onclick="window.location.href='/login.html'">
+            <span>Ieșire</span>
+          </button>
+        </div>
       </div>
     </aside>
 
-    <!-- MAIN CONTENT -->
+    <!-- MAIN -->
     <main class="main">
-      <header class="top-bar">
-        <div class="top-left">
-          <button class="sidebar-toggle" id="sidebarToggle" title="Deschide/închide meniul">
-            ☰
-          </button>
-          <div>
-            <div class="greeting-title">Salut, Andrei 👋</div>
-            <div class="greeting-sub">
-              Aici vezi evenimentele tale, dovezile și poți vorbi cu AI-ul SuperParty.
+      <div class="main-inner">
+        <div class="top-bar">
+          <div class="top-left">
+            <div class="hello-text">Salut, Andrei 👋</div>
+            <div class="hello-name">
+              Vezi evenimentele tale <span class="gradient">de azi</span>
             </div>
           </div>
-        </div>
-        <div class="user-pill">
-          <span class="dot"></span>
-          <span>Angajat activ</span>
-          <span class="mail" id="userEmailPill">n/a</span>
-        </div>
-      </header>
-
-      <section class="summary-row">
-        <div class="summary-card">
-          <div class="summary-label">Evenimente azi</div>
-          <div class="summary-value">2</div>
-          <div class="summary-extra">Nu uita de pozele obligatorii la fiecare rol.</div>
-        </div>
-        <div class="summary-card">
-          <div class="summary-label">Evenimente weekend</div>
-          <div class="summary-value">1</div>
-          <div class="summary-extra">Verifică bagajul din timp pentru sâmbătă.</div>
-        </div>
-        <div class="summary-card">
-          <div class="summary-label">Dovezi lipsă</div>
-          <div class="summary-value">3</div>
-          <div class="summary-extra">AI-ul te poate ghida ce poze trebuie să faci.</div>
-        </div>
-      </section>
-
-      <section class="content-grid">
-        <div class="card-main">
-          <div class="section-title">
-            <span class="icon">🎈</span>
-            Evenimentele mele
-          </div>
-          <div class="event-item">
-            <div class="event-title">EVT_001 · Elsa 2h animație copii</div>
-            <div class="event-meta">
-              <span>Astăzi, 17:00–19:00</span>
-              <span>· Sector 3</span>
-              <span class="tag tag-warning">dovezi incomplete</span>
-            </div>
-            <div class="small-note">
-              Lipsesc pozele de la etapa „Am ajuns”. Întreabă AI-ul cum trebuie făcute ca să nu fie respinse.
-            </div>
-          </div>
-          <div class="event-item">
-            <div class="event-title">EVT_002 · Olaf 1.5h animație copii</div>
-            <div class="event-meta">
-              <span>Mâine, 11:30–13:00</span>
-              <span>· Ilfov</span>
-              <span class="tag tag-ok">pregătit</span>
-            </div>
-            <div class="small-note">
-              Bagajul este marcat ok. AI-ul te poate ajuta cu checklist de recuzită dacă ai dubii.
+          <div class="top-right">
+            <div class="pill">
+              <div class="pill-dot"></div>
+              <span>Conectat la SuperParty AI</span>
             </div>
           </div>
         </div>
 
-        <div class="card-side">
-          <div class="section-title">
-            <span class="icon">📸</span>
-            Rezumat dovezi & KYC
-          </div>
-          <div class="small-note">
-            - KYC: verificare act + selfie + contract acceptat.<br />
-            - Status cont: <strong>active</strong> (poți lucra normal).<br />
-            - Dacă vezi „pending_approval” sau „blocked”, cere detalii AI-ului sau adminului.
-          </div>
-          <div style="margin-top: 8px;">
-            <div class="section-title" style="font-size: 12px; margin-bottom: 4px;">
-              <span class="icon">🤖</span>
-              Idei de comenzi pentru AI
+        <div class="summary-row">
+          <div class="summary-card">
+            <div class="summary-label">Evenimente azi</div>
+            <div class="summary-value">2</div>
+            <div class="summary-tag">
+              <span class="dot-red"></span> 1 cu dovezi lipsă
             </div>
-            <ul class="small-note" style="padding-left: 14px; line-height: 1.6;">
-              <li>„ce dovezi trebuie să fac la EVT_001?”</li>
-              <li>„explică-mi pașii bagaj / am ajuns / final”</li>
-              <li>„ce înseamnă status pending_approval la cont?”</li>
-              <li>„ce poze sunt respinse de obicei?”</li>
-            </ul>
+          </div>
+          <div class="summary-card">
+            <div class="summary-label">Evenimente weekend</div>
+            <div class="summary-value">1</div>
+            <div class="summary-tag">
+              <span class="dot-yellow"></span> 1 în așteptare bagaj
+            </div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-label">Status dovezi</div>
+            <div class="summary-value">3 / 6</div>
+            <div class="summary-tag">
+              <span>📸</span> etape validate
+            </div>
           </div>
         </div>
-      </section>
+
+        <section class="events-section">
+          <div class="events-header">
+            <div class="events-title">
+              <h2>Evenimentele tale</h2>
+              <span>Apasă pe un eveniment pentru detalii sau pe bulinele 📸 pentru poze</span>
+            </div>
+            <div class="events-filters">
+              <button class="tag-filter active">Azi</button>
+              <button class="tag-filter">Weekend</button>
+              <button class="tag-filter">Toate</button>
+            </div>
+          </div>
+
+          <div class="events-list">
+            <!-- EVT 001 -->
+            <article class="event-card" onclick="openAiWithQuestion('Ce dovezi trebuie să fac la EVT_001?')">
+              <div class="event-main">
+                <div class="event-title-row">
+                  <span class="event-personaj">Elsa 2h + Olaf 2h</span>
+                  <span class="event-id-pill">ID: EVT_001</span>
+                </div>
+                <div class="event-meta">
+                  <div class="event-chip">
+                    <span class="icon">📅</span> Azi · 15:00 - 17:00
+                  </div>
+                  <div class="event-chip">
+                    <span class="icon">📍</span> București, Sector 3
+                  </div>
+                  <div class="event-chip">
+                    <span class="icon">👤</span> Maria Ionescu · 0722 456 789
+                  </div>
+                </div>
+              </div>
+              <div class="event-middle">
+                <div><strong>Rol principal:</strong> Animație copii</div>
+                <div><strong>Șofer:</strong> Nu necesită</div>
+                <div><strong>Plată:</strong> 650 lei · cash</div>
+              </div>
+              <div class="event-dovezi" onclick="event.stopPropagation();">
+                <div class="dovezi-label">
+                  <span>📸 Dovezi EVT_001</span>
+                </div>
+                <div class="dovezi-steps">
+                  <div class="dovezi-step valid" title="Etapa 1 - Bagaj validat">1</div>
+                  <div class="dovezi-step missing" title="Etapa 2 - Lipsă, trebuie poze">2</div>
+                  <div class="dovezi-step locked" title="Etapa 3 - Se deblochează după etapa 2">3</div>
+                </div>
+                <button class="btn-small" onclick="openAiWithQuestion('Ce dovezi foto trebuie să fac exact la EVT_001, la toate etapele?')">
+                  🤖 Întreabă AI despre dovezi
+                </button>
+              </div>
+            </article>
+
+            <!-- EVT 002 -->
+            <article class="event-card">
+              <div class="event-main">
+                <div class="event-title-row">
+                  <span class="event-personaj">Spider-Man 2h</span>
+                  <span class="event-id-pill">ID: EVT_002</span>
+                </div>
+                <div class="event-meta">
+                  <div class="event-chip">
+                    <span class="icon">📅</span> Azi · 11:00 - 13:00
+                  </div>
+                  <div class="event-chip">
+                    <span class="icon">📍</span> Voluntari (18 km)
+                  </div>
+                  <div class="event-chip">
+                    <span class="icon">👤</span> Ion Popescu · 0721 123 456
+                  </div>
+                </div>
+              </div>
+              <div class="event-middle">
+                <div><strong>Rol principal:</strong> Super eroi</div>
+                <div><strong>Șofer:</strong> Necesar</div>
+                <div><strong>Plată:</strong> 450 lei · transfer</div>
+              </div>
+              <div class="event-dovezi">
+                <div class="dovezi-label">
+                  <span>📸 Dovezi EVT_002</span>
+                </div>
+                <div class="dovezi-steps">
+                  <div class="dovezi-step valid" title="Etapa 1 - Validat">1</div>
+                  <div class="dovezi-step valid" title="Etapa 2 - Validat">2</div>
+                  <div class="dovezi-step missing" title="Etapa 3 - Lipsă">3</div>
+                </div>
+                <button class="btn-small" onclick="openAiWithQuestion('Ajută-mă cu dovezile și statusul pentru EVT_002.')">
+                  🤖 Ajutor rapid AI
+                </button>
+              </div>
+            </article>
+
+            <!-- EVT 003 weekend -->
+            <article class="event-card">
+              <div class="event-main">
+                <div class="event-title-row">
+                  <span class="event-personaj">Frozen + Balloon show</span>
+                  <span class="event-id-pill">ID: EVT_003</span>
+                </div>
+                <div class="event-meta">
+                  <div class="event-chip">
+                    <span class="icon">📅</span> Sâmbătă · 17:00 - 20:00
+                  </div>
+                  <div class="event-chip">
+                    <span class="icon">📍</span> Otopeni
+                  </div>
+                  <div class="event-chip">
+                    <span class="icon">👤</span> Andreea Marinescu
+                  </div>
+                </div>
+              </div>
+              <div class="event-middle">
+                <div><strong>Rol principal:</strong> Animație + baloane</div>
+                <div><strong>Șofer:</strong> Se decide</div>
+                <div><strong>Plată:</strong> 900 lei · în curs</div>
+              </div>
+              <div class="event-dovezi">
+                <div class="dovezi-label">
+                  <span>📸 Dovezi EVT_003</span>
+                </div>
+                <div class="dovezi-steps">
+                  <div class="dovezi-step locked" title="Etapele se activează în ziua evenimentului">1</div>
+                  <div class="dovezi-step locked">2</div>
+                  <div class="dovezi-step locked">3</div>
+                </div>
+                <button class="btn-small" onclick="openAiWithQuestion('Ce trebuie să pregătesc la bagaj și la dovezi pentru EVT_003?')">
+                  🤖 Planifică cu AI
+                </button>
+              </div>
+            </article>
+          </div>
+        </section>
+      </div>
     </main>
   </div>
 
-  <!-- ========== SUPERPARTY AI – WIDGET DASHBOARD ANGAJAT ========== -->
-  <div id="sp-ai-widget">
-    <button class="sp-ai-floating-btn" id="spAiOpenBtn" title="SuperParty AI">
-      <span>🤖</span>
-    </button>
-
-    <div class="sp-ai-panel" id="spAiPanel">
-      <div class="sp-ai-panel-header">
-        <div class="sp-ai-panel-title">
-          <div class="sp-ai-panel-title-main">SuperParty AI</div>
-          <div class="sp-ai-panel-title-sub">Asistent pentru dovezi, KYC și status cont</div>
-        </div>
-        <button class="sp-ai-panel-close" id="spAiCloseBtn" aria-label="Închide AI">×</button>
+  <!-- AI LAUNCHER -->
+  <div class="ai-launcher" id="aiLauncher" onclick="openAiWidget()">
+    <div class="ai-launcher-icon">
+      <div class="ai-launcher-eyes">
+        <div class="ai-launcher-eye"></div>
+        <div class="ai-launcher-eye"></div>
       </div>
+      <div class="ai-launcher-mouth"></div>
+    </div>
+  </div>
 
-      <div class="sp-ai-panel-body">
-        <div class="sp-ai-email-row">
-          <label for="spAiEmail">Email angajat (folosit ca ID în istoricul de chat):</label>
-          <input id="spAiEmail" type="email" placeholder="ex: nume@superparty.ro" />
+  <!-- AI WIDGET -->
+  <div class="ai-widget" id="aiWidget">
+    <div class="ai-header">
+      <div class="ai-header-left">
+        <div class="ai-avatar">AI</div>
+        <div class="ai-title">
+          <span class="ai-title-main">SuperParty AI</span>
+          <span class="ai-title-sub">Îți verifică dovezile și evenimentele</span>
         </div>
-
-        <div class="sp-ai-chat-log" id="spAiChatLog"></div>
-
-        <div class="sp-ai-input-row">
-          <textarea id="spAiInput" placeholder='Ex: "ce dovezi trebuie să fac la EVT_001?"'></textarea>
-          <div class="sp-ai-input-actions">
-            <button class="sp-ai-send-btn" id="spAiSendBtn">Trimite</button>
-          </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div class="ai-status-dot"></div>
+        <button class="ai-btn-close" onclick="closeAiWidget()">×</button>
+      </div>
+    </div>
+    <div class="ai-body">
+      <div class="ai-messages" id="aiMessages">
+        <div class="ai-message ai">
+          Salut, Andrei 👋<br/>
+          Îți pot explica ce dovezi foto trebuie la EVT_001, îți pot verifica statusul evenimentelor și îți pot reaminti pașii obligatorii (bagaj, am ajuns, returnare).
         </div>
-
-        <div class="sp-ai-status" id="spAiStatus"></div>
+        <div class="ai-message ai">
+          Scrie ceva de genul:<br/>
+          <strong>„ce dovezi trebuie să fac la EVT_001?”</strong><br/>
+          sau<br/>
+          <strong>„verifică-mi dovezile la EVT_002”</strong>.
+        </div>
+      </div>
+      <div class="ai-hint">
+        🔒 Modul admin & GM nu se vede aici – doar tu și evenimentele tale.
+      </div>
+      <div class="ai-input-area">
+        <div class="ai-input-row">
+          <input id="aiInput" class="ai-input" type="text" placeholder="Scrie întrebarea ta (ex: ce dovezi trebuie la EVT_001?)" onkeydown="if(event.key==='Enter'){event.preventDefault();sendAiMessage();}" />
+          <button class="ai-send-btn" onclick="sendAiMessage()">➤</button>
+        </div>
+        <div class="ai-typing" id="aiTyping"></div>
       </div>
     </div>
   </div>
 
   <script>
-    // Backend PROD actual – același ca în test-ai.html
-    const SP_AI_BACKEND_URL =
-      "https://script.google.com/macros/s/AKfycbxs819m4gt-tpTkAIIS91EnxhwYx-5wdbnh6Zi5_GcY14zs5XYqS9ykFuYCCcokhQ/exec";
+    const aiLauncher = document.getElementById('aiLauncher');
+    const aiWidget = document.getElementById('aiWidget');
+    const aiMessages = document.getElementById('aiMessages');
+    const aiInput = document.getElementById('aiInput');
+    const aiTyping = document.getElementById('aiTyping');
 
-    const sidebar       = document.getElementById("sidebar");
-    const sidebarToggle = document.getElementById("sidebarToggle");
-    const userEmailPill = document.getElementById("userEmailPill");
-
-    if (sidebarToggle && sidebar) {
-      sidebarToggle.addEventListener("click", function () {
-        sidebar.classList.toggle("collapsed");
-      });
+    function openAiWidget() {
+      aiLauncher.style.display = 'none';
+      aiWidget.classList.add('visible');
+      aiInput.focus();
     }
 
-    try {
-      const savedEmail = localStorage.getItem("superparty_user_email");
-      if (savedEmail && userEmailPill) {
-        userEmailPill.textContent = savedEmail;
-      }
-    } catch (e) {}
-
-    // WIDGET AI
-    const spAiOpenBtn  = document.getElementById("spAiOpenBtn");
-    const spAiCloseBtn = document.getElementById("spAiCloseBtn");
-    const spAiPanel    = document.getElementById("spAiPanel");
-    const spAiEmail    = document.getElementById("spAiEmail");
-    const spAiInput    = document.getElementById("spAiInput");
-    const spAiSendBtn  = document.getElementById("spAiSendBtn");
-    const spAiChatLog  = document.getElementById("spAiChatLog");
-    const spAiStatus   = document.getElementById("spAiStatus");
-
-    try {
-      const savedEmail2 = localStorage.getItem("superparty_user_email");
-      if (savedEmail2 && spAiEmail) {
-        spAiEmail.value = savedEmail2;
-      }
-    } catch (e) {}
-
-    function spAiAddMessage(role, text) {
-      const div = document.createElement("div");
-      div.className = "sp-ai-msg " + (role === "USER" ? "sp-ai-msg-user" : "sp-ai-msg-ai");
-
-      const bubble = document.createElement("span");
-      bubble.textContent = text;
-
-      div.appendChild(bubble);
-      spAiChatLog.appendChild(div);
-      spAiChatLog.scrollTop = spAiChatLog.scrollHeight;
+    function closeAiWidget() {
+      aiWidget.classList.remove('visible');
+      aiLauncher.style.display = 'flex';
     }
 
-    function spAiSetStatus(text) {
-      if (spAiStatus) spAiStatus.textContent = text || "";
+    function appendMessage(text, sender) {
+      const div = document.createElement('div');
+      div.className = 'ai-message ' + (sender === 'user' ? 'user' : 'ai');
+      div.innerHTML = text;
+      aiMessages.appendChild(div);
+      aiMessages.scrollTop = aiMessages.scrollHeight;
     }
 
-    async function spAiSend() {
-      const email = (spAiEmail.value || "").trim();
-      const msg   = (spAiInput.value || "").trim();
+    function fakeAiAnswer(userText) {
+      let reply;
 
-      if (!email) {
-        alert("Te rog introdu emailul tău de angajat.");
-        return;
+      if (userText.toLowerCase().includes('001')) {
+        reply = `
+          Pentru <strong>EVT_001</strong> ai 3 etape de dovezi:<br/><br/>
+          <strong>1) Bagaj</strong> – poză clară cu tot echipamentul pregătit (costum, recuzită) înainte să pleci.<br/>
+          <strong>2) Am ajuns</strong> – poză cu tine în costum la locație, cu copii/decor în fundal.<br/>
+          <strong>3) Final/returnare</strong> – poză cu costumul și recuzita întoarsă complet, în stare bună.<br/><br/>
+          Nu recicla poze vechi – sistemul verifică data, locația și dacă poza a mai fost folosită.`;
+      } else if (userText.toLowerCase().includes('002')) {
+        reply = `
+          La <strong>EVT_002</strong> văd că:<br/>
+          ✔ Etapa 1 (bagaj) – validat<br/>
+          ✔ Etapa 2 (am ajuns) – validat<br/>
+          ⚠ Etapa 3 (returnare) – lipsă<br/><br/>
+          Ai nevoie de o poză clară cu recuzita și costumul după eveniment, la locul de returnare.`;
+      } else {
+        reply = `
+          Am înțeles. Eu sunt SuperParty AI pentru angajați.<br/><br/>
+          Pot să te ajut cu:<br/>
+          • ce dovezi foto trebuie la un eveniment (ex: EVT_001, EVT_002)<br/>
+          • status dovezi (validat / lipsă / blocat)<br/>
+          • pași de urmat pentru bagaj, sosire și returnare.<br/><br/>
+          Încearcă: <strong>„ce dovezi trebuie să fac la EVT_001?”</strong>`;
       }
-      if (!msg) {
-        alert("Scrie un mesaj pentru AI.");
-        return;
-      }
 
-      spAiAddMessage("USER", msg);
-      spAiInput.value = "";
-      spAiSetStatus("Se trimite către AI...");
-      spAiSendBtn.disabled = true;
-
-      try {
-        const url =
-          SP_AI_BACKEND_URL +
-          "?action=chat_angajat" +
-          "&email="   + encodeURIComponent(email) +
-          "&message=" + encodeURIComponent(msg);
-
-        const res  = await fetch(url);
-        const data = await res.json();
-
-        if (!data.success) {
-          const errText = data.error || "Eroare necunoscută de la backend.";
-          spAiAddMessage("AI", "Eroare AI: " + errText);
-          spAiSetStatus("Eroare AI. Vezi mesajul din chat.");
-        } else {
-          spAiAddMessage("AI", data.reply || "(răspuns gol)");
-          spAiSetStatus("Răspuns primit de la AI.");
-        }
-      } catch (err) {
-        spAiAddMessage("AI", "Eroare rețea / browser: " + err.message);
-        spAiSetStatus("Eroare de rețea / browser.");
-      } finally {
-        spAiSendBtn.disabled = false;
-      }
+      appendMessage(reply, 'ai');
     }
 
-    if (spAiOpenBtn && spAiPanel && spAiCloseBtn) {
-      spAiOpenBtn.addEventListener("click", function () {
-        spAiPanel.style.display = "flex";
-        spAiOpenBtn.style.display = "none";
+    function sendAiMessage() {
+      const text = (aiInput.value || '').trim();
+      if (!text) return;
 
-        if (!spAiChatLog.hasChildNodes()) {
-          spAiAddMessage(
-            "AI",
-            'Salut! Sunt SuperParty AI. Scrie-mi ce ai nevoie legat de dovezi, evenimente, KYC sau status cont. De exemplu: "ce dovezi trebuie să fac la EVT_001?"'
-          );
-        }
-      });
+      appendMessage(text, 'user');
+      aiInput.value = '';
+      aiTyping.textContent = 'AI-ul SuperParty gândește răspunsul...';
 
-      spAiCloseBtn.addEventListener("click", function () {
-        spAiPanel.style.display = "none";
-        spAiOpenBtn.style.display = "flex";
-        spAiSetStatus("");
-      });
+      setTimeout(() => {
+        fakeAiAnswer(text);
+        aiTyping.textContent = '';
+      }, 700);
     }
 
-    if (spAiSendBtn && spAiInput) {
-      spAiSendBtn.addEventListener("click", spAiSend);
-
-      spAiInput.addEventListener("keydown", function (e) {
-        if (e.key === "Enter" && !e.shiftKey) {
-          e.preventDefault();
-          spAiSend();
-        }
-      });
+    function openAiWithQuestion(question) {
+      if (aiWidget.classList.contains('visible') === false) {
+        openAiWidget();
+      }
+      aiInput.value = question;
+      aiInput.focus();
     }
   </script>
 </body>
