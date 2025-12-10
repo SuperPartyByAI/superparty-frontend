@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       min-height: 100vh;
@@ -17,8 +16,7 @@
       padding: 16px;
       color: #e5e7eb;
     }
-
-    .login-card {
+    .card {
       background: rgba(15, 23, 42, 0.95);
       border-radius: 18px;
       padding: 24px 28px;
@@ -26,27 +24,11 @@
       width: 100%;
       box-shadow: 0 22px 60px rgba(15, 23, 42, 0.65);
       border: 1px solid rgba(148, 163, 184, 0.35);
+      font-size: 14px;
     }
-
-    .login-title {
-      font-size: 22px;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .login-subtitle {
-      font-size: 13px;
-      color: #9ca3af;
-      margin-bottom: 18px;
-    }
-
-    label {
-      font-size: 13px;
-      margin-bottom: 4px;
-      display: block;
-      color: #e5e7eb;
-    }
-
+    .title { font-size: 22px; font-weight: 600; margin-bottom: 4px; }
+    .subtitle { font-size: 13px; color: #9ca3af; margin-bottom: 18px; }
+    label { font-size: 13px; margin-bottom: 4px; display: block; }
     input {
       width: 100%;
       padding: 10px 11px;
@@ -58,12 +40,10 @@
       margin-bottom: 12px;
       outline: none;
     }
-
     input:focus {
       border-color: #3b82f6;
-      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.6);
+      box-shadow: 0 0 0 1px rgba(59,130,246,0.6);
     }
-
     .btn {
       width: 100%;
       border: none;
@@ -72,57 +52,25 @@
       font-size: 14px;
       font-weight: 500;
       cursor: pointer;
-      background: linear-gradient(135deg, #2563eb, #38bdf8);
+      background: linear-gradient(135deg,#2563eb,#38bdf8);
       color: white;
       margin-top: 4px;
       margin-bottom: 8px;
-      transition: transform 0.05s ease, box-shadow 0.06s ease, opacity 0.12s ease;
     }
-
-    .btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 16px 30px rgba(37, 99, 235, 0.55);
+    .btn:disabled { opacity: .6; cursor: default; }
+    .error { color:#f97373; font-size:13px; min-height:18px; }
+    .row {
+      font-size: 13px; color:#9ca3af; margin-top:4px;
+      display:flex; justify-content:space-between; align-items:center; gap:8px;
     }
-
-    .btn:disabled {
-      opacity: 0.6;
-      transform: none;
-      box-shadow: none;
-      cursor: default;
-    }
-
-    .error {
-      color: #f97373;
-      font-size: 13px;
-      margin-top: 4px;
-      min-height: 18px;
-    }
-
-    .link-row {
-      font-size: 13px;
-      color: #9ca3af;
-      margin-top: 4px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .link-row a {
-      color: #60a5fa;
-      text-decoration: none;
-      font-weight: 500;
-    }
-
-    .link-row a:hover {
-      text-decoration: underline;
-    }
+    .row a { color:#60a5fa; text-decoration:none; font-weight:500; }
+    .row a:hover { text-decoration:underline; }
   </style>
 </head>
 <body>
-  <div class="login-card">
-    <h1 class="login-title">SuperParty · Angajat</h1>
-    <p class="login-subtitle">Autentifică-te cu emailul și parola.</p>
+  <div class="card">
+    <div class="title">SuperParty · Angajat</div>
+    <div class="subtitle">Autentifică-te cu email și parolă.</div>
 
     <form id="loginForm">
       <label for="email">Email</label>
@@ -134,7 +82,7 @@
       <button type="submit" class="btn" id="loginBtn">Autentificare</button>
       <div id="error" class="error"></div>
 
-      <div class="link-row">
+      <div class="row">
         <span>Nu ai încă un cont?</span>
         <a href="/angajat/register.html">Creează cont</a>
       </div>
@@ -147,47 +95,34 @@
     function setError(msg) {
       document.getElementById('error').textContent = msg || '';
     }
-
     function setLoading(isLoading) {
       const btn = document.getElementById('loginBtn');
       btn.disabled = isLoading;
       btn.textContent = isLoading ? 'Se autentifică…' : 'Autentificare';
     }
-
     function handleLoginResponse(resp) {
       setLoading(false);
-
       if (!resp || resp.success === false) {
         setError(resp && (resp.error || resp.message) || 'Eroare la autentificare.');
         return;
       }
-
-      var role = (resp.role || 'angajat').toLowerCase();
-      if (role === 'admin') {
-        window.location.href = '/admin/index.html';
-      } else if (role === 'gm') {
-        window.location.href = '/gm/index.html';
-      } else {
-        window.location.href = '/angajat/index.html';
-      }
+      const role = (resp.role || 'angajat').toLowerCase();
+      if (role === 'admin')      window.location.href = '/admin/index.html';
+      else if (role === 'gm')    window.location.href = '/gm/index.html';
+      else                       window.location.href = '/angajat/index.html';
     }
 
-    document.getElementById('loginForm').addEventListener('submit', function (e) {
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
       e.preventDefault();
       setError('');
       setLoading(true);
-
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value.trim();
+      const cbName = 'loginCB_' + Date.now();
 
-      const callbackName = 'loginCB_' + Date.now();
-
-      window[callbackName] = function (resp) {
-        try {
-          handleLoginResponse(resp);
-        } finally {
-          delete window[callbackName];
-        }
+      window[cbName] = function(resp) {
+        try { handleLoginResponse(resp); }
+        finally { delete window[cbName]; }
       };
 
       const s = document.createElement('script');
@@ -195,11 +130,11 @@
         + '?action=login'
         + '&email=' + encodeURIComponent(email)
         + '&password=' + encodeURIComponent(password)
-        + '&callback=' + encodeURIComponent(callbackName);
-      s.onerror = function () {
+        + '&callback=' + encodeURIComponent(cbName);
+      s.onerror = function() {
         setLoading(false);
         setError('Network error la login.');
-        delete window[callbackName];
+        delete window[cbName];
       };
       document.body.appendChild(s);
     });

@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       min-height: 100vh;
@@ -17,142 +16,53 @@
       padding: 16px;
       color: #e5e7eb;
     }
-
     .card {
-      background: rgba(15, 23, 42, 0.95);
+      background: rgba(15,23,42,0.95);
       border-radius: 18px;
       padding: 20px 22px;
       max-width: 420px;
       width: 100%;
-      box-shadow: 0 22px 60px rgba(15, 23, 42, 0.65);
-      border: 1px solid rgba(148, 163, 184, 0.35);
+      box-shadow: 0 22px 60px rgba(15,23,42,0.65);
+      border: 1px solid rgba(148,163,184,0.35);
       font-size: 14px;
     }
-
-    h1 {
-      font-size: 20px;
-      margin-bottom: 4px;
+    h1 { font-size: 20px; margin-bottom: 4px; }
+    .subtitle { font-size: 12px; color:#9ca3af; margin-bottom:16px; }
+    label { font-size:13px; margin-bottom:4px; display:block; }
+    input[type="text"],input[type="email"],input[type="tel"],input[type="password"]{
+      width:100%; padding:9px 10px; border-radius:10px;
+      border:1px solid #1f2937; background:#020617; color:#e5e7eb;
+      font-size:14px; margin-bottom:10px; outline:none;
     }
-
-    .subtitle {
-      font-size: 12px;
-      color: #9ca3af;
-      margin-bottom: 16px;
+    input:focus{ border-color:#3b82f6; box-shadow:0 0 0 1px rgba(59,130,246,0.6); }
+    .contract-box{
+      background:rgba(15,23,42,0.9); border-radius:10px; padding:10px;
+      border:1px solid rgba(148,163,184,0.4); font-size:12px; color:#cbd5f5;
+      max-height:120px; overflow-y:auto; margin-bottom:8px;
     }
-
-    label {
-      font-size: 13px;
-      margin-bottom: 4px;
-      display: block;
-      color: #e5e7eb;
+    .checkbox-row{
+      display:flex; align-items:flex-start; gap:8px;
+      margin-bottom:10px; font-size:12px;
     }
-
-    input[type="text"],
-    input[type="email"],
-    input[type="tel"],
-    input[type="password"] {
-      width: 100%;
-      padding: 9px 10px;
-      border-radius: 10px;
-      border: 1px solid #1f2937;
-      background: #020617;
-      color: #e5e7eb;
-      font-size: 14px;
-      margin-bottom: 10px;
-      outline: none;
+    .checkbox-row input{ margin-top:2px; }
+    .btn{
+      width:100%; border:none; border-radius:999px; padding:9px 0;
+      font-size:14px; font-weight:500; cursor:pointer;
+      background:linear-gradient(135deg,#22c55e,#4ade80); color:#022c22;
+      margin-top:4px; margin-bottom:8px;
     }
-
-    input:focus {
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.6);
-    }
-
-    .contract-box {
-      background: rgba(15, 23, 42, 0.9);
-      border-radius: 10px;
-      padding: 10px;
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      font-size: 12px;
-      color: #cbd5f5;
-      max-height: 120px;
-      overflow-y: auto;
-      margin-bottom: 8px;
-    }
-
-    .checkbox-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      margin-bottom: 10px;
-      font-size: 12px;
-    }
-
-    .checkbox-row input {
-      margin-top: 2px;
-    }
-
-    .btn {
-      width: 100%;
-      border: none;
-      border-radius: 999px;
-      padding: 9px 0;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      background: linear-gradient(135deg, #22c55e, #4ade80);
-      color: #022c22;
-      margin-top: 4px;
-      margin-bottom: 8px;
-      transition: transform 0.05s ease, box-shadow 0.06s ease, opacity 0.12s ease;
-    }
-
-    .btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 16px 30px rgba(34, 197, 94, 0.55);
-    }
-
-    .btn:disabled {
-      opacity: 0.6;
-      transform: none;
-      box-shadow: none;
-      cursor: default;
-    }
-
-    .error {
-      color: #f97373;
-      font-size: 13px;
-      min-height: 18px;
-      margin-top: 2px;
-    }
-
-    .success {
-      color: #4ade80;
-      font-size: 13px;
-      min-height: 18px;
-      margin-top: 2px;
-    }
-
-    .footer-link {
-      font-size: 12px;
-      color: #9ca3af;
-      margin-top: 6px;
-    }
-
-    .footer-link a {
-      color: #60a5fa;
-      text-decoration: none;
-      font-weight: 500;
-    }
-
-    .footer-link a:hover {
-      text-decoration: underline;
-    }
+    .btn:disabled{ opacity:.6; cursor:default; }
+    .error{ color:#f97373; font-size:13px; min-height:18px; margin-top:2px; }
+    .success{ color:#4ade80; font-size:13px; min-height:18px; margin-top:2px; }
+    .footer-link{ font-size:12px; color:#9ca3af; margin-top:6px; }
+    .footer-link a{ color:#60a5fa; text-decoration:none; font-weight:500; }
+    .footer-link a:hover{ text-decoration:underline; }
   </style>
 </head>
 <body>
   <div class="card">
     <h1>Înregistrare angajat</h1>
-    <p class="subtitle">Completează datele. După aprobare, te poți loga în aplicație.</p>
+    <p class="subtitle">Completează datele. După aprobare, te poți loga.</p>
 
     <form id="registerForm">
       <label for="fullname">Nume complet</label>
@@ -171,15 +81,13 @@
       <input id="password2" type="password" required />
 
       <div class="contract-box">
-        <strong>Contract de colaborare SuperParty (rezumat):</strong>
-        <br /><br />
-        • Respecți ora și adresa evenimentului.<br />
-        • Respecți dress code-ul și brief-ul de animație.<br />
-        • Trimiți poze / dovezi din timpul evenimentului.<br />
-        • Nu lași datele clienților la alte firme / persoane.<br />
-        • Respecți regulile interne SuperParty.<br />
-        <br />
-        Versiunea completă a contractului poate fi consultată în Admin.
+        <strong>Contract de colaborare (rezumat):</strong><br><br>
+        • Respecți ora și adresa evenimentului.<br>
+        • Respecți dress code-ul și brief-ul de animație.<br>
+        • Trimiți poze / dovezi din timpul evenimentului.<br>
+        • Nu lași datele clienților la alte firme / persoane.<br>
+        • Respecți regulile interne SuperParty.<br><br>
+        Versiunea completă a contractului este în Admin.
       </div>
 
       <div class="checkbox-row">
@@ -202,62 +110,42 @@
   <script>
     const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxs819m4gt-tpTkAIIS91EnxhwYx-5wdbnh6Zi5_GcY14zs5XYqS9ykFuYCCcokhQ/exec';
 
-    function setError(msg) {
-      document.getElementById('error').textContent = msg || '';
-    }
-    function setSuccess(msg) {
-      document.getElementById('success').textContent = msg || '';
-    }
-    function setLoading(isLoading) {
+    function setError(msg){ document.getElementById('error').textContent = msg || ''; }
+    function setSuccess(msg){ document.getElementById('success').textContent = msg || ''; }
+    function setLoading(b){
       const btn = document.getElementById('registerBtn');
-      btn.disabled = isLoading;
-      btn.textContent = isLoading ? 'Se trimite…' : 'Creează cont';
+      btn.disabled = b;
+      btn.textContent = b ? 'Se trimite…' : 'Creează cont';
     }
 
-    document.getElementById('registerForm').addEventListener('submit', function (e) {
+    document.getElementById('registerForm').addEventListener('submit', function(e){
       e.preventDefault();
-      setError('');
-      setSuccess('');
-
+      setError(''); setSuccess('');
       const fullname = document.getElementById('fullname').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const phone = document.getElementById('phone').value.trim();
+      const email    = document.getElementById('email').value.trim();
+      const phone    = document.getElementById('phone').value.trim();
       const password = document.getElementById('password').value.trim();
-      const password2 = document.getElementById('password2').value.trim();
-      const accept = document.getElementById('acceptContract').checked;
+      const p2       = document.getElementById('password2').value.trim();
+      const accept   = document.getElementById('acceptContract').checked;
 
-      if (!accept) {
-        setError('Trebuie să accepți termenii colaborării.');
-        return;
-      }
-
-      if (password.length < 6) {
-        setError('Parola trebuie să aibă minim 6 caractere.');
-        return;
-      }
-
-      if (password !== password2) {
-        setError('Parolele nu coincid.');
-        return;
-      }
+      if (!accept){ setError('Trebuie să accepți termenii colaborării.'); return; }
+      if (password.length < 6){ setError('Parola trebuie să aibă minim 6 caractere.'); return; }
+      if (password !== p2){ setError('Parolele nu coincid.'); return; }
 
       setLoading(true);
+      const cbName = 'registerCB_' + Date.now();
 
-      const callbackName = 'registerCB_' + Date.now();
-
-      window[callbackName] = function (resp) {
-        try {
-          if (!resp || resp.success === false) {
+      window[cbName] = function(resp){
+        try{
+          if (!resp || resp.success === false){
             setError(resp && (resp.message || resp.error) || 'Eroare la înregistrare.');
           } else {
             setSuccess(resp.message || 'Cont creat. Așteaptă aprobarea.');
-            setTimeout(function () {
-              window.location.href = '/login.html';
-            }, 2500);
+            setTimeout(function(){ window.location.href = '/login.html'; }, 2500);
           }
         } finally {
           setLoading(false);
-          delete window[callbackName];
+          delete window[cbName];
         }
       };
 
@@ -265,14 +153,14 @@
       s.src = BACKEND_URL
         + '?action=register'
         + '&fullname=' + encodeURIComponent(fullname)
-        + '&email=' + encodeURIComponent(email)
-        + '&phone=' + encodeURIComponent(phone)
-        + '&password=' + encodeURIComponent(password)
-        + '&callback=' + encodeURIComponent(callbackName);
-      s.onerror = function () {
+        + '&email='   + encodeURIComponent(email)
+        + '&phone='   + encodeURIComponent(phone)
+        + '&password='+ encodeURIComponent(password)
+        + '&callback='+ encodeURIComponent(cbName);
+      s.onerror = function(){
         setLoading(false);
         setError('Network error la înregistrare.');
-        delete window[callbackName];
+        delete window[cbName];
       };
       document.body.appendChild(s);
     });

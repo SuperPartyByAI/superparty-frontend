@@ -2,13 +2,175 @@
 <html lang="ro">
 <head>
   <meta charset="UTF-8" />
-  <title>SuperParty - Intrare</title>
-  <meta http-equiv="refresh" content="0;url=/login.html" />
+  <title>SuperParty - Admin utilizatori</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #1d4ed8 0, #0f172a 45%, #020617 100%);
+      color: #e5e7eb;
+      padding: 24px;
+    }
+    .container { max-width: 960px; margin: 0 auto; }
+    h1 { font-size: 24px; margin-bottom: 8px; }
+    .subtitle { font-size: 14px; color:#9ca3af; margin-bottom: 16px; }
+    .top-bar{
+      display:flex; justify-content:space-between; align-items:center;
+      margin-bottom:16px; gap:12px;
+    }
+    .status-text{ font-size:13px; color:#a5b4fc; }
+    .refresh-link{ font-size:13px; cursor:pointer; text-decoration:underline; }
+    .card{
+      background:rgba(15,23,42,0.9); border-radius:16px;
+      padding:16px 20px; margin-bottom:12px;
+      display:flex; justify-content:space-between; gap:12px;
+      border:1px solid rgba(148,163,184,0.2);
+    }
+    .card-main{ flex:1; }
+    .card-title{ font-size:16px; font-weight:600; margin-bottom:4px; }
+    .card-line{ font-size:13px; color:#cbd5f5; margin-bottom:2px; }
+    .badge{
+      display:inline-flex; align-items:center; padding:2px 8px;
+      border-radius:999px; font-size:11px; letter-spacing:.04em;
+      border:1px solid rgba(96,165,250,0.7); color:#93c5fd; margin-right:4px;
+    }
+    .btn{
+      border:none; border-radius:999px; padding:8px 14px; font-size:13px;
+      cursor:pointer; font-weight:500; background:#22c55e; color:#022c22;
+    }
+    .btn:disabled{ opacity:.5; cursor:default; }
+    .empty{ font-size:14px; color:#9ca3af; margin-top:8px; }
+  </style>
 </head>
 <body>
-  <p>Redirecționare către pagina de autentificare...
-    <a href="/login.html">Click aici dacă nu ești redirecționat automat.</a>
-  </p>
+  <div class="container">
+    <div class="top-bar">
+      <div>
+        <h1>Admin utilizatori</h1>
+        <div class="subtitle">Vezi conturile noi și aprobă.</div>
+      </div>
+      <div>
+        <span id="statusText" class="status-text">Se încarcă…</span>
+        ·
+        <span class="refresh-link" onclick="loadPendingUsers()">Reîncarcă</span>
+      </div>
+    </div>
+
+    <div id="pendingList"></div>
+  </div>
+
+  <script>
+    const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxs819m4gt-tpTkAIIS91EnxhwYx-5wdbnh6Zi5_GcY14zs5XYqS9ykFuYCCcokhQ/exec';
+
+    function setStatus(msg){
+      const el = document.getElementById('statusText');
+      if (el) el.textContent = msg;
+    }
+
+    function renderPendingUsers(items){
+      const c = document.getElementById('pendingList');
+      if (!c) return;
+      if (!items || !items.length){
+        c.innerHTML = '<p class="empty">Nu există utilizatori în așteptare.</p>';
+        return;
+      }
+      c.innerHTML = items.map(function(it){
+        return `
+          <div class="card">
+            <div class="card-main">
+              <div class="card-title">${it.fullname || '(fără nume)'}</div>
+              <div class="card-line">
+                <span class="badge">PENDING</span>
+                ${it.email || ''} · ${it.phone || '-'}
+              </div>
+              <div class="card-line">
+                Rol: <strong>${it.role || 'angajat'}</strong> ·
+                Status: <strong>${it.status}</strong> ·
+                KYC: <strong>${it.kycStatus}</strong>
+              </div>
+            </div>
+            <div>
+              <button class="btn" onclick="approveUser('${it.id || ''}','${it.email || ''}',this)">Aprobă</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function loadPendingUsers(){
+      setStatus('Se încarcă…');
+      const cbName = 'pendingCB_' + Date.now();
+      window[cbName] = function(resp){
+        try{
+          if (!resp || resp.success === false){
+            console.error('Eroare listPending', resp);
+            setStatus('Eroare la încărcare.');
+            return;
+          }
+          renderPendingUsers(resp.items || []);
+          setStatus('Gata.');
+        } finally {
+          delete window[cbName];
+        }
+      };
+      const s = document.createElement('script');
+      s.src = BACKEND_URL
+        + '?action=listPending'
+        + '&callback=' + encodeURIComponent(cbName);
+      s.onerror = function(){
+        console.error('Network error listPending');
+        setStatus('Network error.');
+        delete window[cbName];
+      };
+      document.body.appendChild(s);
+    }
+
+    function approveUser(id,email,btn){
+      if (btn){
+        btn.disabled = true;
+        btn.dataset.textOriginal = btn.textContent;
+        btn.textContent = 'Se aprobă…';
+      }
+      const cbName = 'approveCB_' + Date.now();
+      window[cbName] = function(resp){
+        try{
+          if (!resp || resp.success === false){
+            alert((resp && (resp.error || resp.message)) || 'Eroare la aprobare.');
+            if (btn){
+              btn.disabled = false;
+              btn.textContent = btn.dataset.textOriginal || 'Aprobă';
+            }
+            return;
+          }
+          if (btn){
+            const card = btn.closest('.card');
+            if (card && card.parentNode) card.parentNode.removeChild(card);
+          }
+          setStatus('User aprobat: ' + (resp.email || ''));
+        } finally {
+          delete window[cbName];
+        }
+      };
+      const s = document.createElement('script');
+      s.src = BACKEND_URL
+        + '?action=approveUser'
+        + '&id=' + encodeURIComponent(id || '')
+        + '&email=' + encodeURIComponent(email || '')
+        + '&callback=' + encodeURIComponent(cbName);
+      s.onerror = function(){
+        alert('Network error la aprobare.');
+        if (btn){
+          btn.disabled = false;
+          btn.textContent = btn.dataset.textOriginal || 'Aprobă';
+        }
+        delete window[cbName];
+      };
+      document.body.appendChild(s);
+    }
+
+    window.addEventListener('DOMContentLoaded', loadPendingUsers);
+  </script>
 </body>
 </html>
