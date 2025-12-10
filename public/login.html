@@ -90,7 +90,7 @@
   </div>
 
   <script>
-    const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxs819m4gt-tpTkAIIS91EnxhwYx-5wdbnh6Zi5_GcY14zs5XYqS9ykFuYCCcokhQ/exec';
+    const BACKEND_URL = '/api/login';
 
     function setError(msg) {
       document.getElementById('error').textContent = msg || '';
@@ -112,31 +112,33 @@
       else                       window.location.href = '/angajat/index.html';
     }
 
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       setError('');
       setLoading(true);
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value.trim();
-      const cbName = 'loginCB_' + Date.now();
 
-      window[cbName] = function(resp) {
-        try { handleLoginResponse(resp); }
-        finally { delete window[cbName]; }
-      };
+      try {
+        const resp = await fetch(BACKEND_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
 
-      const s = document.createElement('script');
-      s.src = BACKEND_URL
-        + '?action=login'
-        + '&email=' + encodeURIComponent(email)
-        + '&password=' + encodeURIComponent(password)
-        + '&callback=' + encodeURIComponent(cbName);
-      s.onerror = function() {
+        if (!resp.ok) {
+          setLoading(false);
+          setError('Network error la login (status ' + resp.status + ').');
+          return;
+        }
+
+        const data = await resp.json();
+        handleLoginResponse(data);
+      } catch (err) {
+        console.error('Eroare fetch login:', err);
         setLoading(false);
         setError('Network error la login.');
-        delete window[cbName];
-      };
-      document.body.appendChild(s);
+      }
     });
   </script>
 </body>
