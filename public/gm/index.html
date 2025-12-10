@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <title>SuperParty - Mod GM</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #1d4ed8 0, #0f172a 45%, #020617 100%);
+      color: #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .gm-wrapper {
+      width: 100%;
+      max-width: 960px;
+      background: rgba(15,23,42,0.96);
+      border-radius: 18px;
+      border: 1px solid rgba(148,163,184,0.35);
+      box-shadow: 0 28px 70px rgba(15,23,42,0.9);
+      padding: 20px 22px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .gm-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .gm-header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .gm-title {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .gm-sub {
+      font-size: 13px;
+      color: #9ca3af;
+    }
+
+    .gm-badge {
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: linear-gradient(120deg, rgba(34,197,94,0.2), rgba(37,99,235,0.35));
+      border: 1px solid rgba(59,130,246,0.8);
+      font-size: 11px;
+    }
+
+    .gm-badge.danger {
+      background: linear-gradient(120deg, rgba(248,113,113,0.2), rgba(37,99,235,0.1));
+      border-color: rgba(248,113,113,0.9);
+      color: #fecaca;
+    }
+
+    .gm-content {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: 16px;
+    }
+
+    .gm-card {
+      background: #020617;
+      border-radius: 14px;
+      border: 1px solid #1f2937;
+      padding: 13px 14px 15px;
+      box-shadow: 0 18px 45px rgba(15,23,42,0.8);
+      font-size: 12px;
+    }
+
+    .gm-card-title {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .gm-card-sub {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-bottom: 8px;
+    }
+
+    .gm-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #6b7280;
+      margin-bottom: 4px;
+    }
+
+    .gm-value {
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .gm-list {
+      margin-left: 16px;
+      color: #e5e7eb;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .gm-list li {
+      margin-bottom: 4px;
+    }
+
+    .gm-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 4px;
+      font-size: 11px;
+      color: #9ca3af;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 7px 12px;
+      border-radius: 999px;
+      border: 1px solid #374151;
+      background: #020617;
+      color: #e5e7eb;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      border-color: #4b5563;
+      background: #030712;
+    }
+
+    @media (max-width: 800px) {
+      .gm-content {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="gm-wrapper">
+    <div class="gm-header">
+      <div class="gm-header-left">
+        <div class="gm-title">Mod GM SuperParty</div>
+        <div class="gm-sub">Layer intern, acces doar prin AI și doar pentru Andrei.</div>
+      </div>
+      <div class="gm-badge" id="gmAccessStatus">
+        Verificare acces GM...
+      </div>
+    </div>
+
+    <div class="gm-content">
+      <div class="gm-card">
+        <div class="gm-card-title">Status acces</div>
+        <div class="gm-card-sub">Pagina nu apare în meniu, nu are link public. Este accesată doar prin comanda AI.</div>
+
+        <div class="gm-label">Email logat</div>
+        <div class="gm-value" id="gmEmail">-</div>
+
+        <div class="gm-label">Regulă de acces</div>
+        <ul class="gm-list">
+          <li>✔ Doar <strong>ursache.andrei1995@gmail.com</strong> are voie în Mod GM.</li>
+          <li>✔ Accesul se face doar prin comanda din AI: <code>open mod andrei gm</code>.</li>
+          <li>✔ Dacă emailul nu se potrivește, userul este trimis înapoi în dashboard angajat.</li>
+        </ul>
+      </div>
+
+      <div class="gm-card">
+        <div class="gm-card-title">Ce vei controla de aici (în next step)</div>
+        <div class="gm-card-sub">Aici mutăm, ulterior, toată logica de configurare a AI-ului SuperParty.</div>
+        <ul class="gm-list">
+          <li>📌 Prompt-uri AI pentru verificare poze, anti-fentă și KYC.</li>
+          <li>📌 Praguri de risc (warning, block, manual review).</li>
+          <li>📌 Loguri și alerte speciale GM.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="gm-footer">
+      <button class="btn" id="backToEmployeeBtn">← Înapoi în dashboard angajat</button>
+      <div>SuperParty GM · panel intern control AI</div>
+    </div>
+  </div>
+
+  <!-- LOGICA GM ÎN FIȘIER SEPARAT -->
+  <script src="./gm.js"></script>
+</body>
+</html>
