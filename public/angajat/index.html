@@ -24,7 +24,7 @@
       gap: 16px;
     }
 
-    /* BARA LATERALĂ */
+    /* BARA LATERALĂ (doar design, fără funcție) */
     .sidebar {
       width: 62px;
       border-radius: 999px;
@@ -75,15 +75,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      cursor: pointer;
+      cursor: default; /* nu promitem că “merge” */
       font-size: 18px;
-      transition: all 0.18s ease;
-    }
-
-    .sidebar-btn:hover {
-      background: rgba(37, 99, 235, 0.9);
-      color: #f9fafb;
-      transform: translateY(-1px) scale(1.02);
     }
 
     .sidebar-bottom {
@@ -102,7 +95,7 @@
       line-height: 1.3;
     }
 
-    /* CONȚINUT PRINCIPAL */
+    /* CONȚINUT PRINCIPAL – SIMPLU, FĂRĂ AI, FĂRĂ CIFRE FAKE */
     .main {
       flex: 1;
       border-radius: 24px;
@@ -129,15 +122,7 @@
     }
 
     .top-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 16px;
       margin-bottom: 22px;
-    }
-
-    .title-block {
-      max-width: 480px;
     }
 
     .badge {
@@ -170,17 +155,18 @@
     .main-sub {
       font-size: 13px;
       color: #9ca3af;
+      max-width: 520px;
     }
 
     .user-card {
-      margin-top: 14px;
-      padding: 10px 12px;
+      margin-top: 18px;
+      padding: 12px 14px;
       border-radius: 14px;
-      background: rgba(15,23,42,0.86);
+      background: rgba(15,23,42,0.9);
       border: 1px solid rgba(148,163,184,0.6);
       font-size: 12px;
       display: grid;
-      grid-template-columns: 1.2fr 1.0fr 0.8fr;
+      grid-template-columns: 1.4fr 1fr 0.8fr;
       gap: 10px;
       align-items: center;
     }
@@ -241,14 +227,15 @@
     }
 
     .grid {
+      margin-top: 20px;
       display: grid;
-      grid-template-columns: 1.4fr 1.0fr;
+      grid-template-columns: 1.2fr 1fr;
       gap: 16px;
     }
 
     .card {
       border-radius: 18px;
-      background: rgba(15,23,42,0.92);
+      background: rgba(15,23,42,0.9);
       border: 1px solid rgba(148,163,184,0.55);
       padding: 14px 14px 16px;
       font-size: 12px;
@@ -297,12 +284,15 @@
       .sidebar { display: none; }
       .main { padding: 18px 14px 20px; }
       .grid { grid-template-columns: 1fr; }
+      .user-card {
+        grid-template-columns: 1fr;
+        align-items: flex-start;
+      }
     }
   </style>
 </head>
 <body>
   <div class="shell">
-    <!-- Bara laterală (doar design, fără funcționalitate deocamdată) -->
     <aside class="sidebar">
       <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
         <div class="sidebar-logo">
@@ -325,18 +315,17 @@
       </div>
     </aside>
 
-    <!-- Conținut principal -->
     <main class="main">
       <div class="main-inner">
         <div class="top-row">
-          <section class="title-block">
+          <section>
             <div class="badge">
               <span class="badge-dot"></span>
               <span>Dashboard SuperParty angajat</span>
             </div>
-            <h1 class="main-title">Panou general</h1>
+            <h1 class="main-title">Panou angajat</h1>
             <p class="main-sub">
-              Aici vor apărea evenimentele tale reale, dovezile și toate detaliile, după ce terminăm integrarea completă.
+              Aici va apărea dashboard-ul tău real (evenimente, roluri, dovezi). Momentan este doar design, fără AI și fără date false.
             </p>
 
             <div class="user-card">
@@ -365,8 +354,7 @@
           <article class="card">
             <div class="card-title">Evenimente & dovezi</div>
             <p class="placeholder-text">
-              În versiunea actuală, acesta este doar designul. După ce legăm frontend-ul de Google Sheets / backend,
-              aici vei vedea lista ta reală de evenimente, roluri și ce dovezi foto îți lipsesc.
+              După ce legăm frontend-ul la Google Sheets / backend, aici vei vedea lista ta reală de evenimente și ce dovezi foto îți lipsesc.
             </p>
             <div class="placeholder-grid">
               <div class="small-card">
@@ -387,9 +375,8 @@
           <article class="card">
             <div class="card-title">Status integrare</div>
             <p class="placeholder-text">
-              Flow-ul complet (creare cont, aprobare, KYC, evenimente) îl facem pas cu pas.
-              Momentan e doar UI, fără AI și fără date dinamice. Când conectăm tot, acest card
-              va arăta starea ta reală în sistem.
+              Flow-ul complet (creare cont, aprobare, KYC, dashboard angajat) îl facem în pași separați.
+              Momentan aceasta este doar pagina de după login, fără AI și fără logică de evenimente.
             </p>
           </article>
         </section>
@@ -399,7 +386,6 @@
 
   <script>
     function handleLogout() {
-      // aici poți pune redirectul tău real
       window.location.href = '/login.html';
     }
   </script>
