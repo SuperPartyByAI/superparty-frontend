@@ -2,209 +2,312 @@
 <html lang="ro">
 <head>
   <meta charset="UTF-8" />
-  <title>SuperParty - Test AI Chat</title>
+  <title>SuperParty - Test AI angajat</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-</head>
-<body style="background:#020617; color:#e5e7eb; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; margin:0; padding:0;">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  <div style="padding:24px;">
-    <h2>Test SuperParty AI Chat (backend Apps Script)</h2>
-    <p style="margin-top:8px; font-size:14px; color:#9ca3af;">
-      Pagina asta este doar pentru test. Chatul AI folosește backend-ul:
-      <code style="font-size:12px; background:#111827; padding:2px 4px; border-radius:4px;">
-        action=ai_chat
-      </code>
-    </p>
-    <p style="margin-top:8px; font-size:14px;">
-      Logat ca: <strong>ursache.andrei1995@gmail.com</strong>
-    </p>
-  </div>
-
-  <!-- BUTON ROBOT AI -->
-  <div id="ai-chat-button" style="
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: #1d4ed8;
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.4);
-    transition: 0.25s;
-    z-index: 99999;
-    font-size: 26px;
-  ">
-    🤖
-  </div>
-
-  <!-- BOX CHAT AI -->
-  <div id="ai-chat-box" style="
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 320px;
-    height: 420px;
-    background: #0f172a;
-    border-radius: 16px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-    display: none;
-    flex-direction: column;
-    z-index: 999999;
-  ">
-    <!-- HEADER -->
-    <div style="
-      padding: 14px;
-      background: #1d4ed8;
-      border-radius: 16px 16px 0 0;
-      color: white;
-      font-weight: 600;
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #1d4ed8 0, #0f172a 45%, #020617 100%);
+      color: #e5e7eb;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 480px;
+      background: #020617;
+      border-radius: 18px;
+      border: 1px solid #1f2937;
+      box-shadow: 0 22px 55px rgba(15, 23, 42, 0.7);
+      padding: 18px 18px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .badge-env {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: #f97316;
+      margin-bottom: 2px;
+    }
+
+    .title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 2px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .title span.logo {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 0, #38bdf8 0, #1d4ed8 40%, #020617 100%);
       font-size: 14px;
-    ">
-      SuperParty AI
-      <span id="ai-chat-close" style="cursor:pointer; font-size:18px; font-weight:900;">×</span>
+      font-weight: 700;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: #9ca3af;
+      margin-bottom: 8px;
+    }
+
+    .input-row {
+      margin-bottom: 8px;
+    }
+
+    label {
+      font-size: 11px;
+      color: #9ca3af;
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    input, textarea {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid #1f2937;
+      background: #020617;
+      color: #e5e7eb;
+      font-size: 13px;
+      padding: 7px 9px;
+      outline: none;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #6b7280;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 60px;
+      max-height: 120px;
+    }
+
+    .chat-box {
+      margin-top: 4px;
+      border-radius: 14px;
+      border: 1px solid #1f2937;
+      background: #020617;
+      padding: 10px;
+      max-height: 260px;
+      overflow-y: auto;
+      font-size: 13px;
+    }
+
+    .msg {
+      margin-bottom: 8px;
+      line-height: 1.4;
+      white-space: pre-wrap;
+    }
+
+    .msg-user {
+      text-align: right;
+    }
+
+    .msg-user span.bubble {
+      display: inline-block;
+      background: #1d4ed8;
+      color: #e5e7eb;
+      padding: 6px 10px;
+      border-radius: 999px 0 999px 999px;
+      max-width: 90%;
+    }
+
+    .msg-ai span.bubble {
+      display: inline-block;
+      background: #020617;
+      border: 1px solid #1f2937;
+      padding: 6px 10px;
+      border-radius: 0 999px 999px 999px;
+      max-width: 90%;
+    }
+
+    .status {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: 4px;
+      min-height: 14px;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .actions button {
+      border-radius: 999px;
+      border: none;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      background: linear-gradient(90deg, #2563eb, #4f46e5);
+      color: white;
+      flex-shrink: 0;
+      min-width: 96px;
+    }
+
+    .actions button:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+
+    .actions .fill {
+      flex: 1;
+    }
+
+    .hint {
+      margin-top: 6px;
+      font-size: 11px;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="badge-env">ENV: TEST UI (backend PROD)</div>
+
+    <div class="title">
+      <span class="logo">AI</span>
+      SuperParty – Chat angajat
     </div>
 
-    <!-- MESAJE -->
-    <div id="ai-chat-messages" style="
-      padding: 12px;
-      overflow-y: auto;
-      flex: 1;
-      color: #e5e7eb;
-      font-size: 14px;
-      background:#020617;
-    "></div>
+    <div class="subtitle">
+      Aici testezi AI-ul SuperParty conectat la backend-ul actual. Ce scrii se salvează în foaia <strong>Chats</strong>.
+    </div>
 
-    <!-- INPUT -->
-    <div style="padding: 10px; border-top: 1px solid #1e293b; background:#020617;">
-      <textarea id="ai-chat-input" placeholder="Scrie mesajul..." style="
-        width: 100%;
-        height: 56px;
-        resize: none;
-        padding: 8px;
-        border-radius: 8px;
-        border: 1px solid #334155;
-        background: #0f172a;
-        color: #e5e7eb;
-        font-size: 13px;
-      "></textarea>
-      <button id="ai-chat-send" style="
-        margin-top: 6px;
-        width: 100%;
-        background: #1d4ed8;
-        padding: 8px 0;
-        border-radius: 8px;
-        border: none;
-        cursor: pointer;
-        color: white;
-        font-weight: 600;
-        font-size: 14px;
-      ">
-        Trimite
-      </button>
+    <div class="input-row">
+      <label for="email">Email angajat (folosit ca ID în istoricul de chat):</label>
+      <input id="email" type="email" value="test@superparty.ro" />
+    </div>
+
+    <div class="input-row">
+      <label for="message">Mesaj către SuperParty AI:</label>
+      <textarea id="message" placeholder="Ex: ce dovezi trebuie să fac la EVT_001?"></textarea>
+    </div>
+
+    <div class="chat-box" id="chatBox"></div>
+
+    <div class="status" id="statusLine"></div>
+
+    <div class="actions">
+      <div class="fill"></div>
+      <button id="sendBtn">Trimite</button>
+    </div>
+
+    <div class="hint">
+      Sugestie: încearcă <strong>„ce dovezi trebuie să fac la EVT_001?”</strong> sau <strong>„explică-mi pașii pentru dovezi bagaj / am ajuns / final”</strong>.
     </div>
   </div>
 
   <script>
-    // Backend Apps Script
-    const AI_BACKEND = "https://script.google.com/macros/s/AKfycbxs819m4gt-tpTkAIIS91EnxhwYx-5wdbnh6Zi5_GcY14zs5XYqS9ykFuYCCcokhQ/exec";
+    // BACKEND PROD ACTUAL
+    const BACKEND_URL =
+      "https://script.google.com/macros/s/AKfycbxs819m4gt-tpTkAIIS91EnxhwYx-5wdbnh6Zi5_GcY14zs5XYqS9ykFuYCCcokhQ/exec";
 
-    // Email-ul logat (în test îl punem direct)
-    const emailLogat = "ursache.andrei1995@gmail.com";
+    const emailInput  = document.getElementById("email");
+    const messageArea = document.getElementById("message");
+    const chatBox     = document.getElementById("chatBox");
+    const statusLine  = document.getElementById("statusLine");
+    const sendBtn     = document.getElementById("sendBtn");
 
-    const btn = document.getElementById("ai-chat-button");
-    const box = document.getElementById("ai-chat-box");
-    const closeBtn = document.getElementById("ai-chat-close");
-    const input = document.getElementById("ai-chat-input");
-    const sendBtn = document.getElementById("ai-chat-send");
-    const messages = document.getElementById("ai-chat-messages");
-
-    // Deschide chat-ul
-    btn.onclick = () => {
-      btn.style.display = "none";
-      box.style.display = "flex";
-    };
-
-    // Închide chat-ul
-    closeBtn.onclick = () => {
-      box.style.display = "none";
-      btn.style.display = "flex";
-    };
-
-    function appendMessage(sender, text) {
+    function addMessage(role, text) {
       const div = document.createElement("div");
-      div.style.marginBottom = "10px";
+      div.className = "msg " + (role === "USER" ? "msg-user" : "msg-ai");
 
-      const safeText = String(text || "").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      const bubble = document.createElement("span");
+      bubble.className = "bubble";
+      bubble.textContent = text;
 
-      if (sender === "AI") {
-        div.innerHTML =
-          '<div style="background:#1e293b; padding:8px; border-radius:8px; max-width:85%;">' +
-          safeText.replace(/\n/g, "<br>") +
-          "</div>";
-      } else {
-        div.innerHTML =
-          '<div style="background:#1d4ed8; padding:8px; border-radius:8px; max-width:85%; margin-left:auto;">' +
-          safeText.replace(/\n/g, "<br>") +
-          "</div>";
+      div.appendChild(bubble);
+      chatBox.appendChild(div);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function setStatus(text) {
+      statusLine.textContent = text || "";
+    }
+
+    async function sendToAi() {
+      const email = (emailInput.value || "").trim();
+      const msg   = (messageArea.value || "").trim();
+
+      if (!email) {
+        alert("Te rog introdu un email (poți folosi unul de test).");
+        return;
+      }
+      if (!msg) {
+        alert("Scrie un mesaj pentru AI.");
+        return;
       }
 
-      messages.appendChild(div);
-      messages.scrollTop = messages.scrollHeight;
-    }
+      addMessage("USER", msg);
+      messageArea.value = "";
+      setStatus("Se trimite către AI...");
+      sendBtn.disabled = true;
 
-    function callAiChat(email, message) {
-      const cbName = "cbAI_" + Date.now() + "_" + Math.floor(Math.random() * 100000);
+      try {
+        const url =
+          BACKEND_URL +
+          "?action=chat_angajat" +
+          "&email="   + encodeURIComponent(email) +
+          "&message=" + encodeURIComponent(msg);
 
-      window[cbName] = function(res) {
-        if (res && res.success) {
-          appendMessage("AI", res.message || "(răspuns gol)");
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (!data.success) {
+          const errText = data.error || "Eroare necunoscută de la backend.";
+          addMessage("AI", "Eroare AI: " + errText);
+          setStatus("Eroare AI. Vezi mesajul din chat.");
         } else {
-          appendMessage("AI", "Eroare AI: " + (res && res.error ? res.error : "necunoscută"));
+          addMessage("AI", data.reply || "(răspuns gol)");
+          setStatus("Răspuns primit de la AI.");
         }
-        script.remove();
-        delete window[cbName];
-      };
-
-      const url =
-        AI_BACKEND +
-        "?action=ai_chat" +
-        "&email=" + encodeURIComponent(email || "") +
-        "&message=" + encodeURIComponent(message || "") +
-        "&callback=" + cbName;
-
-      const script = document.createElement("script");
-      script.src = url;
-      script.onerror = function() {
-        appendMessage("AI", "Eroare de rețea la apelul AI.");
-        script.remove();
-        delete window[cbName];
-      };
-      document.body.appendChild(script);
+      } catch (err) {
+        addMessage("AI", "Eroare rețea / JS: " + err.message);
+        setStatus("Eroare de rețea / browser.");
+      } finally {
+        sendBtn.disabled = false;
+      }
     }
 
-    sendBtn.onclick = () => {
-      const msg = (input.value || "").trim();
-      if (!msg) return;
+    sendBtn.addEventListener("click", sendToAi);
 
-      appendMessage("USER", msg);
-      input.value = "";
-
-      callAiChat(emailLogat, msg);
-    };
-
-    input.addEventListener("keydown", (e) => {
+    messageArea.addEventListener("keydown", function (e) {
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
-        sendBtn.click();
+        sendToAi();
       }
     });
+
+    // Mesaj de bun-venit
+    addMessage(
+      "AI",
+      "Salut! Sunt SuperParty AI. Scrie-mi ce ai nevoie legat de dovezi, evenimente, KYC sau status cont. Ex: \"ce dovezi trebuie să fac la EVT_001?\""
+    );
   </script>
 </body>
 </html>
