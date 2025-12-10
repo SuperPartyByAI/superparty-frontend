@@ -18,37 +18,35 @@
     }
 
     .login-card {
-      background: #020617;
-      border-radius: 16px;
-      padding: 24px 28px;
-      max-width: 380px;
+      background: rgba(15,23,42,0.96);
+      border-radius: 20px;
+      padding: 22px 24px 20px;
       width: 100%;
-      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.7);
-      border: 1px solid rgba(148, 163, 184, 0.4);
+      max-width: 380px;
+      box-shadow:
+        0 22px 45px rgba(15,23,42,0.95),
+        0 0 0 1px rgba(30,64,175,0.7);
     }
 
     .login-title {
-      font-size: 22px;
+      font-size: 20px;
       font-weight: 600;
-      margin-bottom: 8px;
-      text-align: center;
+      margin-bottom: 4px;
     }
 
-    .login-subtitle {
+    .login-sub {
       font-size: 13px;
       color: #9ca3af;
-      text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
 
-    label {
-      display: block;
-      font-size: 13px;
+    .field-label {
+      font-size: 12px;
       margin-bottom: 4px;
-      color: #e5e7eb;
+      color: #d1d5db;
     }
 
-    input {
+    .input {
       width: 100%;
       padding: 10px 11px;
       border-radius: 10px;
@@ -60,179 +58,201 @@
       outline: none;
     }
 
-    input::placeholder {
-      color: #6b7280;
+    .input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 1px rgba(37,99,235,0.7);
     }
 
-    input:focus {
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.6);
-    }
-
-    button {
+    .login-btn {
       width: 100%;
-      padding: 10px 12px;
-      border-radius: 999px;
+      padding: 10px 0;
+      border-radius: 12px;
       border: none;
+      background: linear-gradient(135deg, #2563eb, #4f46e5);
+      color: #e5e7eb;
       font-size: 15px;
-      font-weight: 600;
+      font-weight: 500;
       cursor: pointer;
-      background: linear-gradient(135deg, #3b82f6, #22c55e);
-      color: white;
-      margin-top: 8px;
-      transition: transform 0.08s ease, box-shadow 0.08s ease, opacity 0.08s ease;
+      margin-top: 4px;
     }
 
-    button:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.7);
-      opacity: 0.96;
-    }
-
-    button:active {
-      transform: translateY(0);
-      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.7);
-      opacity: 0.9;
-    }
-
-    button:disabled {
+    .login-btn:disabled {
       opacity: 0.6;
-      cursor: default;
-      box-shadow: none;
-      transform: none;
+      cursor: wait;
     }
 
-    .error {
+    .error-msg {
       margin-top: 10px;
-      font-size: 13px;
+      font-size: 12px;
       color: #fecaca;
-      background: rgba(127, 29, 29, 0.4);
-      border-radius: 8px;
-      padding: 8px 10px;
-      display: none;
+      min-height: 16px;
     }
 
-    .meta {
-      margin-top: 12px;
+    .info-msg {
+      margin-top: 8px;
       font-size: 11px;
-      color: #6b7280;
-      text-align: center;
+      color: #9ca3af;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      border: 2px solid rgba(209,213,219,0.6);
+      border-top-color: #f9fafb;
+      animation: spin 0.7s linear infinite;
+      margin-right: 6px;
+      vertical-align: -2px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
   <div class="login-card">
-    <h1 class="login-title">SuperParty · Angajat</h1>
-    <p class="login-subtitle">Autentificare în dashboard-ul de evenimente</p>
+    <h1 class="login-title">SuperParty · Login</h1>
+    <p class="login-sub">Introdu emailul și parola ta de angajat pentru a intra în dashboard.</p>
 
-    <form id="loginForm">
-      <label for="email">Email</label>
+    <form id="loginForm" autocomplete="on">
+      <label class="field-label" for="email">Email</label>
       <input
         id="email"
+        class="input"
         type="email"
-        autocomplete="email"
+        name="email"
         required
+        autocomplete="email"
         placeholder="ex: nume@superparty.ro"
       />
 
-      <label for="password">Parolă</label>
+      <label class="field-label" for="password">Parola</label>
       <input
         id="password"
+        class="input"
         type="password"
-        autocomplete="current-password"
+        name="password"
         required
+        autocomplete="current-password"
         placeholder="Parola ta"
       />
 
-      <button type="submit" id="loginBtn">Autentificare</button>
-      <div id="error" class="error"></div>
-    </form>
+      <button id="loginBtn" class="login-btn" type="submit">
+        Autentificare
+      </button>
 
-    <p class="meta">
-      Probleme la autentificare? Contactează managerul SuperParty.
-    </p>
+      <p id="errorMsg" class="error-msg"></p>
+      <p class="info-msg">
+        Aceasta este PAGINA DE TEST login (<strong>test-login-andrei.html</strong>), nu login-ul live.
+      </p>
+    </form>
   </div>
 
   <script>
-    // ❗ Backend Apps Script (URL-ul tău care deja dă success:true)
-    const APPS_SCRIPT_URL =
-      'https://script.google.com/macros/s/AKfycbxs819m4gt-tpTkAIIS91EnxhwYx-5wdbnh6Zi5_GcY14zs5XYqS9ykFuYCCcokhQ/exec';
+    (function () {
+      const APPS_SCRIPT_URL =
+        'https://script.google.com/macros/s/AKfycbxs819m4gt-tpTkAIIS91EnxhwYx-5wdbnh6Zi5_GcY14zs5XYqS9ykFuYCCcokhQ/exec';
 
-    const form   = document.getElementById('loginForm');
-    const emailI = document.getElementById('email');
-    const passI  = document.getElementById('password');
-    const errEl  = document.getElementById('error');
-    const btn    = document.getElementById('loginBtn');
+      const form = document.getElementById('loginForm');
+      const emailInput = document.getElementById('email');
+      const passwordInput = document.getElementById('password');
+      const btn = document.getElementById('loginBtn');
+      const errorEl = document.getElementById('errorMsg');
 
-    function loginCB(response) {
-      form.dataset.loading = 'false';
-      btn.disabled = false;
-      btn.textContent = 'Autentificare';
-
-      if (!response || !response.success) {
-        const msg =
-          (response && (response.error || response.message)) ||
-          'Email sau parolă incorecte.';
-        errEl.textContent = msg;
-        errEl.style.display = 'block';
-        return;
+      function setLoading(isLoading) {
+        if (isLoading) {
+          btn.disabled = true;
+          btn.innerHTML = '<span class="spinner"></span> Se verifică datele...';
+          errorEl.textContent = '';
+        } else {
+          btn.disabled = false;
+          btn.textContent = 'Autentificare';
+        }
       }
 
-      errEl.style.display = 'none';
+      function jsonpLogin(email, password) {
+        return new Promise((resolve, reject) => {
+          const cbName = 'spLoginCB_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
 
-      try {
-        localStorage.setItem('sp_user_email', response.email || '');
-        localStorage.setItem('sp_user_role',  response.role  || '');
-        localStorage.setItem('sp_user_status',response.status|| '');
-      } catch (e) {
-        console.warn('localStorage error', e);
+          window[cbName] = function (data) {
+            cleanup();
+            resolve(data);
+          };
+
+          const script = document.createElement('script');
+          const params = new URLSearchParams({
+            action: 'login',
+            email: email,
+            password: password,
+            callback: cbName,
+          });
+
+          script.src = APPS_SCRIPT_URL + '?' + params.toString();
+          script.async = true;
+
+          script.onerror = function () {
+            cleanup();
+            reject(new Error('Network error'));
+          };
+
+          function cleanup() {
+            if (script.parentNode) {
+              script.parentNode.removeChild(script);
+            }
+            try {
+              delete window[cbName];
+            } catch (e) {
+              window[cbName] = undefined;
+            }
+          }
+
+          document.body.appendChild(script);
+        });
       }
 
-      // Redirect în dashboard-ul angajatului
-      window.location.href = '/angajat/index.html';
-    }
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
 
-    window.loginCB = loginCB;
+        if (!email || !password) {
+          errorEl.textContent = 'Te rog completează emailul și parola.';
+          return;
+        }
 
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      if (form.dataset.loading === 'true') return;
+        setLoading(true);
 
-      const email = emailI.value.trim();
-      const pass  = passI.value.trim();
+        try {
+          const resp = await jsonpLogin(email, password);
 
-      if (!email || !pass) {
-        errEl.textContent = 'Te rog completează email și parola.';
-        errEl.style.display = 'block';
-        return;
-      }
+          if (!resp || !resp.success) {
+            errorEl.textContent =
+              (resp && resp.error) || 'Email sau parolă incorecte.';
+            return;
+          }
 
-      errEl.style.display = 'none';
-      form.dataset.loading = 'true';
-      btn.disabled = true;
-      btn.textContent = 'Se conectează...';
+          // LOGIN OK: aici doar afișăm ce rol a venit, pentru test
+          const role = resp.role || '(fără rol)';
+          errorEl.style.color = '#bbf7d0';
+          errorEl.textContent =
+            'Login reușit în pagina de TEST. Rol: ' + role + '.';
 
-      const script = document.createElement('script');
-      const params = new URLSearchParams({
-        action: 'login',
-        email: email,
-        password: pass,
-        callback: 'loginCB',
-        ts: Date.now().toString()
+          // Pentru PRODUCȚIE / login real:
+          // if (role === 'angajat') window.location.href = '/angajat/';
+          // else if (role === 'admin') window.location.href = '/admin/';
+          // else if (role === 'gm') window.location.href = '/gm/';
+
+        } catch (err) {
+          console.error('Login error:', err);
+          errorEl.textContent =
+            'Nu mă pot conecta la server (network error). Încearcă din nou.';
+        } finally {
+          setLoading(false);
+        }
       });
-
-      script.src = APPS_SCRIPT_URL + '?' + params.toString();
-
-      script.onerror = function () {
-        form.dataset.loading = 'false';
-        btn.disabled = false;
-        btn.textContent = 'Autentificare';
-        errEl.textContent = 'Eroare de rețea la login.';
-        errEl.style.display = 'block';
-      };
-
-      document.body.appendChild(script);
-    });
+    })();
   </script>
 </body>
 </html>
