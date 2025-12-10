@@ -285,6 +285,8 @@
       max-height: 260px;
       overflow-y: auto;
       background: radial-gradient(circle at top, #020617 0, #020617 100%);
+      display: flex;
+      flex-direction: column;
     }
 
     .ai-msg {
@@ -548,7 +550,25 @@
         });
 
         const data = await res.json();
-        const reply = data.reply || JSON.stringify(data);
+        let reply = data.reply || JSON.stringify(data);
+
+        // === Detectăm comenzi speciale din răspunsul AI ===
+
+        // Mod GM (token __MODE_GM__)
+        if (reply.includes("__MODE_GM__")) {
+          addMessage("Acces GM permis. Deschid modul GM din interfață.", "ai");
+          openGmMode();
+          return;
+        }
+
+        // Mod ADMIN (token __MODE_ADMIN__), dacă vei folosi și acest marker
+        if (reply.includes("__MODE_ADMIN__")) {
+          addMessage("Acces ADMIN permis. Deschid modul ADMIN din interfață.", "ai");
+          openAdminMode();
+          return;
+        }
+
+        // Răspuns normal
         addMessage(reply, "ai");
       } catch (err) {
         addMessage("Eroare la conectarea cu AI: " + err.message, "ai");
@@ -565,6 +585,19 @@
         sendMessageToAI();
       }
     });
+
+    // ================== FUNCȚII MODURI SPECIALE ==================
+
+    function openGmMode() {
+      // Aici decizi tu unde este modul GM.
+      // De exemplu, o pagină separată:
+      window.location.href = "/gm/index.html";
+    }
+
+    function openAdminMode() {
+      // Similar pentru modul ADMIN:
+      window.location.href = "/admin/index.html";
+    }
   </script>
 </body>
 </html>
