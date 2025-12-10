@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <title>SuperParty - Autentificare</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top, #1d4ed8 0, #0f172a 45%, #020617 100%);
+      color: #e5e7eb;
+    }
+
+    .login-card {
+      background: #020617;
+      border-radius: 16px;
+      padding: 24px 28px;
+      max-width: 380px;
+      width: 100%;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+    }
+
+    .login-title {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .login-subtitle {
+      font-size: 13px;
+      color: #9ca3af;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 4px;
+      color: #e5e7eb;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 11px;
+      border-radius: 10px;
+      border: 1px solid #1f2937;
+      background: #020617;
+      color: #e5e7eb;
+      font-size: 14px;
+      margin-bottom: 12px;
+      outline: none;
+    }
+
+    input::placeholder {
+      color: #6b7280;
+    }
+
+    input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.6);
+    }
+
+    button {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: none;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(135deg, #3b82f6, #22c55e);
+      color: white;
+      margin-top: 8px;
+      transition: transform 0.08s ease, box-shadow 0.08s ease, opacity 0.08s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.7);
+      opacity: 0.96;
+    }
+
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.7);
+      opacity: 0.9;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: default;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .error {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #fecaca;
+      background: rgba(127, 29, 29, 0.4);
+      border-radius: 8px;
+      padding: 8px 10px;
+      display: none;
+    }
+
+    .meta {
+      margin-top: 12px;
+      font-size: 11px;
+      color: #6b7280;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <h1 class="login-title">SuperParty · Angajat</h1>
+    <p class="login-subtitle">Autentificare în dashboard-ul de evenimente</p>
+
+    <form id="loginForm">
+      <label for="email">Email</label>
+      <input
+        id="email"
+        type="email"
+        autocomplete="email"
+        required
+        placeholder="ex: nume@superparty.ro"
+      />
+
+      <label for="password">Parolă</label>
+      <input
+        id="password"
+        type="password"
+        autocomplete="current-password"
+        required
+        placeholder="Parola ta"
+      />
+
+      <button type="submit" id="loginBtn">Autentificare</button>
+      <div id="error" class="error"></div>
+    </form>
+
+    <p class="meta">
+      Probleme la autentificare? Contactează managerul SuperParty.
+    </p>
+  </div>
+
+  <script>
+    // ❗ Backend Apps Script (URL-ul tău care deja dă success:true)
+    const APPS_SCRIPT_URL =
+      'https://script.google.com/macros/s/AKfycbxs819m4gt-tpTkAIIS91EnxhwYx-5wdbnh6Zi5_GcY14zs5XYqS9ykFuYCCcokhQ/exec';
+
+    const form   = document.getElementById('loginForm');
+    const emailI = document.getElementById('email');
+    const passI  = document.getElementById('password');
+    const errEl  = document.getElementById('error');
+    const btn    = document.getElementById('loginBtn');
+
+    function loginCB(response) {
+      form.dataset.loading = 'false';
+      btn.disabled = false;
+      btn.textContent = 'Autentificare';
+
+      if (!response || !response.success) {
+        const msg =
+          (response && (response.error || response.message)) ||
+          'Email sau parolă incorecte.';
+        errEl.textContent = msg;
+        errEl.style.display = 'block';
+        return;
+      }
+
+      errEl.style.display = 'none';
+
+      try {
+        localStorage.setItem('sp_user_email', response.email || '');
+        localStorage.setItem('sp_user_role',  response.role  || '');
+        localStorage.setItem('sp_user_status',response.status|| '');
+      } catch (e) {
+        console.warn('localStorage error', e);
+      }
+
+      // Redirect în dashboard-ul angajatului
+      window.location.href = '/angajat/index.html';
+    }
+
+    window.loginCB = loginCB;
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (form.dataset.loading === 'true') return;
+
+      const email = emailI.value.trim();
+      const pass  = passI.value.trim();
+
+      if (!email || !pass) {
+        errEl.textContent = 'Te rog completează email și parola.';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      errEl.style.display = 'none';
+      form.dataset.loading = 'true';
+      btn.disabled = true;
+      btn.textContent = 'Se conectează...';
+
+      const script = document.createElement('script');
+      const params = new URLSearchParams({
+        action: 'login',
+        email: email,
+        password: pass,
+        callback: 'loginCB',
+        ts: Date.now().toString()
+      });
+
+      script.src = APPS_SCRIPT_URL + '?' + params.toString();
+
+      script.onerror = function () {
+        form.dataset.loading = 'false';
+        btn.disabled = false;
+        btn.textContent = 'Autentificare';
+        errEl.textContent = 'Eroare de rețea la login.';
+        errEl.style.display = 'block';
+      };
+
+      document.body.appendChild(script);
+    });
+  </script>
+</body>
+</html>
