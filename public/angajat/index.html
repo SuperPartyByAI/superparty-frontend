@@ -4,22 +4,29 @@
   <meta charset="UTF-8" />
   <title>SuperParty - Dashboard angajat</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     :root {
       --bg-main: #020617;
-      --bg-card: rgba(15, 23, 42, 0.98);
+      --bg-card: #020617;
+      --bg-card-soft: #020617;
       --accent-blue: #3b82f6;
-      --accent-soft: #1d4ed8;
+      --accent-blue-soft: #1d4ed8;
       --accent-green: #22c55e;
       --accent-red: #ef4444;
+      --accent-amber: #f97316;
       --text-main: #e5e7eb;
       --text-muted: #9ca3af;
       --border-subtle: #1f2937;
-      --radius-lg: 18px;
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.65);
+      --radius-lg: 16px;
       --radius-md: 12px;
-      --shadow-soft: 0 22px 50px rgba(15, 23, 42, 0.9);
     }
 
     body {
@@ -28,283 +35,336 @@
       background: radial-gradient(circle at top, #1d4ed8 0, #0f172a 45%, #020617 100%);
       color: var(--text-main);
       display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
     }
 
     .app-shell {
-      width: 100%;
-      max-width: 1100px;
-      background: var(--bg-card);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-soft);
-      border: 1px solid rgba(148, 163, 184, 0.25);
       display: grid;
-      grid-template-columns: 260px minmax(0, 1fr);
-      overflow: hidden;
+      grid-template-columns: auto minmax(0, 1fr);
+      width: 100%;
+      min-height: 100vh;
     }
 
-    @media (max-width: 880px) {
-      .app-shell {
-        grid-template-columns: minmax(0, 1fr);
-      }
-      .sidebar {
-        position: absolute;
-        left: 12px;
-        top: 12px;
-        bottom: 12px;
-        width: 240px;
-        transform: translateX(-110%);
-        transition: transform 0.18s ease;
-        z-index: 50;
-      }
-      .sidebar.open {
-        transform: translateX(0);
-      }
-      .sidebar-toggle {
-        position: absolute;
-        left: 16px;
-        top: 16px;
-        z-index: 60;
-      }
-      .main {
-        padding-top: 54px;
-      }
-    }
+    /* ====== SIDEBAR ====== */
 
     .sidebar {
-      background: radial-gradient(circle at 0 0, #1d4ed8 0, #020617 55%);
-      border-right: 1px solid rgba(15, 23, 42, 0.9);
-      padding: 16px 14px;
+      width: 68px;
+      background: rgba(15, 23, 42, 0.98);
+      border-right: 1px solid rgba(15, 23, 42, 0.95);
       display: flex;
       flex-direction: column;
+      align-items: center;
+      padding: 14px 10px;
       gap: 14px;
     }
 
-    .sidebar-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 8px;
-    }
-
     .sidebar-logo {
-      width: 30px;
-      height: 30px;
+      width: 40px;
+      height: 40px;
       border-radius: 999px;
-      background: radial-gradient(circle at 25% 0, #38bdf8 0, #1d4ed8 40%, #020617 100%);
+      background: radial-gradient(circle at 20% 0, #38bdf8 0, #1d4ed8 35%, #020617 100%);
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 700;
       font-size: 18px;
-    }
-
-    .sidebar-title {
-      font-size: 15px;
-      font-weight: 600;
-    }
-
-    .sidebar-subtitle {
-      font-size: 11px;
-      color: #cbd5f5;
-    }
-
-    .sidebar-section-title {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #9ca3af;
-      margin-bottom: 4px;
-    }
-
-    .sidebar-pill {
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      padding: 5px 9px;
-      font-size: 11px;
       color: #e5e7eb;
-      margin-bottom: 4px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.85);
     }
 
-    .sidebar-stats {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 6px;
-      margin-top: 6px;
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+      width: 100%;
+      align-items: center;
     }
 
-    .sidebar-stat-card {
-      border-radius: 12px;
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      padding: 6px 7px;
-      font-size: 11px;
+    .sidebar-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      border: 1px solid rgba(31, 41, 55, 0.9);
+      background: #020617;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 18px;
+      transition: 0.15s ease;
     }
 
-    .sidebar-stat-label {
-      color: #9ca3af;
-      font-size: 11px;
+    .sidebar-btn.active {
+      border-color: rgba(59, 130, 246, 1);
+      background: radial-gradient(circle at 0 0, #1d4ed8 0, #020617 70%);
+      color: #e5e7eb;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.9);
     }
 
-    .sidebar-stat-value {
-      font-size: 14px;
-      font-weight: 600;
+    .sidebar-btn:hover {
+      transform: translateY(-1px) scale(1.03);
     }
 
-    .sidebar-footer {
+    .sidebar-bottom {
       margin-top: auto;
-      font-size: 11px;
-      color: #9ca3af;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
     }
 
-    .sidebar-footer a {
-      color: #bfdbfe;
-      text-decoration: none;
+    .sidebar-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      background: radial-gradient(circle at 0 0, #1d4ed8 0, #020617 60%);
     }
 
-    .sidebar-footer a:hover {
-      text-decoration: underline;
+    .sidebar-kpi {
+      font-size: 9px;
+      color: var(--text-muted);
+      text-align: center;
     }
+
+    /* ====== MAIN CONTENT ====== */
 
     .main {
-      padding: 16px 18px 18px;
+      padding: 20px 20px 24px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      background: radial-gradient(circle at top right, #020617 0, #020617 45%, #020617 100%);
-      position: relative;
+      gap: 14px;
+      max-width: 1120px;
+      margin: 0 auto;
+      width: 100%;
     }
 
-    .sidebar-toggle {
-      display: none;
-    }
-
-    .top-row {
+    .main-header {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 4px;
+      align-items: flex-start;
+      gap: 12px;
     }
 
-    .top-greeting {
-      font-size: 15px;
-      font-weight: 500;
-    }
-
-    .top-greeting span {
-      color: #93c5fd;
-    }
-
-    .top-meta {
-      font-size: 11px;
-      color: #9ca3af;
-    }
-
-    .chips-row {
+    .welcome-block {
       display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 4px;
+      flex-direction: column;
+      gap: 4px;
     }
 
-    .chip {
+    .welcome-title {
+      font-size: 18px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .welcome-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .switch-theme {
       border-radius: 999px;
       border: 1px solid rgba(148, 163, 184, 0.5);
-      padding: 4px 8px;
+      padding: 4px 10px;
       font-size: 11px;
+      color: var(--text-muted);
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      color: #e5e7eb;
+      gap: 6px;
+      cursor: default;
+      background: rgba(15, 23, 42, 0.9);
     }
 
-    .chip-dot {
-      width: 7px;
-      height: 7px;
+    .status-chip {
       border-radius: 999px;
-      background: #22c55e;
+      border: 1px solid rgba(52, 211, 153, 0.8);
+      padding: 2px 8px;
+      font-size: 11px;
+      color: #bbf7d0;
+      background: rgba(6, 78, 59, 0.8);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .chip-danger .chip-dot {
-      background: #ef4444;
-    }
-
-    .card {
-      border-radius: var(--radius-md);
-      border: 1px solid rgba(31, 41, 55, 0.9);
-      background: rgba(15, 23, 42, 0.98);
-      padding: 11px 11px 9px;
-    }
-
-    .card-title-row {
+    .main-header-right {
       display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: 6px;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
     }
 
-    .card-title {
-      font-size: 13px;
+    .today-date {
+      font-size: 11px;
+    }
+
+    .badge-small {
+      border-radius: 999px;
+      border: 1px solid rgba(59, 130, 246, 0.7);
+      padding: 2px 8px;
+      font-size: 10px;
+      color: #bfdbfe;
+    }
+
+    /* ====== SUMMARY CARDS ====== */
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .summary-card {
+      background: rgba(15, 23, 42, 0.98);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(15, 23, 42, 0.9);
+      padding: 10px 11px;
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .summary-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .summary-value {
+      font-size: 16px;
       font-weight: 600;
     }
 
-    .card-sub {
-      font-size: 11px;
-      color: #9ca3af;
-    }
-
-    .tabs {
-      display: inline-flex;
-      border-radius: 999px;
-      border: 1px solid rgba(31, 41, 55, 0.9);
-      overflow: hidden;
-      font-size: 11px;
-      margin-bottom: 4px;
-    }
-
-    .tab-btn {
-      padding: 4px 8px;
-      background: transparent;
-      border: none;
-      color: #9ca3af;
-      cursor: pointer;
-    }
-
-    .tab-btn.active {
-      background: rgba(15, 23, 42, 0.95);
-      color: #e5e7eb;
-    }
-
-    .events-list {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
+    .summary-pill {
       margin-top: 4px;
+      border-radius: 999px;
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      padding: 2px 7px;
+      font-size: 10px;
+      color: #9ca3af;
+      width: fit-content;
     }
 
-    .event-card {
-      border-radius: 10px;
-      border: 1px solid rgba(31, 41, 55, 0.9);
-      padding: 7px 8px;
-      font-size: 12px;
+    .summary-pill.alert {
+      border-color: var(--accent-amber);
+      color: var(--accent-amber);
+    }
+
+    .summary-pill.ok {
+      border-color: var(--accent-green);
+      color: var(--accent-green);
+    }
+
+    /* ====== EVENTS SECTION ====== */
+
+    .events-shell {
       display: grid;
-      grid-template-columns: minmax(0, 1.8fr) minmax(0, 1.4fr);
-      gap: 6px;
-      cursor: pointer;
+      grid-template-columns: minmax(0, 2.3fr) minmax(0, 1.4fr);
+      gap: 14px;
     }
 
-    @media (max-width: 720px) {
-      .event-card {
+    @media (max-width: 960px) {
+      .events-shell {
         grid-template-columns: minmax(0, 1fr);
       }
     }
 
-    .event-main {
+    .events-card {
+      background: rgba(15, 23, 42, 0.98);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(15, 23, 42, 0.95);
+      padding: 12px 12px 10px;
+      box-shadow: var(--shadow-soft);
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 8px;
+    }
+
+    .events-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .events-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .events-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .events-tabs {
+      display: inline-flex;
+      border-radius: 999px;
+      border: 1px solid rgba(31, 41, 55, 0.95);
+      background: rgba(15, 23, 42, 0.95);
+      overflow: hidden;
+      font-size: 11px;
+    }
+
+    .events-tab {
+      padding: 4px 10px;
+      cursor: pointer;
+      color: var(--text-muted);
+      border-right: 1px solid rgba(31, 41, 55, 1);
+    }
+
+    .events-tab:last-child {
+      border-right: none;
+    }
+
+    .events-tab.active {
+      background: radial-gradient(circle at 0 0, #1d4ed8 0, #020617 90%);
+      color: #f9fafb;
+    }
+
+    .events-list {
+      margin-top: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .event-card {
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(31, 41, 55, 0.95);
+      padding: 9px 10px;
+      background: rgba(15, 23, 42, 0.98);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      cursor: pointer;
+      transition: 0.15s ease;
+    }
+
+    .event-card:hover {
+      border-color: rgba(59, 130, 246, 0.8);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.9);
+      transform: translateY(-1px);
+    }
+
+    .event-row-main {
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+      align-items: flex-start;
     }
 
     .event-title {
@@ -312,12 +372,18 @@
       font-weight: 500;
     }
 
+    .event-id {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
     .event-meta {
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
+      margin-top: 3px;
       font-size: 11px;
-      color: #9ca3af;
+      color: var(--text-muted);
     }
 
     .event-meta span {
@@ -326,374 +392,482 @@
       gap: 4px;
     }
 
-    .event-pill-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-      margin-top: 3px;
-    }
-
-    .event-pill {
+    .event-dovezi-chip {
       border-radius: 999px;
-      border: 1px solid rgba(55, 65, 81, 0.9);
-      padding: 2px 6px;
-      font-size: 11px;
-      color: #9ca3af;
+      border: 1px solid rgba(59, 130, 246, 0.8);
+      padding: 2px 7px;
+      font-size: 10px;
+      color: #bfdbfe;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
     }
 
-    .event-pill.badge-red {
+    .event-dovezi-chip.bad {
       border-color: var(--accent-red);
       color: #fecaca;
     }
 
-    .event-pill.badge-green {
+    .event-dovezi-chip.ok {
       border-color: var(--accent-green);
       color: #bbf7d0;
     }
 
-    .event-actions {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 4px;
-      align-items: flex-end;
-      text-align: right;
-    }
-
-    .btn-small {
-      border-radius: 999px;
-      border: 1px solid rgba(59, 130, 246, 0.9);
-      padding: 4px 8px;
-      font-size: 11px;
-      background: linear-gradient(135deg, #1d4ed8, #3b82f6);
-      color: #f9fafb;
-      cursor: pointer;
-    }
-
-    .btn-small.secondary {
-      border-color: rgba(148, 163, 184, 0.7);
-      background: rgba(15, 23, 42, 1);
-      color: #e5e7eb;
-    }
-
-    .badge-counter {
-      font-size: 11px;
-      padding: 2px 7px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      color: #e5e7eb;
-    }
-
-    .footer-row {
+    .event-footer {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 11px;
-      color: #6b7280;
+      gap: 8px;
       margin-top: 4px;
+      font-size: 10px;
+      color: var(--text-muted);
     }
 
-    .footer-row a {
-      color: #93c5fd;
-      text-decoration: none;
+    .event-footer-left {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
     }
 
-    .footer-row a:hover {
-      text-decoration: underline;
+    .event-footer-right {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      justify-content: flex-end;
     }
 
-    .kyc-warning {
+    .pill-small {
+      border-radius: 999px;
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      padding: 2px 6px;
+      font-size: 10px;
+      color: #9ca3af;
+    }
+
+    .pill-small.cash {
+      border-color: rgba(52, 211, 153, 0.9);
+      color: #bbf7d0;
+    }
+
+    .pill-small.important {
+      border-color: var(--accent-amber);
+      color: #fed7aa;
+    }
+
+    .pill-small.risk {
+      border-color: var(--accent-red);
+      color: #fecaca;
+    }
+
+    /* ====== RIGHT SIDE: DOVEZI & NOTARE ====== */
+
+    .right-card {
+      background: rgba(15, 23, 42, 0.98);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(15, 23, 42, 0.95);
+      padding: 12px 12px 10px;
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .right-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .right-title {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .right-sub {
       font-size: 11px;
-      color: #facc15;
+      color: var(--text-muted);
     }
 
-    .kyc-warning strong {
-      color: #fee66e;
+    .score-block {
+      margin-top: 4px;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(31, 41, 55, 0.95);
+      padding: 8px 9px;
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .score-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .score-label {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .score-value {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .score-grade {
+      font-size: 11px;
+      border-radius: 999px;
+      padding: 2px 8px;
+      border: 1px solid rgba(59, 130, 246, 0.8);
+      color: #bfdbfe;
+    }
+
+    .score-bar {
+      position: relative;
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(31, 41, 55, 0.9);
+      overflow: hidden;
+      margin-top: 2px;
+    }
+
+    .score-bar-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 68%;
+      background: linear-gradient(90deg, #22c55e, #3b82f6);
+    }
+
+    .score-details {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    .score-tag-list {
+      margin-top: 4px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      font-size: 10px;
+    }
+
+    .score-tag {
+      border-radius: 999px;
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      padding: 2px 6px;
+      color: #9ca3af;
+    }
+
+    /* ====== RESPONSIVE ====== */
+
+    @media (max-width: 768px) {
+      .app-shell {
+        display: block;
+      }
+
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 40;
+      }
+
+      .main {
+        padding: 16px 14px 24px 80px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .main-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .main-header-right {
+        align-items: flex-start;
+      }
+
+      .events-shell {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .main {
+        padding: 14px 12px 22px 76px;
+      }
     }
   </style>
 </head>
+
 <body>
   <div class="app-shell">
     <!-- SIDEBAR -->
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <div class="sidebar-logo">SP</div>
-        <div>
-          <div class="sidebar-title">SuperParty · Angajat</div>
-          <div class="sidebar-subtitle">evenimente · dovezi · KYC</div>
-        </div>
+    <aside class="sidebar">
+      <div class="sidebar-logo">SP</div>
+
+      <div class="sidebar-nav">
+        <button class="sidebar-btn active" title="Evenimente">
+          📆
+        </button>
+        <button class="sidebar-btn" title="Dovezi foto">
+          📸
+        </button>
+        <button class="sidebar-btn" title="KYC & cont">
+          🪪
+        </button>
       </div>
 
-      <div>
-        <div class="sidebar-section-title">Contul tău</div>
-        <div class="sidebar-pill" id="accountStatusPill">
-          Status cont: <strong>pending_kyc</strong>
+      <div class="sidebar-bottom">
+        <div class="sidebar-avatar" title="Contul meu">
+          A
         </div>
-        <div class="sidebar-stats">
-          <div class="sidebar-stat-card">
-            <div class="sidebar-stat-label">Evenimente azi</div>
-            <div class="sidebar-stat-value" id="statToday">2</div>
-          </div>
-          <div class="sidebar-stat-card">
-            <div class="sidebar-stat-label">Weekend</div>
-            <div class="sidebar-stat-value" id="statWeekend">1</div>
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <div class="sidebar-section-title">Dovezi</div>
-        <div class="sidebar-pill">
-          Dovezi lipsă: <strong id="missingProofs">3</strong>
-        </div>
-      </div>
-
-      <div class="sidebar-footer">
-        <div>ID utilizator: <span id="userEmailLabel">necunoscut</span></div>
-        <div>
-          KYC: <strong id="kycStateLabel">nu e completat</strong> ·
-          <a href="/angajat/kyc.html">deschide KYC</a>
-        </div>
-        <div>
-          <a href="/login.html">Deconectare</a>
+        <div class="sidebar-kpi">
+          Scor mediu<br />
+          petreceri: <strong>92</strong>/100
         </div>
       </div>
     </aside>
 
-    <!-- MAIN -->
+    <!-- MAIN CONTENT -->
     <main class="main">
-      <button class="btn-small secondary sidebar-toggle" id="sidebarToggle">Meniu</button>
-
-      <div class="top-row">
-        <div>
-          <div class="top-greeting">Salut, <span id="userNameLabel">Andrei</span> 👋</div>
-          <div class="top-meta">Aici vezi evenimentele tale, dovezile și poți vorbi cu AI-ul SuperParty.</div>
-        </div>
-        <div class="badge-counter">Mod: angajat</div>
-      </div>
-
-      <div class="chips-row">
-        <div class="chip">
-          <span class="chip-dot"></span>
-          Animație copii
-        </div>
-        <div class="chip">
-          <span class="chip-dot"></span>
-          Dovezi obligatorii
-        </div>
-        <div class="chip chip-danger">
-          <span class="chip-dot"></span>
-          Ai dovezi lipsă
-        </div>
-      </div>
-
-      <section class="card">
-        <div class="card-title-row">
-          <div>
-            <div class="card-title">Evenimentele tale</div>
-            <div class="card-sub">Apasă pe un eveniment pentru detalii sau pe butonul cu 📸 pentru poze.</div>
+      <!-- HEADER -->
+      <header class="main-header">
+        <div class="welcome-block">
+          <div class="welcome-title">
+            Salut, Andrei 👋
           </div>
-          <div class="tabs">
-            <button class="tab-btn active" data-filter="today">Azi</button>
-            <button class="tab-btn" data-filter="weekend">Weekend</button>
-            <button class="tab-btn" data-filter="all">Toate</button>
+          <div class="welcome-sub">
+            Aici vezi evenimentele tale, dovezile și poți vorbi cu AI-ul SuperParty.
+          </div>
+          <div style="display:flex; gap:8px; align-items:center; margin-top:4px;">
+            <div class="switch-theme">
+              🌙 Dark · Dashboard angajat
+            </div>
+            <div class="status-chip">
+              ● cont activ &nbsp;|&nbsp; KYC aprobat
+            </div>
           </div>
         </div>
 
-        <div class="events-list" id="eventsList">
-          <!-- EVT_001 -->
-          <article class="event-card" data-id="EVT_001" data-type="today">
-            <div class="event-main">
-              <div class="event-title">Elsa 2h + Olaf 2h</div>
-              <div class="event-meta">
-                <span>📅 Azi · 15:00 - 17:00</span>
-                <span>📍 București, Sector 3</span>
-              </div>
-              <div class="event-meta">
-                <span>👤 Maria Ionescu · 0722 456 789</span>
-              </div>
-              <div class="event-pill-row">
-                <div class="event-pill">Rol principal: Animație copii</div>
-                <div class="event-pill">Șofer: nu e nevoie</div>
-                <div class="event-pill badge-red">Dovezi lipsă: 1</div>
-              </div>
-            </div>
-            <div class="event-actions">
-              <button class="btn-small" data-proof-btn="EVT_001">📸 Dovezi EVT_001</button>
-              <button class="btn-small secondary" data-ask-ai="EVT_001">Întreabă AI despre EVT_001</button>
-            </div>
-          </article>
-
-          <!-- EVT_002 -->
-          <article class="event-card" data-id="EVT_002" data-type="today">
-            <div class="event-main">
-              <div class="event-title">Spider-Man 2h</div>
-              <div class="event-meta">
-                <span>📅 Azi · 11:00 - 13:00</span>
-                <span>📍 București, Sector 4</span>
-              </div>
-              <div class="event-meta">
-                <span>👤 Alex Pop · 0733 111 222</span>
-              </div>
-              <div class="event-pill-row">
-                <div class="event-pill">Rol principal: Animație</div>
-                <div class="event-pill badge-green">Dovezi complete</div>
-              </div>
-            </div>
-            <div class="event-actions">
-              <button class="btn-small" data-proof-btn="EVT_002">📸 Dovezi EVT_002</button>
-              <button class="btn-small secondary" data-ask-ai="EVT_002">Întreabă AI despre EVT_002</button>
-            </div>
-          </article>
-
-          <!-- EVT_003 -->
-          <article class="event-card" data-id="EVT_003" data-type="weekend">
-            <div class="event-main">
-              <div class="event-title">Minnie Mouse 2h</div>
-              <div class="event-meta">
-                <span>📅 Sâmbătă · 17:00 - 19:00</span>
-                <span>📍 Voluntari</span>
-              </div>
-              <div class="event-meta">
-                <span>👤 Ioana Dumitru · 0744 333 999</span>
-              </div>
-              <div class="event-pill-row">
-                <div class="event-pill">Rol principal: Animație</div>
-                <div class="event-pill badge-red">Dovezi lipsă: 2</div>
-              </div>
-            </div>
-            <div class="event-actions">
-              <button class="btn-small" data-proof-btn="EVT_003">📸 Dovezi EVT_003</button>
-              <button class="btn-small secondary" data-ask-ai="EVT_003">Întreabă AI despre EVT_003</button>
-            </div>
-          </article>
-        </div>
-
-        <div class="footer-row">
-          <div class="kyc-warning">
-            Pentru cont <strong>ACTIVE</strong> trebuie să ai KYC aprobat și să respecți toate dovezile obligatorii.
+        <div class="main-header-right">
+          <div class="today-date" id="todayLabel">Azi</div>
+          <div class="badge-small">
+            Beta · SuperParty Dashboard v1
           </div>
-          <a href="/angajat/kyc.html">Deschide pagina KYC →</a>
         </div>
+      </header>
+
+      <!-- SUMMARY CARDS -->
+      <section class="summary-grid">
+        <div class="summary-card">
+          <div class="summary-label">🎈 Animație copii</div>
+          <div class="summary-value">3</div>
+          <div class="summary-pill">azi + weekend</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">📸 Dovezi obligatorii</div>
+          <div class="summary-value">3 / eveniment</div>
+          <div class="summary-pill">bagaj · ajuns · final</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">🚗 Fără șofer azi</div>
+          <div class="summary-value">0</div>
+          <div class="summary-pill ok">nu ai curse</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">⚠️ Dovezi lipsă</div>
+          <div class="summary-value">3</div>
+          <div class="summary-pill alert">completează înainte de plată</div>
+        </div>
+      </section>
+
+      <!-- EVENTS + NOTARE -->
+      <section class="events-shell">
+        <!-- LISTĂ EVENIMENTE -->
+        <section class="events-card">
+          <header class="events-header">
+            <div>
+              <div class="events-title">Evenimentele tale</div>
+              <div class="events-sub">
+                Apasă pe un eveniment pentru detalii sau pe bulina 📸 pentru poze.
+              </div>
+            </div>
+            <div class="events-tabs">
+              <div class="events-tab active" data-filter="azi">Azi</div>
+              <div class="events-tab" data-filter="weekend">Weekend</div>
+              <div class="events-tab" data-filter="toate">Toate</div>
+            </div>
+          </header>
+
+          <div class="events-list" id="eventsList">
+            <!-- EVT_001 -->
+            <article class="event-card" data-event-id="EVT_001">
+              <div class="event-row-main">
+                <div>
+                  <div class="event-title">Elsa 2h + Olaf 2h</div>
+                  <div class="event-id">ID: EVT_001</div>
+                  <div class="event-meta">
+                    <span>📅 Azi · 15:00 - 17:00</span>
+                    <span>📍 București, Sector 3</span>
+                    <span>👤 Maria Ionescu · 0722 456 789</span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  class="event-dovezi-chip bad"
+                  data-event-dovezi="EVT_001"
+                >
+                  📸 Dovezi EVT_001 · lipsă
+                </button>
+              </div>
+
+              <div class="event-footer">
+                <div class="event-footer-left">
+                  <span class="pill-small">Rol principal: Animație copii</span>
+                  <span class="pill-small important">3 dovezi obligatorii</span>
+                </div>
+                <div class="event-footer-right">
+                  <span class="pill-small cash">650 lei · cash</span>
+                  <span class="pill-small">fără șofer</span>
+                </div>
+              </div>
+            </article>
+
+            <!-- EVT_002 -->
+            <article class="event-card" data-event-id="EVT_002">
+              <div class="event-row-main">
+                <div>
+                  <div class="event-title">Spider-Man 2h</div>
+                  <div class="event-id">ID: EVT_002</div>
+                  <div class="event-meta">
+                    <span>📅 Azi · 11:00 - 13:00</span>
+                    <span>📍 București, Sector 4</span>
+                    <span>👤 Andreea Pop · 0733 123 456</span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  class="event-dovezi-chip"
+                  data-event-dovezi="EVT_002"
+                >
+                  📸 Dovezi EVT_002 · 2/3
+                </button>
+              </div>
+
+              <div class="event-footer">
+                <div class="event-footer-left">
+                  <span class="pill-small">Rol principal: Supererou</span>
+                  <span class="pill-small important">mai lipsește o poză</span>
+                </div>
+                <div class="event-footer-right">
+                  <span class="pill-small cash">500 lei · cash</span>
+                  <span class="pill-small">fără șofer</span>
+                </div>
+              </div>
+            </article>
+
+            <!-- EVT_003 (weekend) -->
+            <article class="event-card" data-event-id="EVT_003" data-tag="weekend">
+              <div class="event-row-main">
+                <div>
+                  <div class="event-title">Petrecere Frozen · 3h</div>
+                  <div class="event-id">ID: EVT_003</div>
+                  <div class="event-meta">
+                    <span>📅 Sâmbătă · 17:00 - 20:00</span>
+                    <span>📍 Pipera</span>
+                    <span>👤 Radu Mihai · 0720 555 999</span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  class="event-dovezi-chip ok"
+                  data-event-dovezi="EVT_003"
+                >
+                  📸 Dovezi EVT_003 · ok
+                </button>
+              </div>
+
+              <div class="event-footer">
+                <div class="event-footer-left">
+                  <span class="pill-small">Rol principal: Elsa</span>
+                  <span class="pill-small">bagaj A12</span>
+                </div>
+                <div class="event-footer-right">
+                  <span class="pill-small cash">750 lei · transfer</span>
+                  <span class="pill-small">fără șofer</span>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- DOVEZI & NOTARE PETRECERE -->
+        <aside class="right-card">
+          <header class="right-header">
+            <div>
+              <div class="right-title">Scor petrecere (demo)</div>
+              <div class="right-sub">
+                Exemplu de notare bazată pe: dovezi, feedback client, comportament.
+              </div>
+            </div>
+          </header>
+
+          <div class="score-block">
+            <div class="score-row">
+              <div>
+                <div class="score-label">Scor general</div>
+                <div class="score-value" id="scoreGeneralValue">88</div>
+              </div>
+              <div class="score-grade" id="scoreGeneralGrade">
+                Nota B · risc mic
+              </div>
+            </div>
+            <div class="score-bar">
+              <div class="score-bar-fill" id="scoreBarFill"></div>
+            </div>
+            <div class="score-details" id="scoreDetails">
+              Dovezi: 3/3, fără poze respinse, fără incidente raportate. Feedback client: 5/5.
+            </div>
+            <div class="score-tag-list" id="scoreTags">
+              <span class="score-tag">dovezi complete</span>
+              <span class="score-tag">fără întârziere</span>
+              <span class="score-tag">feedback 5★</span>
+            </div>
+          </div>
+        </aside>
       </section>
     </main>
   </div>
 
-  <!-- LOGICĂ DASHBOARD MINIMALĂ -->
+  <!-- Scripturi SuperParty pentru dashboard angajat -->
+  <script src="./dashboard.js"></script>
+  <script src="./logica_notare_petreceri.js"></script>
+  <script src="./ai.js"></script>
+
   <script>
-    // Forțăm KYC simplu: dacă nu e marcat local, sugerăm KYC
+    // Mic script pentru data de azi în header
     (function () {
       try {
-        var kycCompleted = localStorage.getItem("kyc_completed");
-        var kycLabel = document.getElementById("kycStateLabel");
-        var accountPill = document.getElementById("accountStatusPill");
-
-        if (kycCompleted === "yes") {
-          if (kycLabel) kycLabel.textContent = "completat (local)";
-          if (accountPill) accountPill.innerHTML = 'Status cont: <strong>pending_approval</strong>';
-        } else {
-          if (kycLabel) kycLabel.textContent = "nu e completat";
-        }
-
-        var email = localStorage.getItem("superparty_user_email") ||
-                    localStorage.getItem("loggedUserEmail") ||
-                    "necunoscut";
-        var userLabel = document.getElementById("userEmailLabel");
-        if (userLabel) userLabel.textContent = email;
-      } catch (e) {
-        // ignorăm erorile de localStorage
-      }
-    })();
-
-    // Toggle sidebar pe mobil
-    (function () {
-      var toggle = document.getElementById("sidebarToggle");
-      var sidebar = document.getElementById("sidebar");
-      if (!toggle || !sidebar) return;
-
-      if (window.matchMedia("(max-width: 880px)").matches) {
-        toggle.style.display = "inline-flex";
-      }
-
-      toggle.addEventListener("click", function () {
-        sidebar.classList.toggle("open");
-      });
-    })();
-
-    // Filtrare evenimente
-    (function () {
-      var tabs = document.querySelectorAll(".tab-btn");
-      var events = document.querySelectorAll(".event-card");
-
-      function applyFilter(filter) {
-        events.forEach(function (evt) {
-          var type = evt.getAttribute("data-type") || "all";
-          if (filter === "all" || filter === type) {
-            evt.style.display = "";
-          } else {
-            evt.style.display = "none";
-          }
-        });
-      }
-
-      tabs.forEach(function (btn) {
-        btn.addEventListener("click", function () {
-          tabs.forEach(function (b) { b.classList.remove("active"); });
-          btn.classList.add("active");
-          var filter = btn.getAttribute("data-filter");
-          applyFilter(filter);
-        });
-      });
-
-      // implicit: "today"
-      applyFilter("today");
-    })();
-
-    // Legăm butoanele "Întreabă AI despre EVT_xxx"
-    (function () {
-      var askBtns = document.querySelectorAll("[data-ask-ai]");
-      askBtns.forEach(function (btn) {
-        btn.addEventListener("click", function (e) {
-          var code = btn.getAttribute("data-ask-ai");
-          // trimitem un eveniment custom pentru ai.js
-          var ev = new CustomEvent("sp-ai-ask-event", { detail: { eventCode: code } });
-          window.dispatchEvent(ev);
-        });
-      });
-    })();
-  </script>
-
-  <!-- SUPERPARTY AI WIDGET -->
-  <script src="ai.js"></script>
-  <script>
-    // Mic hook: dacă userul apasă pe "Întreabă AI despre EVT_001", completăm automat promptul
-    (function () {
-      window.addEventListener("sp-ai-ask-event", function (e) {
-        var code = (e.detail && e.detail.eventCode) || "";
-        var input = document.getElementById("spAiInput");
-        var win = document.getElementById("spAiWindow");
-        var toggle = document.getElementById("spAiToggleBtn");
-
-        if (win && toggle) {
-          win.classList.add("sp-open");
-          toggle.style.opacity = "0";
-          toggle.style.pointerEvents = "none";
-        }
-
-        var prompt = "Ce dovezi trebuie să fac la " + code + "?";
-        if (input) {
-          input.value = prompt;
-          input.focus();
-        }
-
-        // simulăm un submit automat în câteva milisecunde
-        setTimeout(function () {
-          var form = document.getElementById("spAiForm");
-          if (form) {
-            form.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
-          }
-        }, 120);
-      });
+        const el = document.getElementById("todayLabel");
+        if (!el) return;
+        const d = new Date();
+        const options = { weekday: "short", day: "2-digit", month: "short" };
+        el.textContent = "Azi · " + d.toLocaleDateString("ro-RO", options);
+      } catch (e) {}
     })();
   </script>
 </body>
