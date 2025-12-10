@@ -479,6 +479,11 @@
     const userEmail = localStorage.getItem("userEmail") || "ursache.andrei1995@gmail.com";
     const userMode = localStorage.getItem("userMode") || "employee";
 
+    // Asigurăm că emailul este salvat în localStorage pentru acces GM
+    if (!localStorage.getItem("userEmail")) {
+      localStorage.setItem("userEmail", userEmail);
+    }
+
     // ================== UI ==================
     const aiToggleBtn = document.getElementById("aiToggleBtn");
     const aiChat = document.getElementById("aiChat");
