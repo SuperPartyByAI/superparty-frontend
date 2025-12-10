@@ -2,514 +2,211 @@
 <html lang="ro">
 <head>
   <meta charset="UTF-8" />
-  <title>SuperParty - KYC & verificare cont</title>
+  <title>SuperParty - KYC & Contract</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
 
-    :root {
-      --bg-main: #020617;
-      --card-bg: rgba(15, 23, 42, 0.98);
-      --accent-blue: #3b82f6;
-      --accent-blue-soft: #1d4ed8;
-      --text-main: #e5e7eb;
-      --text-muted: #9ca3af;
-      --border-subtle: #1f2937;
-      --success: #22c55e;
-      --warning: #f97316;
-      --error: #ef4444;
-      --radius-lg: 18px;
-      --radius-md: 12px;
-      --shadow-soft: 0 22px 55px rgba(15, 23, 42, 0.9);
-    }
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
       background: radial-gradient(circle at top, #1d4ed8 0, #0f172a 45%, #020617 100%);
-      color: var(--text-main);
+      color: #e5e7eb;
+      min-height: 100vh;
+      padding: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
     }
 
-    .page-shell {
+    .container {
       width: 100%;
-      max-width: 760px;
-      display: grid;
-      grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.1fr);
-      gap: 14px;
+      max-width: 780px;
+      background: rgba(15, 23, 42, 0.95);
+      padding: 28px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.05);
+      box-shadow: 0 22px 50px rgba(0,0,0,0.45);
     }
 
-    @media (max-width: 820px) {
-      .page-shell {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-
-    .card-main {
-      background: var(--card-bg);
-      border-radius: var(--radius-lg);
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      padding: 18px 18px 14px;
-      box-shadow: var(--shadow-soft);
-    }
-
-    .card-side {
-      background: rgba(15, 23, 42, 0.98);
-      border-radius: var(--radius-lg);
-      border: 1px solid rgba(30, 64, 175, 0.8);
-      padding: 16px 16px 12px;
-      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.9);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-
-    .brand-logo {
-      width: 34px;
-      height: 34px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 25% 0, #38bdf8 0, #1d4ed8 40%, #020617 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 18px;
-    }
-
-    .brand-text-main {
-      font-size: 16px;
-      font-weight: 600;
-    }
-
-    .brand-text-sub {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      border-radius: 999px;
-      border: 1px solid rgba(52, 211, 153, 0.8);
-      background: rgba(6, 78, 59, 0.7);
-      color: #bbf7d0;
-      padding: 3px 8px;
-      margin-left: auto;
-    }
-
-    .card-title {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .card-subtitle {
-      font-size: 12px;
-      color: var(--text-muted);
+    h1 {
+      font-size: 26px;
       margin-bottom: 10px;
+      color: #fff;
+      text-align: center;
     }
 
-    .steps-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 6px;
+    p.desc {
+      text-align: center;
+      color: #9ca3af;
+      margin-bottom: 20px;
     }
 
-    .kyc-step {
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border-subtle);
-      padding: 10px 10px;
-      background: rgba(15, 23, 42, 0.96);
-      display: grid;
-      grid-template-columns: auto minmax(0, 1fr);
-      gap: 8px;
+    .section-title {
+      font-size: 18px;
+      margin: 20px 0 8px;
+      font-weight: 600;
+      color: #3b82f6;
+    }
+
+    .upload-box {
+      background: #0f172a;
+      border: 2px dashed #334155;
+      padding: 20px;
+      border-radius: 14px;
+      text-align: center;
       cursor: pointer;
+      margin-bottom: 16px;
+      transition: 0.3s;
     }
 
-    .kyc-step-header {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
+    .upload-box:hover {
+      border-color: #3b82f6;
+      background: rgba(59,130,246,0.1);
     }
 
-    .kyc-step-circle {
-      width: 26px;
-      height: 26px;
-      border-radius: 999px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      margin-top: 4px;
+    .upload-box input {
+      display: none;
     }
 
-    .kyc-step-title {
-      font-size: 13px;
-      font-weight: 500;
-    }
-
-    .kyc-step-desc {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .kyc-step-actions {
-      font-size: 11px;
-      margin-top: 4px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      align-items: center;
-    }
-
-    .pill {
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      padding: 2px 7px;
-      font-size: 10px;
-      color: var(--text-muted);
-    }
-
-    .pill-warning {
-      border-color: var(--warning);
-      color: var(--warning);
-    }
-
-    .pill-success {
-      border-color: var(--success);
-      color: var(--success);
-    }
-
-    .pill-error {
-      border-color: var(--error);
-      color: var(--error);
-    }
-
-    .btn-small {
-      border-radius: 999px;
-      border: 1px solid rgba(59, 130, 246, 0.9);
-      padding: 4px 10px;
-      font-size: 11px;
-      background: linear-gradient(90deg, #1d4ed8, #3b82f6);
-      color: #f9fafb;
-      cursor: pointer;
-    }
-
-    .btn-small.secondary {
-      border-color: rgba(148, 163, 184, 0.7);
-      background: rgba(15, 23, 42, 0.9);
-      color: var(--text-main);
+    .preview {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #22c55e;
     }
 
     .checkbox-row {
       display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      margin-top: 8px;
+      align-items: center;
+      gap: 10px;
+      margin: 14px 0;
     }
 
-    .checkbox-row input[type="checkbox"] {
-      margin-top: 2px;
-      width: 16px;
-      height: 16px;
-      cursor: pointer;
-    }
-
-    .checkbox-row label {
-      font-size: 11px;
-      color: var(--text-muted);
-      cursor: pointer;
-    }
-
-    .actions-main {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-top: 10px;
-    }
-
-    .btn-primary {
+    button {
       width: 100%;
-      border-radius: 999px;
-      border: 1px solid rgba(59, 130, 246, 0.9);
-      background: linear-gradient(90deg, #1d4ed8, #3b82f6);
-      color: #f9fafb;
-      font-size: 14px;
-      font-weight: 500;
-      padding: 9px 12px;
+      padding: 14px;
+      background: #3b82f6;
+      color: #fff;
+      font-size: 16px;
+      border: none;
+      border-radius: 12px;
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .btn-primary:disabled {
+      margin-top: 20px;
       opacity: 0.5;
-      cursor: default;
+      pointer-events: none;
+      transition: 0.3s;
     }
 
-    .btn-link {
-      text-align: center;
-      font-size: 12px;
-      color: #bfdbfe;
-      text-decoration: none;
-      cursor: pointer;
+    button.active {
+      opacity: 1;
+      pointer-events: auto;
+      background: #2563eb;
     }
 
-    .btn-link:hover {
-      text-decoration: underline;
-    }
-
-    .status {
-      min-height: 18px;
-      font-size: 11px;
-      margin-top: 3px;
-    }
-
-    .status.error {
-      color: var(--error);
-    }
-
-    .status.success {
-      color: var(--success);
-    }
-
-    .status.info {
-      color: var(--text-muted);
-    }
-
-    /* Card lateral */
-
-    .side-title {
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .side-subtitle {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-    }
-
-    .side-block {
-      border-radius: var(--radius-md);
-      border: 1px solid rgba(30, 64, 175, 0.8);
-      background: rgba(15, 23, 42, 0.95);
-      padding: 8px 9px;
-      font-size: 11px;
-      margin-bottom: 6px;
-    }
-
-    .side-block strong {
-      color: #e5e7eb;
-    }
-
-    .side-list {
-      padding-left: 16px;
-      margin-top: 4px;
-      line-height: 1.5;
-    }
-
-    .side-list li {
-      margin-bottom: 2px;
-    }
-
-    .badge-status {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 11px;
-      border-radius: 999px;
-      padding: 2px 8px;
-      border: 1px solid rgba(52, 211, 153, 0.8);
-      background: rgba(6, 78, 59, 0.8);
-      color: #bbf7d0;
-      margin-top: 4px;
-    }
-
-    .badge-status.pending {
-      border-color: var(--warning);
-      background: rgba(67, 56, 202, 0.7);
-      color: #facc15;
-    }
-
-    .badge-status.blocked {
-      border-color: var(--error);
-      background: rgba(127, 29, 29, 0.7);
-      color: #fecaca;
-    }
   </style>
 </head>
+
 <body>
-  <div class="page-shell">
-    <!-- CARD PRINCIPAL KYC -->
-    <section class="card-main">
-      <header class="brand">
-        <div class="brand-logo">SP</div>
-        <div>
-          <div class="brand-text-main">SuperParty</div>
-          <div class="brand-text-sub">KYC & verificare identitate</div>
-        </div>
-        <div class="badge" id="kycStatusBadge">
-          <span>status necunoscut</span>
-        </div>
-      </header>
+<div class="container">
 
-      <h1 class="card-title">Completează KYC ca să îți activăm contul</h1>
-      <p class="card-subtitle">
-        Avem nevoie de poze reale și de acordul tău pe contract. AI-ul și un admin verifică
-        datele înainte să poți intra în dashboard-ul de angajat.
-      </p>
+  <h1>Verificare Identitate (KYC)</h1>
+  <p class="desc">Completează toți pașii pentru a activa contul SuperParty</p>
 
-      <div class="steps-list">
-        <div class="kyc-step" id="stepCiFata">
-          <div class="kyc-step-circle">1</div>
-          <div>
-            <div class="kyc-step-header">
-              <div class="kyc-step-title">Poză CI - față</div>
-              <div class="kyc-step-desc">
-                Fă o poză clară la fața cărții de identitate. Toate datele trebuie să fie lizibile.
-              </div>
-            </div>
-            <div class="kyc-step-actions">
-              <span class="pill pill-warning" id="ciFataStatusPill">neîncărcată</span>
-              <button type="button" class="btn-small" id="ciFataBtn">Încarcă poză</button>
-            </div>
-          </div>
-        </div>
+  <!-- POZA BULETIN FAȚĂ -->
+  <div class="section-title">1. Buletin - față</div>
+  <label class="upload-box">
+    Încarcă poză
+    <input type="file" accept="image/*" id="idFront">
+  </label>
+  <div id="prevFront" class="preview"></div>
 
-        <div class="kyc-step" id="stepCiVerso">
-          <div class="kyc-step-circle">2</div>
-          <div>
-            <div class="kyc-step-header">
-              <div class="kyc-step-title">Poză CI - verso</div>
-              <div class="kyc-step-desc">
-                Fă o poză la spatele cărții de identitate. Seria și adresa trebuie să fie vizibile.
-              </div>
-            </div>
-            <div class="kyc-step-actions">
-              <span class="pill pill-warning" id="ciVersoStatusPill">neîncărcată</span>
-              <button type="button" class="btn-small" id="ciVersoBtn">Încarcă poză</button>
-            </div>
-          </div>
-        </div>
+  <!-- POZA BULETIN VERSO -->
+  <div class="section-title">2. Buletin - verso</div>
+  <label class="upload-box">
+    Încarcă poză
+    <input type="file" accept="image/*" id="idBack">
+  </label>
+  <div id="prevBack" class="preview"></div>
 
-        <div class="kyc-step" id="stepSelfie">
-          <div class="kyc-step-circle">3</div>
-          <div>
-            <div class="kyc-step-header">
-              <div class="kyc-step-title">Selfie cu buletinul</div>
-              <div class="kyc-step-desc">
-                Ține buletinul lângă față. Fără filtre, fără ochelari de soare. Poza trebuie să fie recentă.
-              </div>
-            </div>
-            <div class="kyc-step-actions">
-              <span class="pill pill-warning" id="selfieStatusPill">neîncărcată</span>
-              <button type="button" class="btn-small" id="selfieBtn">Încarcă poză</button>
-            </div>
-          </div>
-        </div>
+  <!-- SELFIE CU BULETIN -->
+  <div class="section-title">3. Selfie cu buletinul în mână</div>
+  <label class="upload-box">
+    Încarcă poză
+    <input type="file" accept="image/*" id="selfie">
+  </label>
+  <div id="prevSelfie" class="preview"></div>
 
-        <div class="kyc-step" id="stepContract">
-          <div class="kyc-step-circle">4</div>
-          <div>
-            <div class="kyc-step-header">
-              <div class="kyc-step-title">Contract & acord</div>
-              <div class="kyc-step-desc">
-                Bifează că ai citit și ești de acord cu contractul digital și politicile SuperParty.
-              </div>
-            </div>
-            <div class="checkbox-row">
-              <input type="checkbox" id="contractAccept" />
-              <label for="contractAccept">
-                Confirm că am citit contractul de colaborare, sunt de acord cu condițiile și
-                că datele mele sunt reale.
-              </label>
-            </div>
-            <div class="kyc-step-actions">
-              <span class="pill" id="contractStatusPill">nebifat</span>
-              <button type="button" class="btn-small secondary" id="viewContractBtn">
-                Vezi contract
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="actions-main">
-        <button type="button" class="btn-primary" id="submitKycBtn">
-          Trimit KYC la verificare
-        </button>
-        <a href="/login.html" class="btn-link">Înapoi la login</a>
-        <div class="status info" id="kycStatusText">
-          Completează toți pașii de mai sus, apoi trimite KYC-ul pentru verificare.
-        </div>
-      </div>
-    </section>
-
-    <!-- CARD LATERAL EXPLICAȚII -->
-    <aside class="card-side">
-      <div class="side-title">Cum funcționează KYC la SuperParty</div>
-      <div class="side-subtitle">
-        AI-ul verifică pozele, iar un admin confirmă manual. Fără aceste etape contul tău nu poate fi activ.
-      </div>
-
-      <div class="side-block">
-        <strong>1. Analiză AI (anti-fentă)</strong>
-        <ul class="side-list">
-          <li>verifică EXIF / metadate</li>
-          <li>verifică dacă pozele sunt făcute cu același telefon</li>
-          <li>detectează poze refolosite sau editate grosier</li>
-        </ul>
-      </div>
-
-      <div class="side-block">
-        <strong>2. Verificare admin</strong>
-        <ul class="side-list">
-          <li>confirmă identitatea ta</li>
-          <li>verifică dacă datele sunt consistente</li>
-          <li>aprobă sau respinge KYC-ul</li>
-        </ul>
-      </div>
-
-      <div class="side-block">
-        <strong>Status cont</strong>
-        <div id="sideStatusText">
-          încă necunoscut – va fi încărcat din backend.
-        </div>
-        <div class="badge-status pending" id="sideStatusBadge">
-          pending_kyc
-        </div>
-      </div>
-
-      <div class="side-block">
-        <strong>Când poți intra în dashboard?</strong>
-        <ul class="side-list">
-          <li>după ce KYC = <strong>approved</strong></li>
-          <li>status cont = <strong>active</strong></li>
-        </ul>
-      </div>
-    </aside>
+  <!-- CONTRACT -->
+  <div class="section-title">4. Contract</div>
+  <div class="checkbox-row">
+    <input type="checkbox" id="acceptContract">
+    <label for="acceptContract">Confirm că am citit și accept contractul SuperParty.</label>
   </div>
 
-  <!-- LOGICĂ SEPARATĂ PENTRU KYC -->
-  <script src="kyc.js"></script>
+  <div class="checkbox-row">
+    <input type="checkbox" id="realPhotos">
+    <label for="realPhotos">Confirm că pozele încărcate sunt reale și mă reprezintă.</label>
+  </div>
+
+  <button id="submitBtn">Finalizează KYC</button>
+
+</div>
+
+<script>
+  const idFront = document.getElementById("idFront");
+  const idBack = document.getElementById("idBack");
+  const selfie = document.getElementById("selfie");
+  const c1 = document.getElementById("acceptContract");
+  const c2 = document.getElementById("realPhotos");
+  const btn = document.getElementById("submitBtn");
+
+  const previews = {
+    idFront: document.getElementById("prevFront"),
+    idBack: document.getElementById("prevBack"),
+    selfie: document.getElementById("prevSelfie"),
+  };
+
+  function updatePreview(input, previewBox) {
+    if (input.files.length > 0) {
+      previewBox.textContent = "Poză încărcată ✔";
+    } else {
+      previewBox.textContent = "";
+    }
+    checkAll();
+  }
+
+  idFront.addEventListener("change", () => updatePreview(idFront, previews.idFront));
+  idBack.addEventListener("change", () => updatePreview(idBack, previews.idBack));
+  selfie.addEventListener("change", () => updatePreview(selfie, previews.selfie));
+
+  c1.addEventListener("change", checkAll);
+  c2.addEventListener("change", checkAll);
+
+  function checkAll() {
+    const ok =
+      idFront.files.length > 0 &&
+      idBack.files.length > 0 &&
+      selfie.files.length > 0 &&
+      c1.checked &&
+      c2.checked;
+
+    if (ok) {
+      btn.classList.add("active");
+    } else {
+      btn.classList.remove("active");
+    }
+  }
+
+  btn.addEventListener("click", () => {
+    if (!btn.classList.contains("active")) return;
+
+    // Salvăm că KYC este finalizat
+    localStorage.setItem("kyc_completed", "yes");
+
+    // Direcționăm către dashboard
+    window.location.href = "/public/angajat/index.html";
+  });
+</script>
+
 </body>
 </html>
