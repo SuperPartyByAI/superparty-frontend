@@ -14,7 +14,9 @@
       color: #e5e7eb;
       display: flex;
       justify-content: center;
+      align-items: stretch;
       padding: 24px 12px;
+      overflow: hidden;
     }
 
     .hidden { display: none !important; }
@@ -48,7 +50,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 16px;
+      font-size: 15px;
+      font-weight: 600;
     }
 
     .sidebar-dot {
@@ -83,66 +86,25 @@
 
     .sidebar-bottom {
       margin-top: auto;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
       font-size: 10px;
       color: #6b7280;
-    }
-
-    .sidebar-small {
-      font-size: 10px;
       text-align: center;
       line-height: 1.3;
     }
 
-    /* CONȚINUT PRINCIPAL – GOL */
+    /* ZONA CENTRALĂ – COMPLET GOALĂ (FĂRĂ CHENAR, FĂRĂ TEXT) */
     .main {
       flex: 1;
       border-radius: 24px;
-      background: radial-gradient(circle at top left, rgba(59,130,246,0.38), rgba(15,23,42,0.95));
-      box-shadow:
-        0 22px 55px rgba(15, 23, 42, 0.85),
-        0 0 0 1px rgba(148,163,184,0.25);
-      padding: 24px 20px 26px;
+      background: transparent;
       position: relative;
-      overflow: hidden;
-    }
-
-    .main::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at 120% -10%, rgba(56,189,248,0.2), transparent 55%);
-      pointer-events: none;
-    }
-
-    .main-inner {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: stretch;
-      justify-content: stretch;
-    }
-
-    /* PANEL GOL - DOAR UN CARD FĂRĂ TEXT */
-    .empty-panel {
-      flex: 1;
-      border-radius: 20px;
-      background: radial-gradient(circle at top, rgba(15,23,42,0.85), rgba(15,23,42,0.95));
-      border: 1px solid rgba(30,64,175,0.65);
-      box-shadow: inset 0 0 45px rgba(15,23,42,0.9);
     }
 
     @media (max-width: 768px) {
       .sidebar { display: none; }
-      .main { padding: 16px 14px 18px; }
     }
 
-    /* ROBOT AI + CHAT */
+    /* ROBOT AI */
     .chat-button {
       position: fixed;
       right: 20px;
@@ -151,23 +113,13 @@
       height: 58px;
       border-radius: 999px;
       background: radial-gradient(circle at 30% 0, #bfdbfe, #2563eb 55%, #4f46e5 100%);
-      box-shadow:
-        0 12px 28px rgba(15,23,42,0.9),
-        0 0 0 2px rgba(59,130,246,0.45);
+      box-shadow: 0 12px 28px rgba(15,23,42,0.9);
       border: none;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       z-index: 30;
-      transition: transform 0.16s ease, box-shadow 0.16s ease;
-    }
-
-    .chat-button:hover {
-      transform: translateY(-1px) scale(1.03);
-      box-shadow:
-        0 18px 38px rgba(15,23,42,0.95),
-        0 0 0 2px rgba(96,165,250,0.7);
     }
 
     .chat-button-inner {
@@ -179,13 +131,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
     }
 
     .chat-face-eye {
       width: 7px;
       height: 7px;
-      border-radius: 999px;
+      border-radius: 50%;
       background: #e5e7eb;
       box-shadow: 12px 0 0 #e5e7eb;
     }
@@ -199,8 +150,6 @@
       height: 8px;
       border-radius: 999px;
       border-bottom: 2px solid #22c55e;
-      border-left: 2px solid transparent;
-      border-right: 2px solid transparent;
     }
 
     .chat-online-dot {
@@ -209,11 +158,12 @@
       right: 4px;
       width: 8px;
       height: 8px;
-      border-radius: 999px;
+      border-radius: 50%;
       background: #22c55e;
       box-shadow: 0 0 10px rgba(34,197,94,0.9);
     }
 
+    /* CHAT WINDOW */
     .chat-window {
       position: fixed;
       right: 16px;
@@ -223,9 +173,7 @@
       height: 420px;
       border-radius: 18px;
       background: radial-gradient(circle at top, #0f172a, #020617 60%);
-      box-shadow:
-        0 24px 55px rgba(15,23,42,0.98),
-        0 0 0 1px rgba(148,163,184,0.6);
+      box-shadow: 0 24px 55px rgba(15,23,42,0.98);
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -233,153 +181,63 @@
     }
 
     .chat-header {
-      padding: 10px 12px;
-      border-bottom: 1px solid rgba(51,65,85,0.9);
+      padding: 10px;
+      background: #1d4ed8;
+      color: white;
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      background: linear-gradient(135deg, #1d4ed8, #4f46e5);
-    }
-
-    .chat-header-left {
-      display: flex;
       align-items: center;
-      gap: 8px;
-      color: #e5e7eb;
-    }
-
-    .chat-header-avatar {
-      width: 26px;
-      height: 26px;
-      border-radius: 999px;
-      background: #020617;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    }
-
-    .chat-header-avatar-eye {
-      width: 5px;
-      height: 5px;
-      border-radius: 999px;
-      background: #e5e7eb;
-      box-shadow: 8px 0 0 #e5e7eb;
-    }
-
-    .chat-header-avatar-dot {
-      position: absolute;
-      bottom: -1px;
-      right: -1px;
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: #22c55e;
-      box-shadow: 0 0 8px rgba(34,197,94,0.9);
-    }
-
-    .chat-header-text {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .chat-header-title {
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    .chat-header-sub {
-      font-size: 11px;
-      color: #bfdbfe;
+      font-size: 13px;
     }
 
     .chat-close {
+      background: none;
       border: none;
-      background: rgba(15,23,42,0.7);
-      color: #e5e7eb;
-      width: 24px;
-      height: 24px;
-      border-radius: 999px;
+      font-size: 22px;
+      color: white;
       cursor: pointer;
-      font-size: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      line-height: 1;
     }
 
     .chat-messages {
       flex: 1;
-      padding: 10px 10px 8px;
+      padding: 10px;
       overflow-y: auto;
       font-size: 12px;
     }
 
-    .msg {
-      max-width: 82%;
-      padding: 7px 9px;
-      border-radius: 12px;
-      margin-bottom: 6px;
-      line-height: 1.45;
-    }
-
-    .msg-bot {
-      background: rgba(15,23,42,0.95);
-      border: 1px solid rgba(55,65,81,0.9);
-      border-bottom-left-radius: 2px;
-    }
-
-    .msg-user {
-      background: #2563eb;
-      border-bottom-right-radius: 2px;
-      margin-left: auto;
-    }
-
-    .msg-meta {
-      font-size: 10px;
-      color: #6b7280;
-      margin-top: 2px;
-    }
+    .msg { margin-bottom: 8px; }
+    .msg-bot { color: #93c5fd; }
+    .msg-user { color: #fbbf24; }
 
     .chat-input-area {
-      padding: 8px 10px 10px;
-      border-top: 1px solid rgba(31,41,55,0.95);
-      background: rgba(15,23,42,0.98);
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .chat-input-row {
+      padding: 10px;
+      background: #020617;
       display: flex;
       gap: 6px;
     }
 
     .chat-input {
       flex: 1;
+      background: #0f172a;
+      border: 1px solid #334155;
+      color: white;
+      padding: 6px;
+      border-radius: 6px;
+      font-size: 12px;
       resize: none;
       min-height: 34px;
       max-height: 70px;
-      border-radius: 10px;
-      border: 1px solid rgba(55,65,81,0.95);
-      background: #020617;
-      color: #e5e7eb;
-      padding: 7px 9px;
-      font-size: 12px;
-      outline: none;
     }
 
     .chat-send-btn {
-      width: 40px;
-      border-radius: 12px;
-      border: none;
       background: #2563eb;
-      color: #e5e7eb;
-      font-size: 14px;
+      border: none;
+      padding: 6px 12px;
+      color: white;
+      border-radius: 6px;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      font-size: 12px;
     }
 
     @media (max-width: 480px) {
@@ -394,39 +252,28 @@
 </head>
 <body>
   <div class="shell">
-    <!-- Bara laterală -->
     <aside class="sidebar">
-      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-        <div class="sidebar-logo">
-          <span style="font-size:14px;">SP</span>
-        </div>
-        <div class="sidebar-dot"></div>
-      </div>
+      <div class="sidebar-logo">SP</div>
+      <div class="sidebar-dot"></div>
 
       <div class="sidebar-nav">
-        <button class="sidebar-btn" type="button" title="Dashboard">🏠</button>
-        <button class="sidebar-btn" type="button" title="Evenimente">🎈</button>
-        <button class="sidebar-btn" type="button" title="Dovezi">📸</button>
-        <button class="sidebar-btn" type="button" title="Plăți">💸</button>
+        <button class="sidebar-btn">🏠</button>
+        <button class="sidebar-btn">🎈</button>
+        <button class="sidebar-btn">📸</button>
+        <button class="sidebar-btn">💸</button>
       </div>
 
       <div class="sidebar-bottom">
-        <div class="sidebar-small">
-          SuperParty<br/>by AI
-        </div>
+        SuperParty<br/>by AI
       </div>
     </aside>
 
-    <!-- Panou central GOL -->
-    <main class="main">
-      <div class="main-inner">
-        <div class="empty-panel"></div>
-      </div>
-    </main>
+    <!-- ZONA CENTRALĂ COMPLET GOALĂ -->
+    <main class="main"></main>
   </div>
 
-  <!-- BUTON ROBOT AI -->
-  <button id="chatToggle" class="chat-button" aria-label="Deschide chatul AI SuperParty">
+  <!-- ROBOT AI -->
+  <button id="chatToggle" class="chat-button" aria-label="Deschide chatul AI">
     <div class="chat-button-inner">
       <div class="chat-face-eye"></div>
       <div class="chat-face-mouth"></div>
@@ -434,88 +281,65 @@
     </div>
   </button>
 
-  <!-- FEREASTRĂ CHAT AI -->
+  <!-- CHAT AI -->
   <section id="chatWindow" class="chat-window hidden" aria-label="Chat AI SuperParty">
     <header class="chat-header">
-      <div class="chat-header-left">
-        <div class="chat-header-avatar">
-          <div class="chat-header-avatar-eye"></div>
-          <div class="chat-header-avatar-dot"></div>
-        </div>
-        <div class="chat-header-text">
-          <div class="chat-header-title">SuperParty AI</div>
-          <div class="chat-header-sub">demo UI</div>
-        </div>
-      </div>
-      <button class="chat-close" id="chatClose" aria-label="Închide chatul">×</button>
+      <span>SuperParty AI (demo)</span>
+      <button id="chatClose" class="chat-close" aria-label="Închide chatul">×</button>
     </header>
 
-    <div class="chat-messages" id="chatMessages">
-      <div class="msg msg-bot">
-        Salut 👋<br/>
-        Sunt SuperParty AI (demo). Chatul funcționează doar ca interfață, fără backend real încă.
-        <div class="msg-meta">AI · acum</div>
-      </div>
+    <div id="chatMessages" class="chat-messages">
+      <div class="msg msg-bot">Salut! Sunt AI-ul SuperParty (demo).</div>
     </div>
 
     <div class="chat-input-area">
-      <div class="chat-input-row">
-        <textarea id="chatInput" class="chat-input" placeholder="Scrie un mesaj pentru AI SuperParty..."></textarea>
-        <button id="chatSend" class="chat-send-btn">➤</button>
-      </div>
+      <textarea id="chatInput" class="chat-input" placeholder="Scrie un mesaj..."></textarea>
+      <button id="chatSend" class="chat-send-btn">Trimite</button>
     </div>
   </section>
 
   <script>
-    function handleLogout() {
-      window.location.href = '/login.html';
-    }
+    const chatToggle   = document.getElementById("chatToggle");
+    const chatWindow   = document.getElementById("chatWindow");
+    const chatClose    = document.getElementById("chatClose");
+    const chatInput    = document.getElementById("chatInput");
+    const chatSend     = document.getElementById("chatSend");
+    const chatMessages = document.getElementById("chatMessages");
 
-    const chatToggle   = document.getElementById('chatToggle');
-    const chatWindow   = document.getElementById('chatWindow');
-    const chatClose    = document.getElementById('chatClose');
-    const chatInput    = document.getElementById('chatInput');
-    const chatSend     = document.getElementById('chatSend');
-    const chatMessages = document.getElementById('chatMessages');
-
-    function openChat() {
-      chatToggle.classList.add('hidden');      // robot dispare
-      chatWindow.classList.remove('hidden');   // chat apare
+    chatToggle.addEventListener("click", () => {
+      chatToggle.classList.add("hidden");
+      chatWindow.classList.remove("hidden");
       setTimeout(() => chatInput.focus(), 50);
-    }
+    });
 
-    function closeChat() {
-      chatWindow.classList.add('hidden');      // chat dispare
-      chatToggle.classList.remove('hidden');   // revine robotul
-    }
+    chatClose.addEventListener("click", () => {
+      chatWindow.classList.add("hidden");
+      chatToggle.classList.remove("hidden");
+    });
 
     function appendMessage(text, from) {
-      const wrapper = document.createElement('div');
-      wrapper.className = 'msg ' + (from === 'user' ? 'msg-user' : 'msg-bot');
-      wrapper.innerHTML = text + '<div class="msg-meta">' +
-        (from === 'user' ? 'tu · acum' : 'AI demo · acum') +
-        '</div>';
-      chatMessages.appendChild(wrapper);
+      const div = document.createElement("div");
+      div.className = "msg " + (from === "user" ? "msg-user" : "msg-bot");
+      div.textContent = text;
+      chatMessages.appendChild(div);
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
     function handleSend() {
-      const value = (chatInput.value || '').trim();
-      if (!value) return;
-      appendMessage(value, 'user');
-      chatInput.value = '';
+      const text = (chatInput.value || "").trim();
+      if (!text) return;
+      appendMessage(text, "user");
+      chatInput.value = "";
 
       setTimeout(() => {
-        appendMessage('Acesta este doar un răspuns de test din UI. Integrarea reală cu AI-ul SuperParty o facem separat. 🤖', 'bot');
-      }, 500);
+        appendMessage("Răspuns demo AI.", "bot");
+      }, 400);
     }
 
-    chatToggle.addEventListener('click', openChat);
-    chatClose.addEventListener('click', closeChat);
-    chatSend.addEventListener('click', handleSend);
+    chatSend.addEventListener("click", handleSend);
 
-    chatInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
+    chatInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
         handleSend();
       }
