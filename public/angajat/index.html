@@ -4,989 +4,411 @@
   <meta charset="UTF-8" />
   <title>SuperParty - Dashboard angajat</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg-dark: #020617;
-      --bg-card: #020617;
-      --bg-card-soft: #020617;
+      --bg-main: #020617;
+      --bg-card: rgba(15, 23, 42, 0.98);
       --accent-blue: #3b82f6;
-      --accent-blue-soft: #1d4ed8;
+      --accent-soft: #1d4ed8;
       --accent-green: #22c55e;
       --accent-red: #ef4444;
       --text-main: #e5e7eb;
       --text-muted: #9ca3af;
       --border-subtle: #1f2937;
-      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.55);
-      --radius-lg: 16px;
+      --radius-lg: 18px;
       --radius-md: 12px;
-      --radius-pill: 999px;
+      --shadow-soft: 0 22px 50px rgba(15, 23, 42, 0.9);
     }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       min-height: 100vh;
-      background: radial-gradient(circle at top, #1d4ed8 0, #0f172a 40%, #020617 100%);
+      background: radial-gradient(circle at top, #1d4ed8 0, #0f172a 45%, #020617 100%);
       color: var(--text-main);
       display: flex;
-      align-items: stretch;
+      align-items: center;
       justify-content: center;
       padding: 16px;
     }
 
-    /* Layout general */
     .app-shell {
       width: 100%;
-      max-width: 1260px;
-      display: grid;
-      grid-template-columns: auto 1fr;
-      gap: 18px;
-    }
-
-    @media (max-width: 900px) {
-      .app-shell {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* Sidebar "bara pe mijloc" care se deschide */
-    .sidebar {
-      background: rgba(15, 23, 42, 0.9);
+      max-width: 1100px;
+      background: var(--bg-card);
       border-radius: var(--radius-lg);
-      border: 1px solid rgba(148, 163, 184, 0.35);
       box-shadow: var(--shadow-soft);
-      padding: 16px 10px;
-      width: 70px;
-      transition: all 0.25s ease;
-      position: relative;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
       overflow: hidden;
     }
 
-    .sidebar.expanded {
-      width: 260px;
+    @media (max-width: 880px) {
+      .app-shell {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .sidebar {
+        position: absolute;
+        left: 12px;
+        top: 12px;
+        bottom: 12px;
+        width: 240px;
+        transform: translateX(-110%);
+        transition: transform 0.18s ease;
+        z-index: 50;
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .sidebar-toggle {
+        position: absolute;
+        left: 16px;
+        top: 16px;
+        z-index: 60;
+      }
+      .main {
+        padding-top: 54px;
+      }
     }
 
-    .sidebar-toggle {
-      position: absolute;
-      top: 50%;
-      right: -14px;
-      transform: translateY(-50%);
-      width: 28px;
-      height: 72px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      background: radial-gradient(circle at top, #1d4ed8 0, #020617 70%);
-      color: var(--text-main);
-      font-size: 18px;
+    .sidebar {
+      background: radial-gradient(circle at 0 0, #1d4ed8 0, #020617 55%);
+      border-right: 1px solid rgba(15, 23, 42, 0.9);
+      padding: 16px 14px;
       display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.8);
-      user-select: none;
+      flex-direction: column;
+      gap: 14px;
     }
 
     .sidebar-header {
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 22px;
-      padding: 4px 4px 4px 6px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.8);
+      margin-bottom: 8px;
     }
 
     .sidebar-logo {
       width: 30px;
       height: 30px;
       border-radius: 999px;
-      background: radial-gradient(circle at 30% 0, #facc15 0, #f97316 25%, #ef4444 55%, #1d4ed8 100%);
+      background: radial-gradient(circle at 25% 0, #38bdf8 0, #1d4ed8 40%, #020617 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 16px;
+      font-weight: 700;
+      font-size: 18px;
     }
 
     .sidebar-title {
-      display: none;
-      flex-direction: column;
-      line-height: 1.2;
-    }
-
-    .sidebar.expanded .sidebar-title {
-      display: flex;
-    }
-
-    .sidebar-title-main {
-      font-size: 13px;
+      font-size: 15px;
       font-weight: 600;
     }
 
-    .sidebar-title-sub {
+    .sidebar-subtitle {
       font-size: 11px;
-      color: var(--text-muted);
+      color: #cbd5f5;
     }
 
-    .sidebar-nav {
+    .sidebar-section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #9ca3af;
+      margin-bottom: 4px;
+    }
+
+    .sidebar-pill {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      padding: 5px 9px;
+      font-size: 11px;
+      color: #e5e7eb;
+      margin-bottom: 4px;
+    }
+
+    .sidebar-stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .sidebar-stat-card {
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      padding: 6px 7px;
+      font-size: 11px;
+    }
+
+    .sidebar-stat-label {
+      color: #9ca3af;
+      font-size: 11px;
+    }
+
+    .sidebar-stat-value {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
+    .sidebar-footer a {
+      color: #bfdbfe;
+      text-decoration: none;
+    }
+
+    .sidebar-footer a:hover {
+      text-decoration: underline;
+    }
+
+    .main {
+      padding: 16px 18px 18px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 12px;
+      background: radial-gradient(circle at top right, #020617 0, #020617 45%, #020617 100%);
+      position: relative;
     }
 
-    .sidebar-item {
+    .sidebar-toggle {
+      display: none;
+    }
+
+    .top-row {
       display: flex;
+      justify-content: space-between;
       align-items: center;
       gap: 10px;
-      padding: 9px 10px;
-      border-radius: 999px;
-      cursor: pointer;
-      font-size: 13px;
-      color: var(--text-muted);
-      border: 1px solid transparent;
-      transition: all 0.18s ease;
+      margin-bottom: 4px;
     }
 
-    .sidebar-item-icon {
-      width: 30px;
-      height: 30px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.85);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
+    .top-greeting {
+      font-size: 15px;
+      font-weight: 500;
     }
 
-    .sidebar-item-label {
-      opacity: 0;
-      white-space: nowrap;
+    .top-greeting span {
+      color: #93c5fd;
     }
 
-    .sidebar.expanded .sidebar-item-label {
-      opacity: 1;
-    }
-
-    .sidebar-item.active {
-      background: linear-gradient(90deg, #1d4ed8, #3b82f6);
-      color: #f9fafb;
-      border-color: rgba(191, 219, 254, 0.4);
-    }
-
-    .sidebar-item.active .sidebar-item-icon {
-      background: rgba(15, 23, 42, 0.9);
-    }
-
-    .sidebar-item:hover {
-      border-color: rgba(148, 163, 184, 0.6);
-      background: rgba(15, 23, 42, 0.75);
-      color: #e5e7eb;
-    }
-
-    /* Conținut principal */
-    .main-panel {
-      background: rgba(15, 23, 42, 0.95);
-      border-radius: var(--radius-lg);
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      box-shadow: var(--shadow-soft);
-      padding: 20px 18px 22px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .main-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .main-header-left {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .main-title-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .main-title {
-      font-size: 19px;
-      font-weight: 600;
-    }
-
-    .main-chip {
+    .top-meta {
       font-size: 11px;
-      padding: 3px 9px;
+      color: #9ca3af;
+    }
+
+    .chips-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .chip {
       border-radius: 999px;
-      border: 1px solid rgba(52, 211, 153, 0.6);
-      background: rgba(5, 46, 22, 0.7);
-      color: #bbf7d0;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      padding: 4px 8px;
+      font-size: 11px;
       display: inline-flex;
       align-items: center;
       gap: 4px;
+      color: #e5e7eb;
     }
 
-    .main-subtitle {
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-    .main-header-right {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .pill {
-      font-size: 12px;
-      padding: 5px 10px;
+    .chip-dot {
+      width: 7px;
+      height: 7px;
       border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.8);
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      background: #22c55e;
     }
 
-    .avatar-mini {
-      width: 30px;
-      height: 30px;
-      border-radius: 999px;
-      border: 1px solid rgba(59, 130, 246, 0.7);
-      background: radial-gradient(circle at 30% 0, #38bdf8 0, #6366f1 40%, #0f172a 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
+    .chip-danger .chip-dot {
+      background: #ef4444;
     }
 
-    .quick-stats {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    @media (max-width: 900px) {
-      .quick-stats {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    @media (max-width: 600px) {
-      .quick-stats {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
-    .stat-card {
-      background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.18) 0, rgba(15, 23, 42, 1) 55%);
+    .card {
       border-radius: var(--radius-md);
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      padding: 10px 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+      border: 1px solid rgba(31, 41, 55, 0.9);
+      background: rgba(15, 23, 42, 0.98);
+      padding: 11px 11px 9px;
     }
 
-    .stat-label {
-      font-size: 11px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-    }
-
-    .stat-value-row {
+    .card-title-row {
       display: flex;
+      justify-content: space-between;
       align-items: baseline;
-      gap: 6px;
+      margin-bottom: 6px;
     }
 
-    .stat-value {
-      font-size: 18px;
+    .card-title {
+      font-size: 13px;
       font-weight: 600;
     }
 
-    .stat-tag {
+    .card-sub {
       font-size: 11px;
-      padding: 2px 7px;
+      color: #9ca3af;
+    }
+
+    .tabs {
+      display: inline-flex;
       border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      color: var(--text-muted);
+      border: 1px solid rgba(31, 41, 55, 0.9);
+      overflow: hidden;
+      font-size: 11px;
+      margin-bottom: 4px;
     }
 
-    .stat-pill-green {
-      border-color: rgba(74, 222, 128, 0.7);
-      color: #bbf7d0;
-      background: rgba(5, 46, 22, 0.6);
+    .tab-btn {
+      padding: 4px 8px;
+      background: transparent;
+      border: none;
+      color: #9ca3af;
+      cursor: pointer;
     }
 
-    /* Evenimente */
-    .events-section {
-      margin-top: 4px;
-      display: grid;
-      grid-template-columns: 1.35fr 1fr;
-      gap: 12px;
+    .tab-btn.active {
+      background: rgba(15, 23, 42, 0.95);
+      color: #e5e7eb;
     }
 
-    @media (max-width: 1000px) {
-      .events-section {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .events-list-card,
-    .events-details-card {
-      background: rgba(15, 23, 42, 0.9);
-      border-radius: var(--radius-md);
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      padding: 12px 11px 12px;
+    .events-list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-    }
-
-    .section-title-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .section-title {
-      font-size: 14px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
       gap: 6px;
-    }
-
-    .section-hint {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .chip-small {
-      font-size: 11px;
-      padding: 2px 7px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      color: var(--text-muted);
-    }
-
-    .events-scroll {
       margin-top: 4px;
-      max-height: 260px;
-      overflow-y: auto;
-      padding-right: 4px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .events-scroll::-webkit-scrollbar {
-      width: 5px;
-    }
-
-    .events-scroll::-webkit-scrollbar-track {
-      background: rgba(15, 23, 42, 0.9);
-    }
-
-    .events-scroll::-webkit-scrollbar-thumb {
-      background: rgba(30, 64, 175, 0.7);
-      border-radius: 999px;
     }
 
     .event-card {
-      border-radius: 12px;
-      border: 1px solid rgba(55, 65, 81, 0.9);
-      background: radial-gradient(circle at top left, rgba(37, 99, 235, 0.28) 0, rgba(15, 23, 42, 0.95) 45%, rgba(15, 23, 42, 1) 100%);
-      padding: 9px 10px;
-      display: flex;
-      flex-direction: column;
+      border-radius: 10px;
+      border: 1px solid rgba(31, 41, 55, 0.9);
+      padding: 7px 8px;
+      font-size: 12px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.8fr) minmax(0, 1.4fr);
       gap: 6px;
       cursor: pointer;
-      transition: all 0.18s ease;
     }
 
-    .event-card:hover {
-      border-color: rgba(129, 140, 248, 0.9);
-      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.9);
-      transform: translateY(-1px);
+    @media (max-width: 720px) {
+      .event-card {
+        grid-template-columns: minmax(0, 1fr);
+      }
     }
 
-    .event-header {
+    .event-main {
       display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 10px;
+      flex-direction: column;
+      gap: 2px;
     }
 
     .event-title {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 500;
-    }
-
-    .event-id {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .event-badge {
-      font-size: 11px;
-      padding: 2px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(129, 140, 248, 0.9);
-      background: rgba(15, 23, 42, 0.8);
     }
 
     .event-meta {
       display: flex;
       flex-wrap: wrap;
-      gap: 7px;
+      gap: 6px;
       font-size: 11px;
-      color: var(--text-muted);
+      color: #9ca3af;
+    }
+
+    .event-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .event-pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 3px;
     }
 
     .event-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 2px 7px;
       border-radius: 999px;
-      background: rgba(15, 23, 42, 0.92);
       border: 1px solid rgba(55, 65, 81, 0.9);
-    }
-
-    .event-footer-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 2px;
-    }
-
-    .event-status-chip {
+      padding: 2px 6px;
       font-size: 11px;
-      padding: 2px 7px;
-      border-radius: 999px;
-      border: 1px solid rgba(59, 130, 246, 0.7);
-      color: #bfdbfe;
+      color: #9ca3af;
     }
 
-    .event-status-chip-red {
-      border-color: rgba(248, 113, 113, 0.9);
+    .event-pill.badge-red {
+      border-color: var(--accent-red);
       color: #fecaca;
     }
 
-    .link-mini {
-      font-size: 11px;
-      color: #93c5fd;
-      text-decoration: underline dotted;
-      cursor: pointer;
+    .event-pill.badge-green {
+      border-color: var(--accent-green);
+      color: #bbf7d0;
     }
 
-    /* Detalii eveniment selectat */
-    .details-grid {
-      display: grid;
-      grid-template-columns: 1.1fr 1fr;
-      gap: 8px;
-    }
-
-    @media (max-width: 640px) {
-      .details-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .details-block {
-      border-radius: 12px;
-      border: 1px solid rgba(55, 65, 81, 0.9);
-      background: radial-gradient(circle at top left, rgba(59, 130, 246, 0.18) 0, rgba(15, 23, 42, 0.98) 45%, rgba(15, 23, 42, 1) 100%);
-      padding: 9px 10px;
+    .event-actions {
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      min-height: 80px;
-    }
-
-    .details-label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-muted);
-    }
-
-    .details-main {
-      font-size: 13px;
-      font-weight: 500;
-    }
-
-    .details-sub {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .dovezi-steps {
-      display: flex;
-      gap: 6px;
-      margin-top: 4px;
-    }
-
-    .dovezi-step {
-      width: 30px;
-      height: 30px;
-      border-radius: 999px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      border: 1px solid transparent;
-      transition: all 0.16s ease;
-    }
-
-    .dovezi-step.validat {
-      background: #16a34a;
-      color: #f0fdf4;
-      border-color: rgba(22, 163, 74, 0.8);
-    }
-
-    .dovezi-step.obligatoriu {
-      background: #dc2626;
-      color: #fee2e2;
-      border-color: rgba(239, 68, 68, 0.9);
-      box-shadow: 0 0 0 0 rgba(248, 113, 113, 0.7);
-      animation: pulse 1.7s infinite;
-    }
-
-    .dovezi-step.blocat {
-      background: #4b5563;
-      color: #e5e7eb;
-      opacity: 0.55;
-      cursor: not-allowed;
-    }
-
-    .dovezi-step:hover:not(.blocat) {
-      transform: translateY(-1px) scale(1.02);
-      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.9);
-    }
-
-    @keyframes pulse {
-      0% {
-        box-shadow: 0 0 0 0 rgba(248, 113, 113, 0.7);
-      }
-      70% {
-        box-shadow: 0 0 0 8px rgba(248, 113, 113, 0);
-      }
-      100% {
-        box-shadow: 0 0 0 0 rgba(248, 113, 113, 0);
-      }
-    }
-
-    .details-note {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
-
-    /* MODAL simplu pentru "upload dovezi" (doar UI, fără backend aici) */
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.88);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 80;
-    }
-
-    .modal-backdrop.active {
-      display: flex;
-    }
-
-    .modal {
-      width: 100%;
-      max-width: 420px;
-      border-radius: 18px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      background: radial-gradient(circle at top, #0f172a 0, #020617 55%);
-      box-shadow: 0 26px 70px rgba(0, 0, 0, 0.85);
-      padding: 14px 14px 16px;
-      color: #e5e7eb;
-    }
-
-    .modal-header {
-      display: flex;
       justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .modal-title {
-      font-size: 15px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .modal-close {
-      width: 26px;
-      height: 26px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      background: rgba(15, 23, 42, 0.9);
-      color: #e5e7eb;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 17px;
-    }
-
-    .modal-body {
-      font-size: 13px;
-      color: var(--text-muted);
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-
-    .modal-footer {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-    }
-
-    .btn {
-      border-radius: 999px;
-      font-size: 13px;
-      padding: 6px 13px;
-      border: 1px solid transparent;
-      background: transparent;
-      color: #e5e7eb;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .btn-secondary {
-      border-color: rgba(148, 163, 184, 0.7);
-      background: rgba(15, 23, 42, 0.9);
-    }
-
-    .btn-primary {
-      border-color: rgba(59, 130, 246, 0.9);
-      background: linear-gradient(90deg, #1d4ed8, #3b82f6);
-    }
-
-    .btn-primary:disabled {
-      opacity: 0.6;
-      cursor: default;
-    }
-
-    /* WIDGET AI */
-
-    .ai-bot-button {
-      position: fixed;
-      right: 20px;
-      bottom: 20px;
-      width: 56px;
-      height: 56px;
-      border-radius: 999px;
-      border: 1px solid rgba(129, 140, 248, 0.9);
-      background: radial-gradient(circle at 30% 0, #38bdf8 0, #6366f1 30%, #0f172a 100%);
-      box-shadow: 0 22px 55px rgba(15, 23, 42, 0.95);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 90;
-      transition: transform 0.18s ease, box-shadow 0.18s ease;
-    }
-
-    .ai-bot-button:hover {
-      transform: translateY(-2px) scale(1.02);
-      box-shadow: 0 28px 70px rgba(15, 23, 42, 1);
-    }
-
-    .ai-bot-face {
-      width: 34px;
-      height: 34px;
-      border-radius: 12px;
-      background: #0b1120;
-      border: 2px solid rgba(129, 140, 248, 0.9);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .ai-bot-eyes {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 2px;
-    }
-
-    .ai-bot-eye {
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: #38bdf8;
-      box-shadow: 0 0 6px rgba(56, 189, 248, 0.9);
-    }
-
-    .ai-bot-mouth {
-      width: 14px;
-      height: 3px;
-      border-radius: 999px;
-      background: linear-gradient(90deg, #22c55e, #4ade80);
-      box-shadow: 0 0 6px rgba(34, 197, 94, 0.9);
-    }
-
-    .ai-bot-antenna {
-      position: absolute;
-      top: -7px;
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      border: 2px solid rgba(129, 140, 248, 0.95);
-      background: #020617;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 9px;
-      color: #a5b4fc;
-    }
-
-    .ai-chat {
-      position: fixed;
-      right: 16px;
-      bottom: 16px;
-      width: 360px;
-      max-width: calc(100vw - 32px);
-      height: 430px;
-      max-height: calc(100vh - 100px);
-      border-radius: 18px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      background: radial-gradient(circle at top left, rgba(37, 99, 235, 0.35) 0, #020617 40%, #020617 100%);
-      box-shadow: 0 30px 80px rgba(0, 0, 0, 1);
-      display: none;
-      flex-direction: column;
-      overflow: hidden;
-      z-index: 99;
-    }
-
-    .ai-chat.visible {
-      display: flex;
-    }
-
-    .ai-chat-header {
-      padding: 10px 11px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid rgba(30, 64, 175, 0.9);
-      background: radial-gradient(circle at top left, rgba(59, 130, 246, 0.4) 0, rgba(15, 23, 42, 0.98) 55%);
-    }
-
-    .ai-chat-title {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-      font-weight: 500;
-    }
-
-    .ai-chat-badge {
-      font-size: 10px;
-      padding: 2px 7px;
-      border-radius: 999px;
-      border: 1px solid rgba(129, 140, 248, 0.9);
-      color: #c7d2fe;
-      background: rgba(15, 23, 42, 0.9);
-    }
-
-    .ai-chat-close {
-      width: 26px;
-      height: 26px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.8);
-      background: rgba(15, 23, 42, 0.98);
-      color: #e5e7eb;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 17px;
-    }
-
-    .ai-chat-body {
-      flex: 1;
-      padding: 10px 10px 8px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      font-size: 13px;
-    }
-
-    .ai-chat-body::-webkit-scrollbar {
-      width: 5px;
-    }
-
-    .ai-chat-body::-webkit-scrollbar-thumb {
-      background: rgba(37, 99, 235, 0.8);
-      border-radius: 999px;
-    }
-
-    .ai-msg-row {
-      display: flex;
-      gap: 8px;
-      align-items: flex-start;
-    }
-
-    .ai-msg-row.user {
-      justify-content: flex-end;
-    }
-
-    .ai-msg-avatar {
-      width: 24px;
-      height: 24px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 0, #38bdf8 0, #6366f1 45%, #0f172a 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      flex-shrink: 0;
-    }
-
-    .ai-msg-avatar-user {
-      background: radial-gradient(circle at 30% 0, #22c55e 0, #4ade80 45%, #022c22 100%);
-    }
-
-    .ai-msg-bubble {
-      padding: 7px 9px;
-      border-radius: 12px;
-      max-width: 80%;
-      border: 1px solid rgba(55, 65, 81, 0.9);
-      background: rgba(15, 23, 42, 0.98);
-      color: #e5e7eb;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-    }
-
-    .ai-msg-row.user .ai-msg-bubble {
-      background: rgba(14, 116, 144, 0.96);
-      border-color: rgba(34, 211, 238, 0.9);
-    }
-
-    .ai-msg-meta {
-      font-size: 10px;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-
-    .ai-chat-footer {
-      border-top: 1px solid rgba(30, 64, 175, 0.9);
-      padding: 7px 8px 8px;
-      background: rgba(15, 23, 42, 0.98);
-      display: flex;
-      flex-direction: column;
       gap: 4px;
+      align-items: flex-end;
+      text-align: right;
     }
 
-    .ai-input-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .ai-input {
-      flex: 1;
-      border-radius: 999px;
-      border: 1px solid rgba(55, 65, 81, 0.95);
-      background: #020617;
-      color: #e5e7eb;
-      font-size: 13px;
-      padding: 7px 11px;
-      outline: none;
-    }
-
-    .ai-input::placeholder {
-      color: #6b7280;
-    }
-
-    .ai-send-btn {
-      width: 34px;
-      height: 34px;
+    .btn-small {
       border-radius: 999px;
       border: 1px solid rgba(59, 130, 246, 0.9);
-      background: linear-gradient(90deg, #1d4ed8, #3b82f6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      padding: 4px 8px;
+      font-size: 11px;
+      background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+      color: #f9fafb;
       cursor: pointer;
-      font-size: 17px;
-      color: #e5e7eb;
-      flex-shrink: 0;
     }
 
-    .ai-chat-status {
-      font-size: 10px;
-      color: var(--text-muted);
+    .btn-small.secondary {
+      border-color: rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 1);
+      color: #e5e7eb;
+    }
+
+    .badge-counter {
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      color: #e5e7eb;
+    }
+
+    .footer-row {
       display: flex;
       justify-content: space-between;
-      gap: 8px;
-    }
-
-    .dot-pulse {
-      display: inline-flex;
-      gap: 3px;
       align-items: center;
+      font-size: 11px;
+      color: #6b7280;
+      margin-top: 4px;
     }
 
-    .dot-pulse span {
-      width: 4px;
-      height: 4px;
-      border-radius: 999px;
-      background: #93c5fd;
-      opacity: 0.4;
-      animation: dot 1.2s infinite ease-in-out;
+    .footer-row a {
+      color: #93c5fd;
+      text-decoration: none;
     }
 
-    .dot-pulse span:nth-child(2) {
-      animation-delay: 0.18s;
+    .footer-row a:hover {
+      text-decoration: underline;
     }
 
-    .dot-pulse span:nth-child(3) {
-      animation-delay: 0.36s;
+    .kyc-warning {
+      font-size: 11px;
+      color: #facc15;
     }
 
-    @keyframes dot {
-      0%, 100% { opacity: 0.3; transform: translateY(0); }
-      50% { opacity: 1; transform: translateY(-2px); }
-    }
-
-    .hidden {
-      display: none !important;
+    .kyc-warning strong {
+      color: #fee66e;
     }
   </style>
 </head>
@@ -995,405 +417,284 @@
     <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
-        <div class="sidebar-logo">🎉</div>
-        <div class="sidebar-title">
-          <div class="sidebar-title-main">SuperParty</div>
-          <div class="sidebar-title-sub">Panel angajat</div>
+        <div class="sidebar-logo">SP</div>
+        <div>
+          <div class="sidebar-title">SuperParty · Angajat</div>
+          <div class="sidebar-subtitle">evenimente · dovezi · KYC</div>
         </div>
       </div>
 
-      <nav class="sidebar-nav">
-        <div class="sidebar-item active" data-section="evenimente">
-          <div class="sidebar-item-icon">📅</div>
-          <div class="sidebar-item-label">Evenimentele mele</div>
+      <div>
+        <div class="sidebar-section-title">Contul tău</div>
+        <div class="sidebar-pill" id="accountStatusPill">
+          Status cont: <strong>pending_kyc</strong>
         </div>
-        <div class="sidebar-item" data-section="kyc">
-          <div class="sidebar-item-icon">📸</div>
-          <div class="sidebar-item-label">Dovezi & KYC</div>
+        <div class="sidebar-stats">
+          <div class="sidebar-stat-card">
+            <div class="sidebar-stat-label">Evenimente azi</div>
+            <div class="sidebar-stat-value" id="statToday">2</div>
+          </div>
+          <div class="sidebar-stat-card">
+            <div class="sidebar-stat-label">Weekend</div>
+            <div class="sidebar-stat-value" id="statWeekend">1</div>
+          </div>
         </div>
-        <div class="sidebar-item" data-section="plati">
-          <div class="sidebar-item-icon">💰</div>
-          <div class="sidebar-item-label">Plăți & tips</div>
-        </div>
-        <div class="sidebar-item" data-section="setari">
-          <div class="sidebar-item-icon">⚙️</div>
-          <div class="sidebar-item-label">Setări cont</div>
-        </div>
-      </nav>
+      </div>
 
-      <button class="sidebar-toggle" id="sidebarToggle" type="button">
-        ☰
-      </button>
+      <div>
+        <div class="sidebar-section-title">Dovezi</div>
+        <div class="sidebar-pill">
+          Dovezi lipsă: <strong id="missingProofs">3</strong>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <div>ID utilizator: <span id="userEmailLabel">necunoscut</span></div>
+        <div>
+          KYC: <strong id="kycStateLabel">nu e completat</strong> ·
+          <a href="/angajat/kyc.html">deschide KYC</a>
+        </div>
+        <div>
+          <a href="/login.html">Deconectare</a>
+        </div>
+      </div>
     </aside>
 
-    <!-- PANEL PRINCIPAL -->
-    <main class="main-panel">
-      <header class="main-header">
-        <div class="main-header-left">
-          <div class="main-title-row">
-            <h1 class="main-title">Salut, Andrei 👋</h1>
-            <span class="main-chip">Mod angajat activ</span>
-          </div>
-          <p class="main-subtitle">
-            Aici vezi evenimentele tale, dovezile și poți vorbi cu AI-ul SuperParty.
-          </p>
-        </div>
-        <div class="main-header-right">
-          <div class="pill">
-            🌙 Dark · <span id="todayLabel"></span>
-          </div>
-          <div class="avatar-mini" id="avatarInitials">A</div>
-        </div>
-      </header>
+    <!-- MAIN -->
+    <main class="main">
+      <button class="btn-small secondary sidebar-toggle" id="sidebarToggle">Meniu</button>
 
-      <!-- Statistici rapide -->
-      <section class="quick-stats">
-        <div class="stat-card">
-          <div class="stat-label">Evenimente azi</div>
-          <div class="stat-value-row">
-            <div class="stat-value" id="statAzi">2</div>
-            <span class="stat-tag stat-pill-green">On time</span>
-          </div>
+      <div class="top-row">
+        <div>
+          <div class="top-greeting">Salut, <span id="userNameLabel">Andrei</span> 👋</div>
+          <div class="top-meta">Aici vezi evenimentele tale, dovezile și poți vorbi cu AI-ul SuperParty.</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-label">Evenimente weekend</div>
-          <div class="stat-value-row">
-            <div class="stat-value" id="statWeekend">1</div>
-            <span class="stat-tag">planificate</span>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Dovezi lipsă</div>
-          <div class="stat-value-row">
-            <div class="stat-value" id="statDoveziLipsa">3</div>
-            <span class="stat-tag event-status-chip-red">URGENT</span>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Status bagaj</div>
-          <div class="stat-value-row">
-            <div class="stat-value">OK</div>
-            <span class="stat-tag">ai 0 blocaje</span>
-          </div>
-        </div>
-      </section>
+        <div class="badge-counter">Mod: angajat</div>
+      </div>
 
-      <!-- Secțiune evenimente -->
-      <section class="events-section" id="section-evenimente">
-        <!-- Lista evenimente -->
-        <div class="events-list-card">
-          <div class="section-title-row">
-            <div>
-              <div class="section-title">📅 Evenimentele tale</div>
-              <div class="section-hint">Click pe un eveniment ca să vezi detalii & dovezi.</div>
-            </div>
-            <span class="chip-small">Azi + weekend</span>
-          </div>
+      <div class="chips-row">
+        <div class="chip">
+          <span class="chip-dot"></span>
+          Animație copii
+        </div>
+        <div class="chip">
+          <span class="chip-dot"></span>
+          Dovezi obligatorii
+        </div>
+        <div class="chip chip-danger">
+          <span class="chip-dot"></span>
+          Ai dovezi lipsă
+        </div>
+      </div>
 
-          <div class="events-scroll" id="eventsList">
-            <!-- Evenimente demo -->
-            <article class="event-card" data-event-id="EVT_001">
-              <div class="event-header">
-                <div>
-                  <div class="event-title">Elsa 2h + Olaf 2h</div>
-                  <div class="event-id">ID: EVT_001 · COD: A23</div>
-                </div>
-                <div class="event-badge">Azi · 15:00 - 17:00</div>
+      <section class="card">
+        <div class="card-title-row">
+          <div>
+            <div class="card-title">Evenimentele tale</div>
+            <div class="card-sub">Apasă pe un eveniment pentru detalii sau pe butonul cu 📸 pentru poze.</div>
+          </div>
+          <div class="tabs">
+            <button class="tab-btn active" data-filter="today">Azi</button>
+            <button class="tab-btn" data-filter="weekend">Weekend</button>
+            <button class="tab-btn" data-filter="all">Toate</button>
+          </div>
+        </div>
+
+        <div class="events-list" id="eventsList">
+          <!-- EVT_001 -->
+          <article class="event-card" data-id="EVT_001" data-type="today">
+            <div class="event-main">
+              <div class="event-title">Elsa 2h + Olaf 2h</div>
+              <div class="event-meta">
+                <span>📅 Azi · 15:00 - 17:00</span>
+                <span>📍 București, Sector 3</span>
               </div>
               <div class="event-meta">
-                <span class="event-pill">📍 București, Sector 3</span>
-                <span class="event-pill">👤 Maria Ionescu</span>
-                <span class="event-pill">💰 650 lei (cash)</span>
-                <span class="event-pill">🚗 Fără șofer</span>
+                <span>👤 Maria Ionescu · 0722 456 789</span>
               </div>
-              <div class="event-footer-row">
-                <span class="event-status-chip-red">Dovezi lipsă: Etapa 2</span>
-                <span class="link-mini">vezi detalii & dovezi ⟶</span>
+              <div class="event-pill-row">
+                <div class="event-pill">Rol principal: Animație copii</div>
+                <div class="event-pill">Șofer: nu e nevoie</div>
+                <div class="event-pill badge-red">Dovezi lipsă: 1</div>
               </div>
-            </article>
+            </div>
+            <div class="event-actions">
+              <button class="btn-small" data-proof-btn="EVT_001">📸 Dovezi EVT_001</button>
+              <button class="btn-small secondary" data-ask-ai="EVT_001">Întreabă AI despre EVT_001</button>
+            </div>
+          </article>
 
-            <article class="event-card" data-event-id="EVT_002">
-              <div class="event-header">
-                <div>
-                  <div class="event-title">Spider-Man 2h</div>
-                  <div class="event-id">ID: EVT_002 · COD: B15</div>
-                </div>
-                <div class="event-badge">Azi · 11:00 - 13:00</div>
+          <!-- EVT_002 -->
+          <article class="event-card" data-id="EVT_002" data-type="today">
+            <div class="event-main">
+              <div class="event-title">Spider-Man 2h</div>
+              <div class="event-meta">
+                <span>📅 Azi · 11:00 - 13:00</span>
+                <span>📍 București, Sector 4</span>
               </div>
               <div class="event-meta">
-                <span class="event-pill">📍 Voluntari, Ilfov</span>
-                <span class="event-pill">👤 Ion Popescu</span>
-                <span class="event-pill">💰 450 lei</span>
-                <span class="event-pill">🚗 Necesită șofer</span>
+                <span>👤 Alex Pop · 0733 111 222</span>
               </div>
-              <div class="event-footer-row">
-                <span class="event-status-chip">Dovezi ok: Etapa 1</span>
-                <span class="link-mini">vezi detalii ⟶</span>
+              <div class="event-pill-row">
+                <div class="event-pill">Rol principal: Animație</div>
+                <div class="event-pill badge-green">Dovezi complete</div>
               </div>
-            </article>
+            </div>
+            <div class="event-actions">
+              <button class="btn-small" data-proof-btn="EVT_002">📸 Dovezi EVT_002</button>
+              <button class="btn-small secondary" data-ask-ai="EVT_002">Întreabă AI despre EVT_002</button>
+            </div>
+          </article>
 
-            <article class="event-card" data-event-id="EVT_003">
-              <div class="event-header">
-                <div>
-                  <div class="event-title">Frozen Party 3h</div>
-                  <div class="event-id">ID: EVT_003 · COD: W19</div>
-                </div>
-                <div class="event-badge">Sâmbătă · 17:00 - 20:00</div>
+          <!-- EVT_003 -->
+          <article class="event-card" data-id="EVT_003" data-type="weekend">
+            <div class="event-main">
+              <div class="event-title">Minnie Mouse 2h</div>
+              <div class="event-meta">
+                <span>📅 Sâmbătă · 17:00 - 19:00</span>
+                <span>📍 Voluntari</span>
               </div>
               <div class="event-meta">
-                <span class="event-pill">📍 Pipera</span>
-                <span class="event-pill">👤 Andreea Dumitrescu</span>
-                <span class="event-pill">💰 900 lei</span>
-                <span class="event-pill">🚗 cu șofer</span>
+                <span>👤 Ioana Dumitru · 0744 333 999</span>
               </div>
-              <div class="event-footer-row">
-                <span class="event-status-chip">Dovezi ok: Etapa 1</span>
-                <span class="link-mini">vezi detalii ⟶</span>
-              </div>
-            </article>
-          </div>
-        </div>
-
-        <!-- Detalii eveniment selectat -->
-        <div class="events-details-card">
-          <div class="section-title-row">
-            <div>
-              <div class="section-title">📋 Detalii rol & dovezi</div>
-              <div class="section-hint" id="detailsHint">
-                Selectează un eveniment din listă pentru detalii complete.
+              <div class="event-pill-row">
+                <div class="event-pill">Rol principal: Animație</div>
+                <div class="event-pill badge-red">Dovezi lipsă: 2</div>
               </div>
             </div>
-            <span class="chip-small">live · doar tu vezi</span>
-          </div>
+            <div class="event-actions">
+              <button class="btn-small" data-proof-btn="EVT_003">📸 Dovezi EVT_003</button>
+              <button class="btn-small secondary" data-ask-ai="EVT_003">Întreabă AI despre EVT_003</button>
+            </div>
+          </article>
+        </div>
 
-          <div class="details-grid" id="detailsGrid">
-            <div class="details-block">
-              <div class="details-label">Rol & oră</div>
-              <div class="details-main" id="detailsRol">—</div>
-              <div class="details-sub" id="detailsOra">—</div>
-            </div>
-            <div class="details-block">
-              <div class="details-label">Locație & client</div>
-              <div class="details-main" id="detailsLocatie">—</div>
-              <div class="details-sub" id="detailsClient">—</div>
-            </div>
-            <div class="details-block">
-              <div class="details-label">Plată & tips</div>
-              <div class="details-main" id="detailsPlata">—</div>
-              <div class="details-sub" id="detailsTips">—</div>
-            </div>
-            <div class="details-block">
-              <div class="details-label">Dovezi obligatorii</div>
-              <div class="dovezi-steps">
-                <button
-                  type="button"
-                  class="dovezi-step validat"
-                  data-etapa="1"
-                  title="Etapa 1: Bagaj"
-                  id="step1"
-                >
-                  1
-                </button>
-                <button
-                  type="button"
-                  class="dovezi-step obligatoriu"
-                  data-etapa="2"
-                  title="Etapa 2: Am ajuns"
-                  id="step2"
-                >
-                  2
-                </button>
-                <button
-                  type="button"
-                  class="dovezi-step blocat"
-                  data-etapa="3"
-                  title="Etapa 3: Plecare & returnare"
-                  id="step3"
-                >
-                  3
-                </button>
-              </div>
-              <div class="details-note" id="detailsDoveziNote">
-                Etapa 2 este obligatorie înainte să poți închide evenimentul.
-              </div>
-            </div>
+        <div class="footer-row">
+          <div class="kyc-warning">
+            Pentru cont <strong>ACTIVE</strong> trebuie să ai KYC aprobat și să respecți toate dovezile obligatorii.
           </div>
-        </div>
-      </section>
-
-      <!-- Placeholder pentru alte secțiuni din dashboard (KYC / Plăți / Setări) -->
-      <section class="events-section hidden" id="section-kyc">
-        <div class="events-list-card">
-          <div class="section-title-row">
-            <div>
-              <div class="section-title">🪪 Status KYC</div>
-              <div class="section-hint">Rezumat rapid al stării KYC & contract.</div>
-            </div>
-            <span class="chip-small">link către pagina KYC</span>
-          </div>
-          <p class="section-hint">
-            Pentru KYC complet, mergi la pagina dedicată: <a href="/angajat/kyc.html" class="link-mini">deschide KYC</a>.
-          </p>
-        </div>
-        <div class="events-details-card">
-          <div class="section-title-row">
-            <div>
-              <div class="section-title">📸 Reguli poze KYC</div>
-            </div>
-          </div>
-          <p class="section-hint">
-            Pozele trebuie să fie clare, făcute recent și fără filtre. AI-ul verifică metadate, device, consistență
-            între imagini și respinge pozele refolosite sau modificate grosier.
-          </p>
-        </div>
-      </section>
-
-      <section class="events-section hidden" id="section-plati">
-        <div class="events-list-card">
-          <div class="section-title-row">
-            <div>
-              <div class="section-title">💰 Rezumat plăți</div>
-              <div class="section-hint">Total estimat pentru luna curentă.</div>
-            </div>
-          </div>
-          <p class="section-hint">Integrarea reală cu sistemul de plăți se face ulterior.</p>
-        </div>
-        <div class="events-details-card">
-          <div class="section-title-row">
-            <div>
-              <div class="section-title">💸 Tips & recomandări</div>
-            </div>
-          </div>
-          <p class="section-hint">
-            Poți cere AI-ului sfaturi despre cum să crești tips-ul la evenimente în funcție de roluri și tipul de petrecere.
-          </p>
-        </div>
-      </section>
-
-      <section class="events-section hidden" id="section-setari">
-        <div class="events-list-card">
-          <div class="section-title-row">
-            <div>
-              <div class="section-title">⚙️ Setări de bază cont</div>
-              <div class="section-hint">Email, parolă, notificări – gestionate deocamdată manual.</div>
-            </div>
-          </div>
-          <p class="section-hint">
-            Orice modificare de email sau număr de telefon se face momentan prin contact direct cu adminul.
-          </p>
-        </div>
-        <div class="events-details-card">
-          <div class="section-title-row">
-            <div>
-              <div class="section-title">🤖 Comenzi speciale AI</div>
-            </div>
-          </div>
-          <p class="section-hint">
-            Din acest dashboard, poți folosi AI-ul pentru comenzi ascunse (ex: mod admin / mod GM) doar pentru emailul tău.
-          </p>
+          <a href="/angajat/kyc.html">Deschide pagina KYC →</a>
         </div>
       </section>
     </main>
   </div>
 
-  <!-- MODAL DOVEZI (doar UI) -->
-  <div class="modal-backdrop" id="doveziModalBackdrop">
-    <div class="modal">
-      <div class="modal-header">
-        <div class="modal-title" id="doveziModalTitle">
-          📸 Upload dovezi
-        </div>
-        <button class="modal-close" type="button" id="doveziModalClose">×</button>
-      </div>
-      <div class="modal-body">
-        <p id="doveziModalText">
-          Aici vei încărca pozele pentru etapa selectată. În versiunea finală, AI-ul SuperParty verifică dacă pozele sunt reale, făcute la eveniment și respectă regulile.
-        </p>
-        <p>
-          Momentan este doar un demo vizual; integrarea reală cu backend-ul AI se face ulterior.
-        </p>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" type="button" id="doveziModalCancel">
-          Anulează
-        </button>
-        <button class="btn btn-primary" type="button" disabled>
-          Încarcă poze (în curând)
-        </button>
-      </div>
-    </div>
-  </div>
+  <!-- LOGICĂ DASHBOARD MINIMALĂ -->
+  <script>
+    // Forțăm KYC simplu: dacă nu e marcat local, sugerăm KYC
+    (function () {
+      try {
+        var kycCompleted = localStorage.getItem("kyc_completed");
+        var kycLabel = document.getElementById("kycStateLabel");
+        var accountPill = document.getElementById("accountStatusPill");
 
-  <!-- BUTON ROBOT AI -->
-  <button class="ai-bot-button" id="aiBotButton" type="button" aria-label="Deschide chat AI">
-    <div class="ai-bot-face">
-      <div class="ai-bot-antenna">AI</div>
-      <div class="ai-bot-eyes">
-        <div class="ai-bot-eye"></div>
-        <div class="ai-bot-eye"></div>
-      </div>
-      <div class="ai-bot-mouth"></div>
-    </div>
-  </button>
+        if (kycCompleted === "yes") {
+          if (kycLabel) kycLabel.textContent = "completat (local)";
+          if (accountPill) accountPill.innerHTML = 'Status cont: <strong>pending_approval</strong>';
+        } else {
+          if (kycLabel) kycLabel.textContent = "nu e completat";
+        }
 
-  <!-- CHAT AI -->
-  <section class="ai-chat" id="aiChat">
-    <header class="ai-chat-header">
-      <div class="ai-chat-title">
-        <div class="ai-msg-avatar">SP</div>
-        <div>
-          <div>SuperParty AI · angajat</div>
-          <div style="font-size:11px; color:#bfdbfe;">Te ajut cu evenimente, dovezi și proceduri interne.</div>
-        </div>
-      </div>
-      <div style="display:flex; align-items:center; gap:6px;">
-        <span class="ai-chat-badge">mod intern</span>
-        <button class="ai-chat-close" id="aiChatClose" type="button">×</button>
-      </div>
-    </header>
+        var email = localStorage.getItem("superparty_user_email") ||
+                    localStorage.getItem("loggedUserEmail") ||
+                    "necunoscut";
+        var userLabel = document.getElementById("userEmailLabel");
+        if (userLabel) userLabel.textContent = email;
+      } catch (e) {
+        // ignorăm erorile de localStorage
+      }
+    })();
 
-    <div class="ai-chat-body" id="aiChatBody">
-      <div class="ai-msg-row">
-        <div class="ai-msg-avatar">SP</div>
-        <div>
-          <div class="ai-msg-bubble">
-Salut, Andrei 👋  
-Sunt AI-ul oficial SuperParty pentru angajați.
+    // Toggle sidebar pe mobil
+    (function () {
+      var toggle = document.getElementById("sidebarToggle");
+      var sidebar = document.getElementById("sidebar");
+      if (!toggle || !sidebar) return;
 
-Pot să te ajut cu:
-• explicații despre dovezi foto (ce e obligatoriu, când te blochezi)  
-• verificare roluri & coduri evenimente  
-• ce faci dacă întârzii sau ai 2 evenimente apropiate  
-• întrebări despre plăți, tips și proceduri interne
+      if (window.matchMedia("(max-width: 880px)").matches) {
+        toggle.style.display = "inline-flex";
+      }
 
-Întreabă-mă orice sau scrie direct ID-ul evenimentului (ex: EVT_001).
-          </div>
-          <div class="ai-msg-meta">SuperParty AI · acum</div>
-        </div>
-      </div>
-    </div>
+      toggle.addEventListener("click", function () {
+        sidebar.classList.toggle("open");
+      });
+    })();
 
-    <footer class="ai-chat-footer">
-      <form class="ai-input-row" id="aiForm">
-        <input
-          type="text"
-          class="ai-input"
-          id="aiInput"
-          autocomplete="off"
-          placeholder="Scrie aici întrebarea ta (ex: „ce dovezi îmi trebuie la EVT_001?”)…"
-        />
-        <button class="ai-send-btn" id="aiSendBtn" type="submit">➤</button>
-      </form>
-      <div class="ai-chat-status">
-        <span id="aiStatusText">Conectare la SuperParty AI…</span>
-        <span class="dot-pulse" id="aiTypingIndicator" style="visibility:hidden;">
-          <span></span><span></span><span></span>
-        </span>
-      </div>
-    </footer>
-  </section>
+    // Filtrare evenimente
+    (function () {
+      var tabs = document.querySelectorAll(".tab-btn");
+      var events = document.querySelectorAll(".event-card");
 
-  <!-- LOGICA DASHBOARD SEPARATĂ -->
-  <script src="dashboard.js"></script>
+      function applyFilter(filter) {
+        events.forEach(function (evt) {
+          var type = evt.getAttribute("data-type") || "all";
+          if (filter === "all" || filter === type) {
+            evt.style.display = "";
+          } else {
+            evt.style.display = "none";
+          }
+        });
+      }
+
+      tabs.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          tabs.forEach(function (b) { b.classList.remove("active"); });
+          btn.classList.add("active");
+          var filter = btn.getAttribute("data-filter");
+          applyFilter(filter);
+        });
+      });
+
+      // implicit: "today"
+      applyFilter("today");
+    })();
+
+    // Legăm butoanele "Întreabă AI despre EVT_xxx"
+    (function () {
+      var askBtns = document.querySelectorAll("[data-ask-ai]");
+      askBtns.forEach(function (btn) {
+        btn.addEventListener("click", function (e) {
+          var code = btn.getAttribute("data-ask-ai");
+          // trimitem un eveniment custom pentru ai.js
+          var ev = new CustomEvent("sp-ai-ask-event", { detail: { eventCode: code } });
+          window.dispatchEvent(ev);
+        });
+      });
+    })();
+  </script>
+
+  <!-- SUPERPARTY AI WIDGET -->
+  <script src="ai.js"></script>
+  <script>
+    // Mic hook: dacă userul apasă pe "Întreabă AI despre EVT_001", completăm automat promptul
+    (function () {
+      window.addEventListener("sp-ai-ask-event", function (e) {
+        var code = (e.detail && e.detail.eventCode) || "";
+        var input = document.getElementById("spAiInput");
+        var win = document.getElementById("spAiWindow");
+        var toggle = document.getElementById("spAiToggleBtn");
+
+        if (win && toggle) {
+          win.classList.add("sp-open");
+          toggle.style.opacity = "0";
+          toggle.style.pointerEvents = "none";
+        }
+
+        var prompt = "Ce dovezi trebuie să fac la " + code + "?";
+        if (input) {
+          input.value = prompt;
+          input.focus();
+        }
+
+        // simulăm un submit automat în câteva milisecunde
+        setTimeout(function () {
+          var form = document.getElementById("spAiForm");
+          if (form) {
+            form.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+          }
+        }, 120);
+      });
+    })();
+  </script>
 </body>
 </html>
