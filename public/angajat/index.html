@@ -184,17 +184,18 @@
 
       window[cbName] = function(res) {
         if (res && res.success) {
-          appendMessage("AI", res.message || "(răspuns gol)");
+          appendMessage("AI", res.reply || res.message || "(gol)");
         } else {
           appendMessage("AI", "Eroare AI: " + (res?.error || "necunoscută"));
         }
+
         script.remove();
         delete window[cbName];
       };
 
       const url =
         AI_BACKEND +
-        "?action=ai_chat" +
+        "?action=chat_angajat" +
         "&email=" + encodeURIComponent(email || "") +
         "&message=" + encodeURIComponent(message || "") +
         "&callback=" + cbName;
@@ -202,7 +203,7 @@
       const script = document.createElement("script");
       script.src = url;
       script.onerror = function() {
-        appendMessage("AI", "Eroare de rețea la apelul AI.");
+        appendMessage("AI", "Eroare de rețea la AI.");
         script.remove();
         delete window[cbName];
       };
