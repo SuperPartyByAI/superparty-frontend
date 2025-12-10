@@ -1,8 +1,80 @@
 // =======================================================
-// SuperParty AI - vizual + logic chat (frontend DEMO)
+// SuperParty AI - vizual + logic chat (REAL, chat_angajat)
+// Folosește endpointul Google Apps Script: action=chat_angajat
+// și promptul AI_CORE_PROMPT + istoricul de chat din Sheets.
 // =======================================================
 
 (function () {
+  // -----------------------------
+  // CONFIG BACKEND (Apps Script)
+  // -----------------------------
+  const SP_BACKEND_URL =
+    "https://script.google.com/macros/s/AKfycbxs819m4gt-tpTkAIIS91EnxhwYx-5wdbnh6Zi5_GcY14zs5XYqS9ykFuYCCcokhQ/exec";
+  const AI_CHAT_ACTION = "chat_angajat"; // FOARTE IMPORTANT: folosim chat_angajat
+
+  function getCurrentEmail() {
+    try {
+      return (
+        localStorage.getItem("superparty_user_email") ||
+        localStorage.getItem("loggedUserEmail") ||
+        ""
+      );
+    } catch (e) {
+      return "";
+    }
+  }
+
+  // JSONP: trimitem mesajul la Apps Script și primim răspunsul GPT
+  function jsonpAiRequest(message) {
+    return new Promise((resolve) => {
+      const cbName =
+        "spAiCB_" + Date.now() + "_" + Math.floor(Math.random() * 100000);
+
+      let script = document.createElement("script");
+
+      window[cbName] = function (res) {
+        try {
+          resolve(res);
+        } finally {
+          if (script && script.parentNode) script.parentNode.removeChild(script);
+          delete window[cbName];
+        }
+      };
+
+      const email = getCurrentEmail();
+
+      const params = {
+        action: AI_CHAT_ACTION,
+        email: email,
+        message: message,
+        source: "dashboard_angajat",
+        callback: cbName,
+      };
+
+      const qs =
+        "?" +
+        Object.keys(params)
+          .map((k) => k + "=" + encodeURIComponent(params[k]))
+          .join("&");
+
+      const url = SP_BACKEND_URL + qs;
+
+      script.src = url;
+      script.onerror = function () {
+        if (window[cbName]) {
+          resolve({
+            success: false,
+            error: "Eroare de rețea la AI (nu am putut apela backend-ul).",
+          });
+          delete window[cbName];
+        }
+        if (script && script.parentNode) script.parentNode.removeChild(script);
+      };
+
+      document.body.appendChild(script);
+    });
+  }
+
   // -----------------------------
   // 1) Injectăm CSS pentru AI
   // -----------------------------
@@ -198,7 +270,7 @@
   document.head.appendChild(style);
 
   // -----------------------------
-  // 2) Butonul cu robot 🤖
+  // 2) Butonul cu robot
   // -----------------------------
   const toggleBtn = document.createElement("button");
   toggleBtn.className = "sp-ai-toggle";
@@ -288,53 +360,25 @@
   closeBtn.addEventListener("click", closeChat);
 
   // -----------------------------
-  // Logică AI DEMO (local)
+  // 4) Logica: apelăm backend-ul real (chat_angajat)
   // -----------------------------
-  function simulateAiReply(userText) {
-    const t = userText.toLowerCase().trim();
-
-    if (!t) {
-      return "Te rog scrie o întrebare sau un cod de eveniment.";
+  async function getAiReplyReal(userText) {
+    const trimmed = userText.trim();
+    if (!trimmed) {
+      return "Te rog scrie o întrebare sau un cod de eveniment (ex. EVT_001).";
     }
 
-    // SALUT / CE FACI / SMALL TALK
-    if (
-      t === "ce faci" ||
-      t === "ce faci?" ||
-      t.includes("ce mai faci") ||
-      t.startsWith("salut") ||
-      t.startsWith("salut,") ||
-      t.startsWith("buna") ||
-      t.startsWith("bună")
-    ) {
-      return "Sunt aici să te ajut cu tot ce ține de evenimente, dovezi, KYC și statusul contului tău SuperParty. Întreabă-mă, de exemplu: „ce dovezi trebuie la EVT_001?” sau „cum îmi activez contul?”.";
+    const res = await jsonpAiRequest(trimmed);
+
+    if (res && res.success && res.reply) {
+      return res.reply;
     }
 
-    if (t.includes("kyc")) {
-      return "Pentru KYC trebuie: poză CI față, CI verso, selfie cu buletinul și bifă pe contract. După ce le trimiți, un admin verifică și aprobă contul.";
-    }
+    const errMsg =
+      (res && res.error) ||
+      "Momentan nu pot vorbi cu AI-ul din backend. Încearcă din nou sau întreabă un admin.";
 
-    if (t.includes("evt_001") || t.includes("evt 001")) {
-      return "La EVT_001 ai 3 dovezi obligatorii: 1) poză cu pregătirea (bagaj / setare), 2) poză cu copiii la activitate, 3) poză de final cu tort / personaj.";
-    }
-
-    if (t.includes("evt_002") || t.includes("evt 002")) {
-      return "La EVT_002 se aplică aceeași regulă: minim 3 poze – pregătire, în timpul activității și final. Dacă evenimentul are și alt rol (ex: șofer), pot exista și poze suplimentare.";
-    }
-
-    if (t.includes("dovezi") || t.includes("poze")) {
-      return "Regula generală la dovezi: minim 3 poze / rol – pregătire, în timpul activității și final. La unele pachete pot fi mai multe, AI-ul și adminul le verifică și pot respinge dovezi neclare sau reciclate.";
-    }
-
-    if (t.includes("contract")) {
-      return "Contractul SuperParty se acceptă din pagina de KYC. Acolo confirmi că datele sunt reale, că respecți procedurile și că îți asumi responsabilitatea pentru evenimentele la care mergi.";
-    }
-
-    if (t.includes("activ") || t.includes("activez contul") || t.includes("activare cont")) {
-      return "Contul devine ACTIV după ce: 1) KYC este APROBAT, 2) un admin setează statusul tău pe ACTIVE în backend. Dacă ceva nu este clar, poți întreba direct un admin sau poți scrie aici ce status vezi.";
-    }
-
-    return "Am notat întrebarea ta. În versiunea DEMO îți pot da doar răspunsuri generale și reguli. Pentru integrarea completă cu backend (Apps Script + OpenAI), AI-ul va citi direct evenimentele tale, statusul KYC și dovezile din sistem.";
+    return errMsg;
   }
 
   // -----------------------------
@@ -348,10 +392,19 @@
     addMessage(text, "user");
     inputEl.value = "";
 
-    // Răspuns DEMO local
-    const reply = simulateAiReply(text);
-    setTimeout(() => {
-      addMessage(reply, "ai");
-    }, 150);
+    const thinkingEl = document.createElement("div");
+    thinkingEl.className = "sp-ai-msg sp-ai-msg-ai";
+    thinkingEl.textContent = "Gândesc răspunsul...";
+    messagesEl.appendChild(thinkingEl);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+
+    getAiReplyReal(text)
+      .then((reply) => {
+        thinkingEl.textContent = reply;
+      })
+      .catch(() => {
+        thinkingEl.textContent =
+          "A apărut o eroare când am încercat să vorbesc cu AI-ul din backend.";
+      });
   });
 })();
