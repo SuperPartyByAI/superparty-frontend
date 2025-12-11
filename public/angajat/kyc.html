@@ -2,7 +2,7 @@
 <html lang="ro">
 <head>
   <meta charset="UTF-8" />
-  <title>SuperParty - KYC & Contract</title>
+  <title>SuperParty - Formular KYC</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -10,554 +10,552 @@
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       min-height: 100vh;
-      background: radial-gradient(circle at top, #1d4ed8 0, #0f172a 45%, #020617 100%);
-      color: #e5e7eb;
       display: flex;
+      align-items: center;
       justify-content: center;
+      background: radial-gradient(circle at top, #1d4ed8 0, #0f172a 45%, #020617 100%);
       padding: 16px;
+      color: #e5e7eb;
     }
 
     .page {
       width: 100%;
-      max-width: 1100px;
-      background: rgba(15,23,42,0.95);
+      max-width: 900px;
+      background: rgba(15, 23, 42, 0.96);
       border-radius: 18px;
-      box-shadow: 0 0 40px rgba(0,0,0,0.6);
-      padding: 20px;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(148, 163, 184, 0.3);
       display: grid;
-      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-      gap: 20px;
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+      gap: 0;
+      overflow: hidden;
     }
 
-    @media (max-width: 900px) {
+    @media (max-width: 850px) {
       .page {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
       }
     }
 
-    .left, .right {
-      padding: 8px;
+    .left {
+      padding: 22px 22px 18px 22px;
+      border-right: 1px solid rgba(31, 41, 55, 0.95);
     }
 
-    .badge {
-      display: inline-flex;
+    .right {
+      padding: 22px 22px 18px 22px;
+      background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.35), rgba(15, 23, 42, 0.98));
+    }
+
+    .logo {
+      display: flex;
       align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      color: #93c5fd;
-      background: rgba(37,99,235,0.15);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .logo-mark {
+      width: 36px;
+      height: 36px;
       border-radius: 999px;
-      padding: 4px 10px;
-      margin-bottom: 8px;
+      background: radial-gradient(circle at 25% 0, #f97316, #db2777 40%, #1d4ed8 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      font-weight: 800;
+      color: #f9fafb;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.9);
     }
 
-    h1 {
-      font-size: 26px;
-      margin-bottom: 4px;
+    .logo-text-main {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
 
-    p.subtitle {
-      font-size: 14px;
+    .logo-text-sub {
+      font-size: 10px;
       color: #9ca3af;
-      margin-bottom: 18px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
     }
 
-    .status-box {
-      padding: 10px 12px;
-      border-radius: 10px;
+    .title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
       font-size: 13px;
+      color: #9ca3af;
       margin-bottom: 16px;
     }
 
-    .status-pending {
-      background: rgba(234,179,8,0.1);
-      border-left: 3px solid #facc15;
-      color: #fde68a;
-    }
-
-    .status-approved {
-      background: rgba(34,197,94,0.1);
-      border-left: 3px solid #22c55e;
-      color: #bbf7d0;
-    }
-
-    .status-error {
-      background: rgba(248,113,113,0.1);
-      border-left: 3px solid #f97373;
-      color: #fecaca;
-    }
-
-    .section-title {
-      font-size: 15px;
-      font-weight: 600;
-      margin: 14px 0 6px;
-    }
-
-    .grid {
+    form {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px 12px;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 10px 14px;
     }
 
-    .grid-full {
+    @media (max-width: 600px) {
+      form {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .full-row {
       grid-column: 1 / -1;
     }
 
     label {
-      display: block;
-      font-size: 13px;
-      color: #9ca3af;
-      margin-bottom: 4px;
-    }
-
-    input, textarea {
-      width: 100%;
-      padding: 9px 10px;
-      border-radius: 10px;
-      border: 1px solid #1f2937;
-      background: #020617;
+      font-size: 12px;
       color: #e5e7eb;
-      font-size: 14px;
       margin-bottom: 4px;
-      outline: none;
-      resize: vertical;
+      display: block;
     }
 
-    input:focus, textarea:focus {
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 1px rgba(59,130,246,0.5);
+    label span {
+      color: #f97373;
     }
 
-    .file-input {
-      border: 1px dashed #334155;
-      padding: 10px;
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="file"],
+    textarea {
+      width: 100%;
       border-radius: 10px;
-      background: #020617;
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      background: rgba(15, 23, 42, 0.95);
+      color: #e5e7eb;
+      padding: 7px 9px;
       font-size: 13px;
-      margin-bottom: 6px;
+      outline: none;
+      transition: border 0.15s, box-shadow 0.15s, background 0.15s;
     }
 
-    .file-input input[type="file"] {
-      border: none;
-      padding: 0;
-      margin: 0;
+    input[type="file"] {
+      padding: 6px 7px;
+      font-size: 12px;
     }
 
-    .hint {
+    textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.4);
+      background: rgba(15, 23, 42, 0.98);
+    }
+
+    .inline-note {
       font-size: 11px;
-      color: #64748b;
-      margin-bottom: 8px;
+      color: #9ca3af;
+      margin-top: 2px;
     }
 
     .checkbox-row {
       display: flex;
       align-items: flex-start;
       gap: 8px;
-      margin-top: 10px;
-    }
-
-    .checkbox-row input {
-      width: 16px;
-      margin-top: 2px;
-    }
-
-    .checkbox-row span {
       font-size: 12px;
-      color: #cbd5f5;
-    }
-
-    .btn-primary {
-      width: 100%;
-      padding: 11px;
-      margin-top: 14px;
-      background: #3b82f6;
-      border: none;
-      border-radius: 999px;
-      color: white;
-      font-size: 15px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.05s;
-    }
-
-    .btn-primary:hover {
-      background: #2563eb;
-    }
-
-    .btn-primary:active {
-      transform: scale(0.99);
-    }
-
-    .btn-primary[disabled] {
-      opacity: 0.6;
-      cursor: default;
-      transform: none;
-    }
-
-    .kyc-status-message {
-      margin-top: 10px;
-      font-size: 13px;
-      min-height: 18px;
-    }
-
-    .kyc-status-message.error {
-      color: #f97373;
-    }
-
-    .kyc-status-message.success {
-      color: #4ade80;
-    }
-
-    /* Right side (contract) */
-
-    .contract-box {
-      background: rgba(15,23,42,0.9);
-      border-radius: 14px;
-      padding: 14px 14px 16px;
-      border: 1px solid #1f2937;
-      max-height: 100%;
-    }
-
-    .contract-box h2 {
-      font-size: 16px;
-      margin-bottom: 8px;
-    }
-
-    .contract-scroll {
-      max-height: 380px;
-      overflow-y: auto;
-      padding-right: 6px;
-      font-size: 12px;
-      line-height: 1.5;
       color: #e5e7eb;
     }
 
-    .contract-scroll h3 {
+    .checkbox-row input {
+      margin-top: 3px;
+    }
+
+    .checkbox-row a {
+      color: #93c5fd;
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+    }
+
+    .buttons-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+      border-radius: 999px;
+      border: none;
+      padding: 9px 14px;
       font-size: 13px;
-      margin: 10px 0 4px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #0f172a;
+    }
+
+    .btn-secondary {
+      background: rgba(15, 23, 42, 0.85);
+      color: #e5e7eb;
+      border: 1px solid rgba(148, 163, 184, 0.8);
+    }
+
+    .status-box {
+      border-radius: 14px;
+      border: 1px solid rgba(148, 163, 184, 0.65);
+      background: rgba(15, 23, 42, 0.9);
+      padding: 12px 12px 11px 12px;
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .status-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
       color: #93c5fd;
     }
 
-    .contract-scroll p {
+    .status-main {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .status-sub {
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #facc15;
+      box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.28);
+      margin-right: 6px;
+    }
+
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .steps-list {
+      list-style: none;
+      padding-left: 0;
+      margin-top: 10px;
+      font-size: 12px;
+      color: #e5e7eb;
+    }
+
+    .steps-list li {
+      display: flex;
+      gap: 8px;
       margin-bottom: 6px;
     }
 
-    .contract-scroll ul {
-      margin: 4px 0 8px 18px;
+    .steps-list li span {
+      margin-top: 1px;
     }
 
-    .contract-scroll li {
-      margin-bottom: 3px;
+    .highlight {
+      color: #bfdbfe;
+      font-weight: 500;
     }
 
-    .contract-meta {
+    .small-muted {
       font-size: 11px;
-      color: #64748b;
+      color: #9ca3af;
       margin-top: 8px;
     }
 
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 3px 8px;
-      border-radius: 999px;
-      background: rgba(34,197,94,0.12);
+    .error-msg {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #fecaca;
+      background: rgba(127, 29, 29, 0.6);
+      border-radius: 10px;
+      padding: 7px 9px;
+      display: none;
+    }
+
+    .success-msg {
+      margin-top: 8px;
+      font-size: 12px;
       color: #bbf7d0;
-      font-size: 11px;
-      margin-left: 4px;
+      background: rgba(22, 163, 74, 0.5);
+      border-radius: 10px;
+      padding: 7px 9px;
+      display: none;
     }
   </style>
 </head>
-
 <body>
   <div class="page">
-    <div class="left">
-      <div class="badge">🔒 Verificare identitate & contract</div>
-      <h1>Verificare KYC SuperParty</h1>
+    <!-- COL STÂNGA: FORMULAR KYC -->
+    <section class="left">
+      <div class="logo">
+        <div class="logo-mark">SP</div>
+        <div>
+          <div class="logo-text-main">SuperParty</div>
+          <div class="logo-text-sub">Formular KYC</div>
+        </div>
+      </div>
+
+      <h1 class="title">Date identitate &amp; contract</h1>
       <p class="subtitle">
-        Completează datele de mai jos, încarcă pozele și confirmă contractul.
-        Fără acest pas, contul tău nu poate fi activat pentru evenimente plătite.
+        Completează formularul de mai jos cu date reale. Informațiile sunt folosite pentru contract, plăți și verificări interne.
       </p>
 
-      <div id="kycStatusBox" class="status-box status-pending" style="display:none;"></div>
+      <form id="kycForm" enctype="multipart/form-data">
+        <div class="full-row">
+          <label for="fullName">Nume complet <span>*</span></label>
+          <input id="fullName" name="fullName" type="text" placeholder="ex: Popescu Andrei-Mihai" required />
+          <p class="inline-note">Trebuie să coincidă cu numele din actul de identitate.</p>
+        </div>
 
-      <div id="kycFormContainer">
-        <div class="section-title">1. Date de identitate</div>
-        <div class="grid">
-          <div class="grid-full">
-            <label for="fullName">Nume complet (ca în buletin)</label>
-            <input id="fullName" type="text" placeholder="ex: Popescu Andrei-Mihai">
+        <div>
+          <label for="email">Email <span>*</span></label>
+          <input id="email" name="email" type="email" placeholder="emailul tău" required />
+        </div>
+
+        <div>
+          <label for="phone">Telefon <span>*</span></label>
+          <input id="phone" name="phone" type="tel" placeholder="ex: 07xxxxxxxx" required />
+        </div>
+
+        <div>
+          <label for="cnp">CNP <span>*</span></label>
+          <input id="cnp" name="cnp" type="text" placeholder="13 cifre" required />
+        </div>
+
+        <div>
+          <label for="iban">IBAN pentru plată <span>*</span></label>
+          <input id="iban" name="iban" type="text" placeholder="ex: RO49AAAA1B31007593840000" required />
+        </div>
+
+        <div class="full-row">
+          <label for="address">Adresă completă <span>*</span></label>
+          <textarea id="address" name="address" placeholder="Stradă, număr, bloc/scară, oraș, județ" required></textarea>
+        </div>
+
+        <div class="full-row">
+          <label>Poza CI față <span>*</span></label>
+          <input id="idFront" name="idFront" type="file" accept="image/*,.pdf" required />
+          <p class="inline-note">Se acceptă fotografie clară sau scan/PDF.</p>
+        </div>
+
+        <div class="full-row">
+          <label>Poza CI verso <span>*</span></label>
+          <input id="idBack" name="idBack" type="file" accept="image/*,.pdf" required />
+        </div>
+
+        <div class="full-row">
+          <label>Selfie cu CI în mână <span>*</span></label>
+          <input id="selfie" name="selfie" type="file" accept="image/*" required />
+          <p class="inline-note">Fața și actul trebuie să fie clar vizibile în poză.</p>
+        </div>
+
+        <div class="full-row">
+          <label>Contract semnat (poză sau PDF) <span>*</span></label>
+          <input id="contractSigned" name="contractSigned" type="file" accept="image/*,.pdf" required />
+        </div>
+
+        <div class="full-row">
+          <div class="checkbox-row">
+            <input id="acceptContract" type="checkbox" required />
+            <label for="acceptContract">
+              Confirm că am citit și sunt de acord cu <a href="#" onclick="return false;">contractul SuperParty</a> și
+              că datele trimise sunt reale.
+            </label>
           </div>
-          <div class="grid-full">
-            <label for="cnp">CNP</label>
-            <input id="cnp" type="text" maxlength="13" placeholder="13 cifre">
+        </div>
+
+        <div class="full-row">
+          <div class="buttons-row">
+            <button type="submit" class="btn-primary" id="submitBtn">Trimite KYC pentru verificare</button>
+            <button type="button" class="btn-secondary" id="backBtn">Înapoi la status cont</button>
           </div>
-          <div class="grid-full">
-            <label for="address">Adresă completă (domiciliu)</label>
-            <textarea id="address" rows="2" placeholder="Stradă, număr, bloc, scara, etaj, apartament, localitate, județ"></textarea>
-          </div>
-          <div>
-            <label for="iban">IBAN (plată evenimente)</label>
-            <input id="iban" type="text" placeholder="RO..">
-          </div>
-          <div>
-            <label for="phone">Telefon</label>
-            <input id="phone" type="tel" placeholder="07xxxxxxxx">
-          </div>
+
+          <div id="errorBox" class="error-msg"></div>
+          <div id="successBox" class="success-msg"></div>
         </div>
+      </form>
+    </section>
 
-        <div class="section-title">2. Poze document & selfie</div>
-
-        <div class="file-input">
-          <label for="idFront">Poză CI - față</label>
-          <input id="idFront" type="file" accept="image/*">
-          <div class="hint">Asigură-te că se vede clar numele, CNP-ul și seria.</div>
+    <!-- COL DREAPTA: EXPLICAȚII + STATUS -->
+    <section class="right">
+      <div class="status-box">
+        <div class="status-label">Status KYC</div>
+        <div class="status-row">
+          <div class="status-dot"></div>
+          <div class="status-main" id="statusMainText">În curs de completare</div>
         </div>
-
-        <div class="file-input">
-          <label for="idBack">Poză CI - verso</label>
-          <input id="idBack" type="file" accept="image/*">
-          <div class="hint">Se vede clar adresa de domiciliu.</div>
-        </div>
-
-        <div class="file-input">
-          <label for="selfie">Selfie cu buletinul în mână</label>
-          <input id="selfie" type="file" accept="image/*">
-          <div class="hint">Ține buletinul lângă față, să fie lizibil și chipul tău clar.</div>
-        </div>
-
-        <div class="checkbox-row">
-          <input id="contractAccepted" type="checkbox">
-          <span>
-            Confirm că am citit contractul din dreapta, sunt de acord cu condițiile și îmi dau consimțământul
-            pentru prelucrarea datelor în scop de colaborare cu SuperParty.
-          </span>
-        </div>
-
-        <button id="submitBtn" class="btn-primary" onclick="submitKyc()">Trimite spre verificare KYC</button>
-        <div id="kycMessage" class="kyc-status-message"></div>
-      </div>
-    </div>
-
-    <div class="right">
-      <div class="contract-box">
-        <h2>Contract colaborare SuperParty <span class="pill">model simplificat</span></h2>
-        <div class="contract-scroll">
-          <p>
-            Acest contract simplificat prezintă principalele clauze dintre SuperParty (Organizator)
-            și colaboratorul (Prestatorul de servicii de animație, entertainment sau logistică).
-          </p>
-
-          <h3>1. Obiectul contractului</h3>
-          <p>
-            Prestatorul se obligă să presteze servicii de animație, entertainment, logistică sau servicii conexe
-            pentru evenimentele organizate sau intermediate de SuperParty, conform fișelor de eveniment comunicate.
-          </p>
-
-          <h3>2. Obligațiile prestatorului</h3>
-          <ul>
-            <li>Să se prezinte la locație la ora comunicată, cu echipamentul complet și în stare bună.</li>
-            <li>Să respecte procedurile interne SuperParty (dress code, comportament, dovezi foto etc.).</li>
-            <li>Să nu încaseze sume suplimentare de la client fără acordul expres al SuperParty.</li>
-            <li>Să trimită dovezile foto cerute prin aplicație (bagaj, sosire, final eveniment etc.).</li>
-          </ul>
-
-          <h3>3. Obligațiile SuperParty</h3>
-          <ul>
-            <li>Să comunice clar detaliile fiecărui eveniment (locație, oră, rol, onorariu).</li>
-            <li>Să efectueze plata onorariului în termenul stabilit după validarea dovezilor.</li>
-            <li>Să ofere suport în caz de probleme la locație, prin dispecerat.</li>
-          </ul>
-
-          <h3>4. Onorariu și plăți</h3>
-          <p>
-            Onorariul se stabilește per eveniment, în funcție de rol, durată și complexitate. Plata se face
-            în contul IBAN declarat, după validarea dovezilor și confirmarea că evenimentul a fost prestat corect.
-          </p>
-
-          <h3>5. Protecția datelor (GDPR)</h3>
-          <p>
-            Datele tale personale sunt utilizate exclusiv în scopul colaborării (contract, plăți, programare
-            evenimente). Ai drept de acces, rectificare și ștergere conform legislației în vigoare.
-          </p>
-
-          <h3>6. Răspundere</h3>
-          <p>
-            Prestatorul răspunde pentru comportamentul său la eveniment, pentru integritatea echipamentului
-            primit în custodie și pentru respectarea programului. SuperParty răspunde pentru comunicarea corectă
-            a detaliilor și pentru plata onorariului.
-          </p>
-
-          <h3>7. Durata colaborării</h3>
-          <p>
-            Colaborarea este pe perioadă nedeterminată, cu posibilitate de întrerupere de oricare parte, cu
-            efect imediat pentru evenimentele viitoare care nu sunt încă confirmate.
-          </p>
-
-          <h3>8. Acceptarea contractului</h3>
-          <p>
-            Bifarea căsuței „Sunt de acord cu contractul” și trimiterea datelor KYC echivalează cu acceptarea
-            prezentului contract în format electronic.
-          </p>
-        </div>
-
-        <div class="contract-meta">
-          Versiune model: v1.0 · Acest text poate fi actualizat; ultima versiune va fi disponibilă în aplicație.
+        <div class="status-sub" id="statusSubText">
+          Completează formularul din stânga, încarcă pozele cerute și semnează contractul. După trimitere, KYC-ul intră la verificare.
         </div>
       </div>
-    </div>
+
+      <ul class="steps-list">
+        <li>
+          <span>1.</span>
+          <span>Verifică să fie corecte <span class="highlight">CNP-ul, IBAN-ul și adresa</span>. Acestea vor apărea în contract și la plată.</span>
+        </li>
+        <li>
+          <span>2.</span>
+          <span>Pozele cu actul trebuie să fie <span class="highlight">clare, nemodificate</span> și făcute direct de tine.</span>
+        </li>
+        <li>
+          <span>3.</span>
+          <span>Selfie-ul cu actul în mână trebuie să fie făcut special pentru SuperParty (nu poze vechi).</span>
+        </li>
+        <li>
+          <span>4.</span>
+          <span>După ce apeși <span class="highlight">Trimite KYC</span>, un coordonator verifică manual datele.</span>
+        </li>
+      </ul>
+
+      <p class="small-muted">
+        După aprobare, <span class="highlight">statusul KYC</span> va deveni <span class="highlight">"approved"</span>, iar contul tău
+        va putea fi activat pentru evenimente. Vei vedea automat schimbarea în pagina de <span class="highlight">"Cont în verificare"</span>.
+      </p>
+    </section>
   </div>
 
-<script>
-const API_BASE = "https://superparty-ai-backend-production.up.railway.app";
+  <script>
+    (function () {
+      const BACKEND_BASE_URL = "https://superparty-ai-backend-production.up.railway.app";
 
-document.addEventListener("DOMContentLoaded", () => {
-  const email = localStorage.getItem("userEmail");
-  if (!email) {
-    window.location.href = "/login.html";
-    return;
-  }
-  checkKycStatus(email);
-});
+      const emailLS = localStorage.getItem("userEmail") || "";
+      const fullNameLS = localStorage.getItem("userFullName") || "";
+      const kycStatusLS = (localStorage.getItem("userKycStatus") || "").toLowerCase();
+      const statusLS = (localStorage.getItem("userStatus") || "").toLowerCase();
 
-async function checkKycStatus(email) {
-  const box = document.getElementById("kycStatusBox");
-  const formContainer = document.getElementById("kycFormContainer");
+      // Dacă nu e logat, scoatem utilizatorul afară
+      if (!emailLS) {
+        window.location.replace("/login.html");
+        return;
+      }
 
-  try {
-    const res = await fetch(`${API_BASE}/api/kyc/status?email=${encodeURIComponent(email)}`);
-    const data = await res.json();
+      // Dacă deja e approved + activ, nu are ce căuta în KYC -> du-l în dashboard
+      if (statusLS === "active" && kycStatusLS === "approved") {
+        window.location.replace("/angajat/index.html");
+        return;
+      }
 
-    if (!data.success) {
-      // nu există încă KYC – afișăm formularul
-      box.style.display = "none";
-      formContainer.style.display = "block";
-      return;
-    }
+      // Pre-populare formular
+      const fullNameInput = document.getElementById("fullName");
+      const emailInput = document.getElementById("email");
+      if (fullNameLS && fullNameInput) fullNameInput.value = fullNameLS;
+      if (emailLS && emailInput) emailInput.value = emailLS;
 
-    if (data.status === "approved") {
-      box.style.display = "block";
-      box.className = "status-box status-approved";
-      box.textContent = "KYC aprobat. Ești redirecționat către dashboard...";
-      formContainer.style.display = "none";
+      // Ajustăm status text în dreapta dacă deja există un KYC trimis
+      const statusMainText = document.getElementById("statusMainText");
+      const statusSubText = document.getElementById("statusSubText");
 
-      setTimeout(() => {
-        window.location.href = "/angajat/index.html";
-      }, 1200);
-    } else if (data.status === "pending") {
-      box.style.display = "block";
-      box.className = "status-box status-pending";
-      box.textContent = "KYC trimis. Este în curs de verificare de către echipa SuperParty.";
-      formContainer.style.display = "none";
-    } else {
-      // alte statusuri – tratăm ca „nu există”
-      box.style.display = "none";
-      formContainer.style.display = "block";
-    }
-  } catch (err) {
-    console.error(err);
-    // dacă nu putem verifica, lăsăm formularul vizibil
-    box.style.display = "block";
-    box.className = "status-box status-error";
-    box.textContent = "Nu am putut verifica statusul KYC. Poți încerca să trimiți formularul.";
-    formContainer.style.display = "block";
-  }
-}
+      if (kycStatusLS === "pending") {
+        if (statusMainText) statusMainText.textContent = "KYC trimis - în curs de verificare";
+        if (statusSubText) statusSubText.textContent =
+          "Am primit datele și documentele tale. Un coordonator SuperParty verifică manual KYC-ul. Vei vedea statusul actualizat în pagina de 'Cont în verificare'.";
+      } else if (kycStatusLS === "rejected") {
+        if (statusMainText) statusMainText.textContent = "KYC respins - este nevoie de refacere";
+        if (statusSubText) statusSubText.textContent =
+          "Anteriorul KYC a fost respins. Te rugăm să refaci pozele sau datele conform instrucțiunilor primite și să retrimiți formularul.";
+      }
 
-async function submitKyc() {
-  const email = localStorage.getItem("userEmail");
-  if (!email) {
-    window.location.href = "/login.html";
-    return;
-  }
+      const form = document.getElementById("kycForm");
+      const submitBtn = document.getElementById("submitBtn");
+      const backBtn = document.getElementById("backBtn");
+      const errorBox = document.getElementById("errorBox");
+      const successBox = document.getElementById("successBox");
 
-  const fullName = document.getElementById("fullName").value.trim();
-  const cnp = document.getElementById("cnp").value.trim();
-  const address = document.getElementById("address").value.trim();
-  const iban = document.getElementById("iban").value.trim();
-  const phone = document.getElementById("phone").value.trim();
-  const idFront = document.getElementById("idFront").files[0];
-  const idBack = document.getElementById("idBack").files[0];
-  const selfie = document.getElementById("selfie").files[0];
-  const contractAccepted = document.getElementById("contractAccepted").checked;
-  const messageEl = document.getElementById("kycMessage");
-  const btn = document.getElementById("submitBtn");
+      function showError(msg) {
+        if (!errorBox) return;
+        errorBox.textContent = msg;
+        errorBox.style.display = "block";
+        if (successBox) successBox.style.display = "none";
+      }
 
-  messageEl.className = "kyc-status-message";
-  messageEl.textContent = "";
+      function showSuccess(msg) {
+        if (!successBox) return;
+        successBox.textContent = msg;
+        successBox.style.display = "block";
+        if (errorBox) errorBox.style.display = "none";
+      }
 
-  if (!fullName || !cnp || !address || !iban || !phone) {
-    messageEl.classList.add("error");
-    messageEl.textContent = "Completează toate câmpurile de identitate.";
-    return;
-  }
+      if (backBtn) {
+        backBtn.addEventListener("click", function () {
+          window.location.href = "/angajat/pending.html";
+        });
+      }
 
-  if (cnp.length !== 13) {
-    messageEl.classList.add("error");
-    messageEl.textContent = "CNP-ul trebuie să aibă 13 cifre.";
-    return;
-  }
+      if (form) {
+        form.addEventListener("submit", async function (e) {
+          e.preventDefault();
+          if (errorBox) errorBox.style.display = "none";
+          if (successBox) successBox.style.display = "none";
 
-  if (!idFront || !idBack || !selfie) {
-    messageEl.classList.add("error");
-    messageEl.textContent = "Încarcă pozele pentru buletin (față + verso) și selfie.";
-    return;
-  }
+          if (!submitBtn) return;
+          submitBtn.disabled = true;
+          submitBtn.textContent = "Se trimite KYC...";
 
-  if (!contractAccepted) {
-    messageEl.classList.add("error");
-    messageEl.textContent = "Trebuie să accepți contractul pentru a continua.";
-    return;
-  }
+          try {
+            const formData = new FormData(form);
 
-  try {
-    btn.disabled = true;
-    btn.textContent = "Se trimite...";
-    messageEl.textContent = "";
+            // ne asigurăm că emailul & numele din localStorage sunt trimise
+            formData.set("email", emailInput.value || emailLS);
+            formData.set("fullName", fullNameInput.value || fullNameLS);
+            formData.set("status", statusLS || "pending_admin");
+            formData.set("kyc_status", kycStatusLS || "none");
 
-    const formData = new FormData();
-    formData.append("email", email);
-    formData.append("fullName", fullName);
-    formData.append("cnp", cnp);
-    formData.append("address", address);
-    formData.append("iban", iban);
-    formData.append("phone", phone);
-    formData.append("idFront", idFront);
-    formData.append("idBack", idBack);
-    formData.append("selfie", selfie);
-    formData.append("contractAccepted", "true");
+            const response = await fetch(BACKEND_BASE_URL + "/api/kyc/submit", {
+              method: "POST",
+              body: formData
+            });
 
-    const res = await fetch(`${API_BASE}/api/kyc/submit`, {
-      method: "POST",
-      body: formData
-    });
+            const data = await response.json().catch(() => null);
 
-    const data = await res.json();
+            if (!response.ok) {
+              const msg = (data && data.error) || "Nu am putut trimite KYC-ul. Încearcă din nou.";
+              throw new Error(msg);
+            }
 
-    if (!data.success) {
-      messageEl.classList.add("error");
-      messageEl.textContent = data.error || "Eroare la trimiterea KYC.";
-      btn.disabled = false;
-      btn.textContent = "Trimite spre verificare KYC";
-      return;
-    }
+            if (!data || data.success === false) {
+              const msg = (data && data.error) || "A apărut o problemă la trimiterea KYC-ului.";
+              throw new Error(msg);
+            }
 
-    messageEl.classList.add("success");
-    messageEl.textContent = "KYC trimis cu succes. Va fi verificat de un admin.";
+            // Dacă totul e ok, marcăm KYC ca pending în localStorage și îl ducem în pending.html
+            try {
+              localStorage.setItem("userKycStatus", "pending");
+            } catch (e) {}
 
-    setTimeout(() => {
-      window.location.reload();
-    }, 1500);
-
-  } catch (err) {
-    console.error(err);
-    messageEl.classList.add("error");
-    messageEl.textContent = "Eroare conexiune server.";
-    btn.disabled = false;
-    btn.textContent = "Trimite spre verificare KYC";
-  }
-}
-</script>
+            showSuccess("KYC trimis cu succes. Vei fi redirecționat către pagina de status cont.");
+            setTimeout(function () {
+              window.location.href = "/angajat/pending.html";
+            }, 1200);
+          } catch (err) {
+            showError(err.message || "Nu am putut trimite KYC-ul. Verifică datele și pozele și încearcă din nou.");
+          } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Trimite KYC pentru verificare";
+          }
+        });
+      }
+    })();
+  </script>
 </body>
 </html>
