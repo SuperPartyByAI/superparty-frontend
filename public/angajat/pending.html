@@ -2,9 +2,11 @@
 <html lang="ro">
 <head>
   <meta charset="UTF-8" />
-  <title>SuperParty - Cont în așteptare</title>
+  <title>SuperParty - Cont în verificare</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       min-height: 100vh;
@@ -14,45 +16,323 @@
       background: radial-gradient(circle at top, #1d4ed8 0, #0f172a 45%, #020617 100%);
       padding: 16px;
       color: #e5e7eb;
-      margin: 0;
     }
+
     .card {
+      background: rgba(15, 23, 42, 0.95);
+      border-radius: 18px;
+      padding: 24px 24px 20px 24px;
+      max-width: 460px;
       width: 100%;
-      max-width: 420px;
-      background: rgba(15, 23, 42, 0.92);
-      border-radius: 16px;
-      padding: 24px;
-      border: 1px solid #1f2937;
-      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.7);
-      text-align: center;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(148, 163, 184, 0.35);
     }
-    h1 { font-size: 20px; margin: 0 0 10px; }
-    p { font-size: 14px; color: #9ca3af; margin: 0 0 18px; }
-    a {
-      display: inline-block;
-      margin: 4px;
-      padding: 9px 14px;
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .logo-mark {
+      width: 38px;
+      height: 38px;
       border-radius: 999px;
-      font-size: 14px;
-      text-decoration: none;
+      background: radial-gradient(circle at 25% 0, #f97316, #db2777 40%, #1d4ed8 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 800;
+      color: #f9fafb;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.9);
     }
-    .btn-primary {
-      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+
+    .logo-text-main {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .logo-text-sub {
+      font-size: 11px;
+      color: #9ca3af;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+    }
+
+    .title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: #9ca3af;
+      margin-bottom: 16px;
+    }
+
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(234, 179, 8, 0.7);
+      background: rgba(250, 204, 21, 0.13);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: #facc15;
+      margin-bottom: 14px;
+    }
+
+    .status-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: #facc15;
+      box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.22);
+    }
+
+    .info-list {
+      list-style: none;
+      margin-bottom: 16px;
+      font-size: 13px;
       color: #e5e7eb;
     }
-    .btn-ghost {
-      background: rgba(15,23,42,0.9);
-      border: 1px solid #1f2937;
+
+    .info-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .info-list li span {
+      margin-top: 1px;
+    }
+
+    .highlight {
+      color: #bfdbfe;
+      font-weight: 500;
+    }
+
+    .buttons-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .btn-primary,
+    .btn-secondary,
+    .btn-logout {
+      border-radius: 999px;
+      border: none;
+      padding: 9px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #0f172a;
+    }
+
+    .btn-secondary {
+      background: rgba(15, 23, 42, 0.85);
+      color: #e5e7eb;
+      border: 1px solid rgba(148, 163, 184, 0.8);
+    }
+
+    .btn-logout {
+      background: transparent;
+      color: #f97373;
+      border: 1px solid rgba(248, 113, 113, 0.7);
+      margin-left: auto;
+    }
+
+    .footer-note {
+      margin-top: 14px;
+      font-size: 11px;
       color: #9ca3af;
+    }
+
+    .strong {
+      font-weight: 600;
+    }
+
+    .user-line {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-bottom: 10px;
+    }
+
+    .user-line span {
+      color: #e5e7eb;
+      font-weight: 500;
     }
   </style>
 </head>
 <body>
   <div class="card">
-    <h1>Cont în așteptare</h1>
-    <p>Contul tău a fost creat, dar încă nu este activ. Un admin SuperParty trebuie să îl aprobe.</p>
-    <a href="/angajat/kyc.html" class="btn-primary">Completează KYC</a>
-    <a href="/login.html" class="btn-ghost">Înapoi la login</a>
+    <div class="logo">
+      <div class="logo-mark">SP</div>
+      <div>
+        <div class="logo-text-main">SuperParty</div>
+        <div class="logo-text-sub">Verificare cont</div>
+      </div>
+    </div>
+
+    <div class="user-line" id="userLine">
+      <!-- Completat din JS cu nume + email -->
+    </div>
+
+    <h1 class="title">Cont în verificare / KYC</h1>
+    <p class="subtitle" id="subtitleText">
+      Contul tău este în proces de verificare. Urmează pașii de mai jos pentru a finaliza activarea.
+    </p>
+
+    <div class="status-chip" id="statusChip">
+      <div class="status-dot"></div>
+      <span id="statusLabel">Status: în așteptare</span>
+    </div>
+
+    <ul class="info-list" id="infoList">
+      <li>
+        <span>1.</span>
+        <span>Completează formularul de <span class="highlight">KYC</span> cu datele reale (CNP, adresă, date bancare).</span>
+      </li>
+      <li>
+        <span>2.</span>
+        <span>Încarcă pozele cerute: <span class="highlight">CI față-verso + poză tip selfie</span> cu buletinul în mână.</span>
+      </li>
+      <li>
+        <span>3.</span>
+        <span>Semnează <span class="highlight">contractul</span> și așteaptă aprobarea coordonatorului.</span>
+      </li>
+    </ul>
+
+    <div class="buttons-row">
+      <button class="btn-primary" id="kycBtn">Completează KYC</button>
+      <button class="btn-secondary" id="refreshBtn">Am completat, verifică din nou</button>
+      <button class="btn-logout" id="logoutBtn">Delogare</button>
+    </div>
+
+    <p class="footer-note" id="footerNote">
+      După ce contul tău este <span class="strong">aprobat</span> și KYC-ul este <span class="strong">validat</span>, vei fi dus automat în dashboard-ul de evenimente.
+    </p>
   </div>
+
+  <script>
+    (function () {
+      // Citim ce a setat login-ul în localStorage
+      var email = localStorage.getItem("userEmail") || "";
+      var fullName = localStorage.getItem("userFullName") || "";
+      var status = (localStorage.getItem("userStatus") || "").toLowerCase();
+      var kycStatus = (localStorage.getItem("userKycStatus") || "").toLowerCase();
+
+      var userLineEl = document.getElementById("userLine");
+      var statusLabelEl = document.getElementById("statusLabel");
+      var subtitleTextEl = document.getElementById("subtitleText");
+      var infoListEl = document.getElementById("infoList");
+      var footerNoteEl = document.getElementById("footerNote");
+
+      // Dacă nu există email deloc, îl dăm afară la login (siguranță)
+      if (!email) {
+        window.location.replace("/login.html");
+        return;
+      }
+
+      // Afișăm cine e logat
+      userLineEl.textContent = "Logat ca: " +
+        (fullName ? fullName + " (" + email + ")" : email);
+
+      // Ajustăm textul în funcție de status + kycStatus
+      var linesHtml = "";
+
+      if (status === "blocked") {
+        statusLabelEl.textContent = "Status: blocat";
+        subtitleTextEl.textContent =
+          "Contul tău este blocat. Te rugăm să iei legătura cu un coordonator SuperParty pentru detalii.";
+        linesHtml += "<li><span>1.</span><span>Contactează coordonatorul sau managerul tău pentru a clarifica motivul blocării.</span></li>";
+        linesHtml += "<li><span>2.</span><span>Nu poți accepta sau onora evenimente până la deblocarea contului.</span></li>";
+        infoListEl.innerHTML = linesHtml;
+        footerNoteEl.textContent = "Această pagină este doar informativă. Doar coordonatorul poate reactiva contul.";
+      } else if (!kycStatus || kycStatus === "none") {
+        statusLabelEl.textContent = "Status: KYC necompletat";
+        subtitleTextEl.textContent =
+          "Pentru a putea primi evenimente, trebuie să completezi formularul de KYC și să încarci documentele.";
+        // lăsăm lista default din HTML
+      } else if (kycStatus === "pending") {
+        statusLabelEl.textContent = "Status: KYC trimis, așteaptă aprobare";
+        subtitleTextEl.textContent =
+          "Am primit KYC-ul tău. Un coordonator SuperParty urmează să îl verifice și să îți activeze contul.";
+        linesHtml += "<li><span>1.</span><span>Poți verifica periodic această pagină după ce ai fost informat că s-a făcut verificarea.</span></li>";
+        linesHtml += "<li><span>2.</span><span>Nu este nevoie să retrimiți KYC-ul dacă deja l-ai completat corect.</span></li>";
+        infoListEl.innerHTML = linesHtml;
+        footerNoteEl.textContent = "După aprobarea KYC-ului și activarea contului, vei fi redirecționat automat în dashboard.";
+      } else if (kycStatus === "rejected") {
+        statusLabelEl.textContent = "Status: KYC respins, este nevoie de refacere";
+        subtitleTextEl.textContent =
+          "KYC-ul trimis a fost respins. Este necesar să refaci pozele sau datele conform instrucțiunilor primite de la coordonator.";
+        linesHtml += "<li><span>1.</span><span>Verifică mesajele primite de la coordonator pentru motivul respingerii (ex: poze neclare, date greșite).</span></li>";
+        linesHtml += "<li><span>2.</span><span>Apasă pe <span class=\"highlight\">Completează KYC</span> și retrimite documentele corecte.</span></li>";
+        infoListEl.innerHTML = linesHtml;
+      } else if (status === "pending_admin" || status === "pending" || status === "") {
+        statusLabelEl.textContent = "Status: în așteptarea aprobării coordonatorului";
+        subtitleTextEl.textContent =
+          "Datele tale au fost înregistrate. Urmează ca un coordonator SuperParty să îți aprobe contul.";
+        linesHtml += "<li><span>1.</span><span>Dacă nu ai completat încă KYC-ul, te rugăm să o faci apăsând pe <span class=\"highlight\">Completează KYC</span>.</span></li>";
+        linesHtml += "<li><span>2.</span><span>Dacă ai completat deja KYC-ul, așteaptă confirmarea din partea coordonatorului.</span></li>";
+        infoListEl.innerHTML = linesHtml;
+      } else if (status === "active" && kycStatus === "approved") {
+        // Nu ar trebui să ajungă aici; dacă ajunge, îl trimitem direct în dashboard
+        window.location.replace("/angajat/index.html");
+        return;
+      }
+
+      // Buton "Completează KYC" → trimite la pagina de KYC
+      var kycBtn = document.getElementById("kycBtn");
+      if (kycBtn) {
+        kycBtn.addEventListener("click", function () {
+          window.location.href = "/angajat/kyc.html";
+        });
+      }
+
+      // Buton "Am completat, verifică din nou"
+      // Deocamdată doar reîncarcă pagina (în viitor putem trage din backend status-ul actualizat)
+      var refreshBtn = document.getElementById("refreshBtn");
+      if (refreshBtn) {
+        refreshBtn.addEventListener("click", function () {
+          window.location.reload();
+        });
+      }
+
+      // Buton "Delogare"
+      var logoutBtn = document.getElementById("logoutBtn");
+      if (logoutBtn) {
+        logoutBtn.addEventListener("click", function () {
+          try {
+            localStorage.removeItem("userEmail");
+            localStorage.removeItem("userFullName");
+            localStorage.removeItem("userRole");
+            localStorage.removeItem("userStatus");
+            localStorage.removeItem("userKycStatus");
+          } catch (e) {}
+          window.location.href = "/login.html";
+        });
+      }
+    })();
+  </script>
 </body>
 </html>
