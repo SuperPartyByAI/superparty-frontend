@@ -1,82 +1,81 @@
-// public/login.js
-// Login real pe backend Railway (fără Apps Script)
+// Endpoint backend Railway
+const API_BASE = "https://superparty-ai-backend-production.up.railway.app";
 
-(function () {
-  const BACKEND_URL = "https://superparty-ai-backend-production.up.railway.app";
+const form = document.getElementById("loginForm");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const loginBtn = document.getElementById("loginBtn");
+const errorBox = document.getElementById("errorBox");
+const successBox = document.getElementById("successBox");
 
-  const form = document.getElementById("loginForm");
-  const emailInput = document.getElementById("email");
-  const passwordInput = document.getElementById("password");
-  const btn = document.getElementById("loginBtn");
-  const msgBox = document.getElementById("loginMessage");
+function setLoading(isLoading) {
+  loginBtn.disabled = isLoading;
+  loginBtn.textContent = isLoading ? "Se autentifică..." : "Intră în cont";
+}
 
-  function showMessage(text, type) {
-    if (!msgBox) return;
-    msgBox.textContent = text;
-    msgBox.className = "msg " + type;
-    msgBox.style.display = "block";
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  errorBox.textContent = "";
+  successBox.textContent = "";
+
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+
+  if (!email || !password) {
+    errorBox.textContent = "Te rog să introduci emailul și parola.";
+    return;
   }
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    if (!emailInput || !passwordInput || !btn) return;
+  try {
+    setLoading(true);
 
-    msgBox.style.display = "none";
+    const resp = await fetch(`${API_BASE}/api/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
 
-    const email = emailInput.value.trim();
-    const password = passwordInput.value;
+    const data = await resp.json();
 
-    if (!email || !password) {
-      showMessage("Te rog completează emailul și parola.", "error");
+    if (!resp.ok || !data.success) {
+      const msg = data && data.error ? data.error : "Eroare la autentificare.";
+      errorBox.textContent = msg;
+      setLoading(false);
       return;
     }
 
-    btn.disabled = true;
-    btn.textContent = "Se autentifică...";
+    const user = data.user || {};
 
-    try {
-      const res = await fetch(`${BACKEND_URL}/api/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-      });
+    // Salvăm user-ul în localStorage pentru dashboard + kyc
+    localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem("userEmail", user.email || email);
 
-      const data = await res.json();
+    successBox.textContent = "Autentificare reușită. Te redirecționăm...";
 
-      if (!data.success) {
-        showMessage(data.error || "Email sau parolă incorecte.", "error");
-        btn.disabled = false;
-        btn.textContent = "Autentifică-te";
-        return;
-      }
+    const isApproved =
+      user.kyc_status === "approved" &&
+      user.status === "active" &&
+      user.is_approved === true;
 
-      try {
-        localStorage.setItem("userEmail", data.user?.email || email);
-        localStorage.setItem("userFullName", data.user?.fullName || "");
-        localStorage.setItem("userRole", data.user?.role || "angajat");
-        localStorage.setItem("userKycStatus", data.user?.kycStatus || "required");
-
-        if (data.token) {
-          localStorage.setItem("authToken", data.token);
-        }
-      } catch (e) {
-        console.error("Nu pot salva în localStorage:", e);
-      }
-
-      showMessage("Autentificare reușită. Te redirecționăm în dashboard...", "success");
-
-      setTimeout(() => {
-        window.location.href = "/angajat/index.html";
-      }, 1000);
-    } catch (err) {
-      console.error(err);
-      showMessage("Eroare de rețea sau server. Încearcă din nou.", "error");
-      btn.disabled = false;
-      btn.textContent = "Autentifică-te";
+    // viitor: rol admin
+    if (user.role === "admin") {
+      window.location.href = "/admin/index.html";
+      return;
     }
-  }
 
-  if (form) {
-    form.addEventListener("submit", handleSubmit);
+    if (isApproved) {
+      // KYC ok + cont activ → dashboard angajat
+      window.location.href = "/angajat/index.html";
+    } else {
+      // orice alt status → KYC page
+      window.location.href = "/angajat/kyc.html";
+    }
+  } catch (err) {
+    console.error("Login error:", err);
+    errorBox.textContent = "Eroare de rețea sau server. Încearcă din nou.";
+  } finally {
+    setLoading(false);
   }
-})();
+});
