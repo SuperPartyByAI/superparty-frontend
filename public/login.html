@@ -19,340 +19,176 @@
     }
 
     .card {
-      width: 100%;
+      background: rgba(15,23,42,0.9);
+      padding: 32px;
+      border-radius: 16px;
       max-width: 420px;
-      background: rgba(15, 23, 42, 0.95);
-      border-radius: 18px;
-      box-shadow: 0 25px 60px rgba(15, 23, 42, 0.85);
-      padding: 24px 22px 20px;
-      border: 1px solid rgba(148, 163, 184, 0.25);
-      backdrop-filter: blur(18px);
+      width: 100%;
+      box-shadow: 0 0 25px rgba(0,0,0,0.4);
     }
 
     .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 18px;
-    }
-
-    .logo-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #3b82f6, #22c55e);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 18px;
-      color: #0b1120;
-    }
-
-    .logo-text {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .logo-text span:first-child {
-      font-size: 18px;
-      font-weight: 600;
-    }
-
-    .logo-text span:last-child {
-      font-size: 12px;
-      color: #9ca3af;
-    }
-
-    .tabs {
-      display: flex;
-      gap: 6px;
-      background: rgba(15, 23, 42, 0.9);
-      padding: 4px;
-      border-radius: 999px;
-      border: 1px solid rgba(55, 65, 81, 0.8);
-      margin-bottom: 18px;
-    }
-
-    .tab-btn {
-      flex: 1;
-      border: none;
-      border-radius: 999px;
-      padding: 8px 10px;
-      font-size: 13px;
-      cursor: pointer;
-      background: transparent;
-      color: #9ca3af;
-      transition: all 0.18s ease-out;
-    }
-
-    .tab-btn.active {
-      background: linear-gradient(135deg, #1d4ed8, #3b82f6);
-      color: #e5e7eb;
-      font-weight: 500;
-      box-shadow: 0 12px 30px rgba(37, 99, 235, 0.45);
-    }
-
-    .subtitle {
-      font-size: 13px;
-      color: #9ca3af;
-      margin-bottom: 14px;
-    }
-
-    .field {
+      text-align: center;
       margin-bottom: 12px;
-    }
-
-    .field label {
-      display: block;
-      font-size: 12px;
-      margin-bottom: 4px;
+      font-size: 18px;
       color: #9ca3af;
     }
 
-    .field input {
+    h1 {
+      margin-bottom: 16px;
+      font-size: 26px;
+      font-weight: 600;
+      text-align: center;
+      color: #fff;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: #9ca3af;
+      margin-bottom: 4px;
+    }
+
+    input {
       width: 100%;
-      padding: 10px 11px;
+      padding: 11px;
       border-radius: 10px;
       border: 1px solid #1f2937;
       background: #020617;
       color: #e5e7eb;
       font-size: 14px;
+      margin-bottom: 12px;
       outline: none;
     }
 
-    .field input:focus {
+    input:focus {
       border-color: #3b82f6;
-      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.6);
+      box-shadow: 0 0 0 1px rgba(59,130,246,0.5);
     }
 
-    .btn-primary {
+    button {
       width: 100%;
+      padding: 12px;
+      background: #3b82f6;
       border: none;
-      margin-top: 8px;
-      padding: 10px 12px;
-      border-radius: 999px;
-      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-      color: #e5e7eb;
-      font-size: 14px;
-      font-weight: 500;
+      border-radius: 10px;
+      color: white;
+      font-size: 15px;
       cursor: pointer;
-      box-shadow: 0 18px 40px rgba(37, 99, 235, 0.55);
-      transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
+      transition: background 0.2s, transform 0.05s;
+      margin-top: 4px;
     }
 
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 22px 55px rgba(37, 99, 235, 0.7);
+    button:hover {
+      background: #2563eb;
     }
 
-    .btn-primary:active {
-      transform: translateY(0);
-      box-shadow: 0 10px 25px rgba(37, 99, 235, 0.55);
+    button:active {
+      transform: scale(0.99);
     }
 
     .status {
       margin-top: 10px;
-      font-size: 12px;
+      text-align: center;
+      font-size: 13px;
       min-height: 18px;
     }
 
-    .status.error { color: #f87171; }
-    .status.success { color: #4ade80; }
-
-    .hint {
-      margin-top: 10px;
-      font-size: 11px;
-      color: #9ca3af;
-      line-height: 1.4;
+    .status.error {
+      color: #f97373;
     }
 
-    .hidden { display: none; }
+    .status.success {
+      color: #4ade80;
+    }
+
+    .register-link {
+      margin-top: 14px;
+      text-align: center;
+      font-size: 14px;
+      color: #9ca3af;
+    }
+
+    .register-link a {
+      color: #3b82f6;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .register-link a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 
 <body>
+
   <div class="card">
-    <div class="logo">
-      <div class="logo-icon">SP</div>
-      <div class="logo-text">
-        <span>SuperParty</span>
-        <span>Dashboard angajat · login securizat</span>
-      </div>
-    </div>
+    <div class="logo">SUPERPARTY · STAFF</div>
+    <h1>Autentificare</h1>
 
-    <div class="tabs">
-      <button id="tab-login" class="tab-btn active">Autentificare</button>
-      <button id="tab-register" class="tab-btn">Creare cont nou</button>
-    </div>
+    <label for="email">Email</label>
+    <input id="email" type="email" placeholder="ex: nume@exemplu.com" autocomplete="email" required>
 
-    <p id="subtitle-login" class="subtitle">
-      Intră în contul tău SuperParty pentru a vedea evenimentele și dovezile.
-    </p>
-    <p id="subtitle-register" class="subtitle hidden">
-      Creează-ți cont, îl aprobăm intern și apoi poți intra în dashboard.
-    </p>
+    <label for="password">Parola</label>
+    <input id="password" type="password" placeholder="Parola ta" autocomplete="current-password" required>
 
-    <!-- LOGIN -->
-    <form id="form-login">
-      <div class="field">
-        <label>Email</label>
-        <input id="login-email" type="email" required />
-      </div>
-      <div class="field">
-        <label>Parola</label>
-        <input id="login-password" type="password" required />
-      </div>
-      <button class="btn-primary" type="submit">Intră în cont</button>
-    </form>
-
-    <!-- REGISTER -->
-    <form id="form-register" class="hidden">
-      <div class="field">
-        <label>Nume complet</label>
-        <input id="reg-fullname" type="text" required />
-      </div>
-      <div class="field">
-        <label>Email</label>
-        <input id="reg-email" type="email" required />
-      </div>
-      <div class="field">
-        <label>Telefon</label>
-        <input id="reg-phone" type="tel" required />
-      </div>
-      <div class="field">
-        <label>Parolă</label>
-        <input id="reg-password" type="password" required />
-      </div>
-      <button class="btn-primary" type="submit">Creează cont</button>
-    </form>
+    <button onclick="login()">Autentificare</button>
 
     <div id="status" class="status"></div>
 
-    <div class="hint">
-      După creare cont, acesta apare în panoul de aprobare Admin.<br/>
-      După aprobare + KYC, vei intra direct în dashboardul de angajat.
+    <div class="register-link">
+      Nu ai cont? <a href="/register.html">Creează un cont nou</a>
     </div>
   </div>
 
 <script>
-const API_BASE = "https://superparty-ai-backend-production.up.railway.app";
+async function login() {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const statusEl = document.getElementById("status");
 
-// Elemente UI
-const tabLogin = document.getElementById("tab-login");
-const tabRegister = document.getElementById("tab-register");
-const formLogin = document.getElementById("form-login");
-const formRegister = document.getElementById("form-register");
-const subtitleLogin = document.getElementById("subtitle-login");
-const subtitleRegister = document.getElementById("subtitle-register");
-const statusEl = document.getElementById("status");
+  statusEl.className = "status";
+  statusEl.textContent = "";
 
-// Status UI
-function setStatus(msg, type) {
-  statusEl.textContent = msg;
-  statusEl.className = "status " + (type || "");
+  if (!email || !password) {
+    statusEl.classList.add("error");
+    statusEl.textContent = "Te rugăm să completezi emailul și parola.";
+    return;
+  }
+
+  try {
+    const res = await fetch("https://superparty-ai-backend-production.up.railway.app/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+
+    if (!data.success) {
+      statusEl.classList.add("error");
+      statusEl.textContent = data.error || "Email sau parolă incorecte.";
+      return;
+    }
+
+    // Salvăm emailul pentru KYC / dashboard
+    localStorage.setItem("userEmail", email);
+
+    statusEl.classList.add("success");
+    statusEl.textContent = "Autentificare reușită...";
+
+    // Redirect spre dashboard angajat
+    setTimeout(() => {
+      window.location.href = "/angajat/index.html";
+    }, 800);
+
+  } catch (err) {
+    console.error(err);
+    statusEl.classList.add("error");
+    statusEl.textContent = "Eroare conexiune server.";
+  }
 }
-
-// TABS
-tabLogin.onclick = () => {
-  tabLogin.classList.add("active");
-  tabRegister.classList.remove("active");
-  formLogin.classList.remove("hidden");
-  formRegister.classList.add("hidden");
-  subtitleLogin.classList.remove("hidden");
-  subtitleRegister.classList.add("hidden");
-  setStatus("");
-};
-
-tabRegister.onclick = () => {
-  tabRegister.classList.add("active");
-  tabLogin.classList.remove("active");
-  formRegister.classList.remove("hidden");
-  formLogin.classList.add("hidden");
-  subtitleRegister.classList.remove("hidden");
-  subtitleLogin.classList.add("hidden");
-  setStatus("");
-};
-
-// LOGIN
-formLogin.onsubmit = async (e) => {
-  e.preventDefault();
-  setStatus("Te autentificăm...", "success");
-
-  const email = document.getElementById("login-email").value.trim();
-  const password = document.getElementById("login-password").value;
-
-  try {
-    const resp = await fetch(API_BASE + "/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-
-    const data = await resp.json();
-
-    if (!data.success) {
-      setStatus(data.error || "Email sau parolă incorecte.", "error");
-      return;
-    }
-
-    localStorage.setItem("sp_user", JSON.stringify(data.user));
-    localStorage.setItem("userEmail", data.user.email);
-
-    setStatus("Autentificare reușită!", "success");
-
-    // verificări status user
-    const u = data.user;
-
-    if (!u.is_approved) {
-      alert("Contul tău este în așteptare pentru aprobare Admin.");
-      return;
-    }
-
-    if (u.kyc_status !== "approved") {
-      window.location.href = "/angajat/kyc.html";
-      return;
-    }
-
-    // user complet -> dashboard
-    window.location.href = "/angajat/index.html";
-
-  } catch {
-    setStatus("Eroare conexiune server.", "error");
-  }
-};
-
-// REGISTER
-formRegister.onsubmit = async (e) => {
-  e.preventDefault();
-  setStatus("Îți creăm contul...", "success");
-
-  const fullName = document.getElementById("reg-fullname").value.trim();
-  const email = document.getElementById("reg-email").value.trim();
-  const phone = document.getElementById("reg-phone").value.trim();
-  const password = document.getElementById("reg-password").value;
-
-  try {
-    const resp = await fetch(API_BASE + "/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ fullName, email, phone, password }),
-    });
-
-    const data = await resp.json();
-
-    if (!data.success) {
-      setStatus(data.error || "Nu am putut crea contul.", "error");
-      return;
-    }
-
-    setStatus("Cont creat. Așteaptă aprobarea Admin.", "success");
-
-    tabLogin.click();
-  } catch {
-    setStatus("Eroare conexiune server.", "error");
-  }
-};
 </script>
 
 </body>
