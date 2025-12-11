@@ -2,210 +2,671 @@
 <html lang="ro">
 <head>
   <meta charset="UTF-8" />
-  <title>SuperParty - Autentificare</title>
+  <title>SuperParty - Dashboard angajat</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- GATE ACCES DASHBOARD: login + status + KYC -->
+  <script>
+    (function () {
+      try {
+        // Dacă nu avem userEmail în localStorage => nu e logat => trimitem la /login.html
+        var email = localStorage.getItem("userEmail");
+        var status = localStorage.getItem("userStatus");      // ex: "active", "pending_admin", "blocked"
+        var kycStatus = localStorage.getItem("userKycStatus"); // ex: "approved", "pending", "none"
+
+        if (!email) {
+          window.location.replace("/login.html");
+          return;
+        }
+
+        // Dacă nu e activ sau KYC nu e aprobat => îl trimitem în zona de pending/KYC
+        if (status !== "active" || kycStatus !== "approved") {
+          window.location.replace("/angajat/pending.html");
+          return;
+        }
+
+        // Dacă trece de aceste condiții, rămâne în dashboard
+      } catch (e) {
+        // Dacă ceva crapă, mai bine îl trimitem la login ca fallback de siguranță
+        window.location.replace("/login.html");
+      }
+    })();
+  </script>
+
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-dark: #020617;
+      --bg-card: #020617;
+      --bg-card-soft: #020617;
+      --accent-blue: #3b82f6;
+      --accent-blue-soft: #1d4ed8;
+      --accent-green: #22c55e;
+      --accent-red: #ef4444;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --border-subtle: #1f2937;
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.55);
+      --radius-lg: 16px;
+      --radius-md: 12px;
+    }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       min-height: 100vh;
+      background: radial-gradient(circle at top, #1d4ed8 0, #0f172a 45%, #020617 100%);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 1100px;
+      background: rgba(15, 23, 42, 0.95);
+      border-radius: 18px;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .page-header {
+      padding: 18px 22px 12px 22px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 0, #f97316, #db2777 40%, #1d4ed8 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      background: radial-gradient(circle at top, #ff9a9e 0, #fad0c4 40%, #fbc2eb 100%);
+      font-size: 18px;
+      font-weight: 800;
+      color: #f9fafb;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.9);
     }
 
-    .login-card {
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 24px 28px;
-      max-width: 380px;
-      width: 100%;
-      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.25);
-    }
-
-    .login-title {
-      font-size: 24px;
+    .logo-text-main {
+      font-size: 17px;
       font-weight: 700;
-      color: #0f172a;
-      margin-bottom: 4px;
-      text-align: center;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
     }
 
-    .login-subtitle {
-      font-size: 13px;
-      color: #64748b;
-      margin-bottom: 20px;
-      text-align: center;
+    .logo-text-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
     }
 
-    label {
-      font-size: 13px;
-      color: #0f172a;
-      display: block;
-      margin-bottom: 4px;
+    .user-chip {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(15, 118, 110, 0.15);
+      border: 1px solid rgba(45, 212, 191, 0.4);
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    input[type="email"],
-    input[type="password"] {
-      width: 100%;
-      padding: 9px 10px;
-      border-radius: 8px;
-      border: 1px solid #cbd5f5;
+    .user-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.4);
+    }
+
+    .page-content {
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2.2fr);
+      gap: 18px;
+      padding: 18px 18px 20px 18px;
+    }
+
+    @media (max-width: 900px) {
+      .page-content {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .card {
+      background: radial-gradient(circle at top left, rgba(37, 99, 235, 0.14), rgba(15, 23, 42, 0.95));
+      border-radius: var(--radius-lg);
+      padding: 16px 16px 14px 16px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .card-title {
       font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      color: var(--text-muted);
+    }
+
+    .card-badge {
+      font-size: 11px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      color: var(--text-main);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #38bdf8;
+    }
+
+    .welcome-text-big {
+      font-size: 19px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .welcome-text-sub {
+      font-size: 13px;
+      color: var(--text-muted);
       margin-bottom: 12px;
-      outline: none;
-      transition: border 0.15s, box-shadow 0.15s;
     }
 
-    input[type="email"]:focus,
-    input[type="password"]:focus {
-      border-color: #6366f1;
-      box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.3);
+    .stats-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
     }
 
-    button {
-      width: 100%;
-      padding: 10px 14px;
+    .stat-pill {
+      flex: 1;
+      min-width: 130px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      padding: 7px 10px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(15, 23, 42, 0.8);
+    }
+
+    .stat-label {
+      color: var(--text-muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+    }
+
+    .stat-value {
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .events-section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      margin-bottom: 6px;
+      margin-top: 4px;
+    }
+
+    .events-tabs {
+      display: inline-flex;
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 999px;
+      border: 1px solid rgba(31, 41, 55, 0.9);
+      padding: 3px;
+      margin-bottom: 10px;
+    }
+
+    .events-tab {
+      font-size: 11px;
+      padding: 5px 10px;
       border-radius: 999px;
       border: none;
-      font-size: 15px;
-      font-weight: 600;
-      background: linear-gradient(135deg, #6366f1, #ec4899);
-      color: white;
       cursor: pointer;
-      margin-top: 4px;
-      transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.1s ease;
-      box-shadow: 0 12px 30px rgba(99, 102, 241, 0.4);
+      background: transparent;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
     }
 
-    button:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 16px 40px rgba(99, 102, 241, 0.55);
-      opacity: 0.96;
-    }
-
-    button:active {
-      transform: translateY(0);
-      box-shadow: 0 10px 26px rgba(99, 102, 241, 0.3);
-    }
-
-    .error-msg {
-      display: none;
-      margin-top: 10px;
-      font-size: 13px;
-      color: #b91c1c;
-      background: #fee2e2;
-      border-radius: 8px;
-      padding: 8px 10px;
-    }
-
-    .footer-note {
-      margin-top: 14px;
-      font-size: 11px;
-      text-align: center;
-      color: #94a3b8;
-    }
-
-    .footer-note span {
+    .events-tab.active {
+      background: linear-gradient(to right, #22c55e, #16a34a);
+      color: #020617;
       font-weight: 600;
-      color: #6366f1;
+    }
+
+    .events-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 320px;
+      overflow: auto;
+      padding-right: 2px;
+    }
+
+    .event-card {
+      border-radius: 12px;
+      border: 1px solid rgba(55, 65, 81, 0.8);
+      padding: 9px 10px;
+      background: rgba(15, 23, 42, 0.92);
+      cursor: pointer;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .event-card:hover {
+      transform: translateY(-1px);
+      border-color: #3b82f6;
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.9);
+    }
+
+    .event-main-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .event-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .event-id {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .event-badge {
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.16);
+      border: 1px solid rgba(59, 130, 246, 0.8);
+    }
+
+    .event-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .event-meta-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .event-dovezi-pill {
+      margin-top: 4px;
+      font-size: 11px;
+      padding: 4px 7px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px dashed rgba(148, 163, 184, 0.7);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .event-dovezi-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #facc15;
+      box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.3);
+    }
+
+    /* Col dreapta: AI */
+    .ai-card {
+      background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.4), rgba(15, 23, 42, 0.96));
+      border-radius: var(--radius-lg);
+      padding: 14px 14px 12px 14px;
+      border: 1px solid rgba(129, 140, 248, 0.7);
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      min-height: 260px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ai-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+      gap: 8px;
+    }
+
+    .ai-title {
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: #e5e7eb;
+    }
+
+    .ai-subtitle {
+      font-size: 11px;
+      color: #c4cafe;
+      margin-top: 3px;
+    }
+
+    .ai-status-chip {
+      font-size: 10px;
+      padding: 4px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(129, 140, 248, 0.9);
+      background: rgba(15, 23, 42, 0.8);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .ai-status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #22c55e;
+    }
+
+    .ai-messages {
+      flex: 1;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.94);
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      padding: 10px 11px;
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      overflow: auto;
+      margin-bottom: 9px;
+    }
+
+    .ai-message {
+      line-height: 1.4;
+    }
+
+    .ai-message-strong {
+      font-weight: 600;
+    }
+
+    .ai-input-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .ai-input {
+      flex: 1;
+      border-radius: 999px;
+      border: 1px solid rgba(75, 85, 99, 0.9);
+      background: rgba(15, 23, 42, 0.96);
+      padding: 7px 11px;
+      font-size: 12px;
+      color: var(--text-main);
+      outline: none;
+    }
+
+    .ai-input::placeholder {
+      color: rgba(156, 163, 175, 0.9);
+    }
+
+    .ai-button {
+      border-radius: 999px;
+      border: none;
+      padding: 7px 11px;
+      font-size: 12px;
+      font-weight: 600;
+      background: linear-gradient(135deg, #4f46e5, #22c55e);
+      color: #f9fafb;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .ai-helper-hint {
+      font-size: 10px;
+      color: rgba(199, 210, 254, 0.9);
+      margin-top: 2px;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.9);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(55, 65, 81, 0.8);
+      border-radius: 999px;
     }
   </style>
 </head>
 <body>
-  <div class="login-card">
-    <h1 class="login-title">SuperParty</h1>
-    <p class="login-subtitle">Autentificare staff &amp; colaboratori</p>
+  <div class="page">
+    <header class="page-header">
+      <div class="logo-area">
+        <div class="logo-mark">SP</div>
+        <div>
+          <div class="logo-text-main">SuperParty</div>
+          <div class="logo-text-sub">Dashboard angajat</div>
+        </div>
+      </div>
+      <div class="user-chip">
+        <span class="user-dot"></span>
+        <span>Cont activat • acces evenimente</span>
+      </div>
+    </header>
 
-    <form id="loginForm">
-      <label for="email">Email</label>
-      <input id="email" type="email" placeholder="ex: nume@superparty.ro" required />
+    <main class="page-content">
+      <!-- COL STÂNGA: evenimente -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Ziua ta de lucru</div>
+            <div class="welcome-text-big">Salut! Aici vezi evenimentele tale și statusul dovezilor.</div>
+            <div class="welcome-text-sub">
+              Dacă nu ai niciun eveniment listat sau ai întrebări despre reguli, întreabă direct SuperParty AI din dreapta.
+            </div>
+          </div>
+          <div class="card-badge">
+            <span class="card-badge-dot"></span>
+            <span>Azi &amp; weekend</span>
+          </div>
+        </div>
 
-      <label for="password">Parola</label>
-      <input id="password" type="password" placeholder="Parola ta" required />
+        <div class="stats-row">
+          <div class="stat-pill">
+            <div>
+              <div class="stat-label">Evenimente azi</div>
+              <div class="stat-value">0</div>
+            </div>
+            <span>📅</span>
+          </div>
+          <div class="stat-pill">
+            <div>
+              <div class="stat-label">Dovezi validate</div>
+              <div class="stat-value">0 / 0</div>
+            </div>
+            <span>📸</span>
+          </div>
+          <div class="stat-pill">
+            <div>
+              <div class="stat-label">Status cont</div>
+              <div class="stat-value">Activ + KYC OK</div>
+            </div>
+            <span>✅</span>
+          </div>
+        </div>
 
-      <button type="submit" id="loginBtn">Autentificare</button>
-    </form>
+        <div class="events-section-title">Evenimentele tale</div>
+        <div class="events-tabs">
+          <button class="events-tab active">AZI</button>
+          <button class="events-tab">WEEKEND</button>
+          <button class="events-tab">TOATE</button>
+        </div>
 
-    <p id="error" class="error-msg"></p>
+        <div class="events-list" id="eventsList">
+          <!-- Placeholder simplu; logica detaliată rămâne în dashboard.js / backend -->
+          <div class="event-card">
+            <div class="event-main-row">
+              <div>
+                <div class="event-title">Nu ai încă evenimente active</div>
+                <div class="event-id">ID: -</div>
+              </div>
+              <div class="event-badge">Așteaptă alocare</div>
+            </div>
+            <div class="event-meta-row">
+              <div class="event-meta-item">📅 Data va apărea aici</div>
+              <div class="event-meta-item">📍 Locația va apărea aici</div>
+            </div>
+            <div class="event-dovezi-pill">
+              <div class="event-dovezi-dot"></div>
+              <span>Dovezile pentru fiecare eveniment vor apărea aici</span>
+            </div>
+          </div>
+        </div>
+      </section>
 
-    <p class="footer-note">
-      Acces doar pentru <span>staff SuperParty</span>.
-    </p>
+      <!-- COL DREAPTA: SuperParty AI -->
+      <section class="ai-card">
+        <div class="ai-header">
+          <div>
+            <div class="ai-title">SuperParty AI</div>
+            <div class="ai-subtitle">
+              Îți răspund despre dovezi foto, reguli la eveniment, KYC și statusul contului.
+            </div>
+          </div>
+          <div class="ai-status-chip">
+            <span class="ai-status-dot"></span>
+            <span>Online</span>
+          </div>
+        </div>
+
+        <div class="ai-messages" id="aiMessages">
+          <div class="ai-message">
+            <span class="ai-message-strong">Salut!</span> Sunt SuperParty AI, asistentul tău pentru evenimente și proceduri interne.
+          </div>
+          <div class="ai-message">
+            Poți să mă întrebi lucruri de tipul:
+            <br>• „Ce dovezi trebuie să fac la EVT_001?”
+            <br>• „Ce acte îmi trebuie pentru KYC?”
+            <br>• „Cum știu dacă mi-a fost validat un eveniment?”
+          </div>
+        </div>
+
+        <div class="ai-input-row">
+          <input
+            id="aiInput"
+            class="ai-input"
+            type="text"
+            placeholder="Scrie aici întrebarea ta (ex: ce dovezi trebuie la următorul eveniment?)"
+          />
+          <button class="ai-button" id="aiSendButton">Trimite</button>
+        </div>
+        <div class="ai-helper-hint">
+          Sfat: dacă întrebi despre dovezi, încearcă să incluzi și ID-ul evenimentului (ex: EVT_002).
+        </div>
+      </section>
+    </main>
   </div>
 
+  <!-- Dacă ai deja un dashboard.js cu logica evenimentelor/AI, îl poți lăsa conectat aici -->
+  <!-- <script src="/angajat/dashboard.js"></script> -->
   <script>
-    const BACKEND_URL =
-      "https://script.google.com/macros/s/AKfycbxs819m4gt-tpTkAIIS91EnxhwYx-5wdbnh6Zi5_GcY14zs5XYqS9ykFuYCCcokhQ/exec";
+    // Mini logică pentru input AI local (fără backend, doar ca să nu pară „mort”)
+    (function () {
+      var input = document.getElementById("aiInput");
+      var btn = document.getElementById("aiSendButton");
+      var box = document.getElementById("aiMessages");
+      if (!input || !btn || !box) return;
 
-    function jsonpLogin(email, password) {
-      return new Promise((resolve, reject) => {
-        const cbName = "SP_LOGIN_CB_" + Date.now();
+      function appendUserQuestion(text) {
+        var div = document.createElement("div");
+        div.className = "ai-message";
+        div.textContent = "👤 " + text;
+        box.appendChild(div);
+      }
 
-        window[cbName] = function (response) {
-          resolve(response);
-          try { delete window[cbName]; } catch {}
-          script.remove();
-        };
+      function appendAiAnswer(text) {
+        var div = document.createElement("div");
+        div.className = "ai-message";
+        div.innerHTML = "🤖 " + text;
+        box.appendChild(div);
+        box.scrollTop = box.scrollHeight;
+      }
 
-        const script = document.createElement("script");
-        const url =
-          BACKEND_URL +
-          "?action=login" +
-          "&email=" + encodeURIComponent(email) +
-          "&password=" + encodeURIComponent(password) +
-          "&callback=" + encodeURIComponent(cbName);
+      function handleSend() {
+        var q = (input.value || "").trim();
+        if (!q) return;
+        appendUserQuestion(q);
+        input.value = "";
 
-        script.src = url;
+        // Deocamdată răspuns dummy, backend-ul real îl punem la pasul cu AI
+        appendAiAnswer(
+          "Am înregistrat întrebarea ta. În varianta completă, aici răspunde AI-ul conectat la regulile SuperParty."
+        );
+      }
 
-        script.onerror = function () {
-          reject(new Error("Network error"));
-          script.remove();
-        };
-
-        document.body.appendChild(script);
+      btn.addEventListener("click", handleSend);
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          handleSend();
+        }
       });
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      const form = document.getElementById("loginForm");
-      const emailInput = document.getElementById("email");
-      const passInput = document.getElementById("password");
-      const errorEl = document.getElementById("error");
-
-      form.addEventListener("submit", (e) => {
-        e.preventDefault();
-
-        const email = emailInput.value.trim();
-        const password = passInput.value.trim();
-        errorEl.style.display = "none";
-
-        jsonpLogin(email, password)
-          .then((resp) => {
-            if (!resp || !resp.success) {
-              errorEl.textContent = resp.error || "Email sau parolă greșite.";
-              errorEl.style.display = "block";
-              return;
-            }
-
-            const role = (resp.role || "").toLowerCase();
-
-            if (role === "admin") {
-              window.location.href = "/admin/index.html";
-            } else if (role === "gm") {
-              window.location.href = "/gm/index.html";
-            } else {
-              window.location.href = "/angajat/index.html";
-            }
-          })
-          .catch(() => {
-            errorEl.textContent = "Nu s-a putut contacta serverul. Încearcă din nou.";
-            errorEl.style.display = "block";
-          });
-      });
-    });
+    })();
   </script>
 </body>
 </html>

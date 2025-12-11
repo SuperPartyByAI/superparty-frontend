@@ -37,3 +37,4 @@ temp_extract/
 # Secrets
 **/api-keys.js
 config/secrets.js
+.vercel
