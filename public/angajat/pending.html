@@ -18,23 +18,23 @@
     }
     .card {
       width: 100%;
-      max-width: 480px;
+      max-width: 420px;
       background: rgba(15, 23, 42, 0.92);
       border-radius: 16px;
       padding: 24px;
       border: 1px solid #1f2937;
       box-shadow: 0 18px 45px rgba(15, 23, 42, 0.7);
+      text-align: center;
     }
     h1 { font-size: 20px; margin: 0 0 10px; }
-    .text-muted { font-size: 14px; color: #9ca3af; margin-bottom: 16px; }
-    .buttons { display: flex; gap: 10px; }
-    button {
-      cursor: pointer;
-      border: none;
-      padding: 10px 14px;
+    p { font-size: 14px; color: #9ca3af; margin: 0 0 18px; }
+    a {
+      display: inline-block;
+      margin: 4px;
+      padding: 9px 14px;
       border-radius: 999px;
       font-size: 14px;
-      font-weight: 500;
+      text-decoration: none;
     }
     .btn-primary {
       background: linear-gradient(135deg, #3b82f6, #1d4ed8);
@@ -45,47 +45,14 @@
       border: 1px solid #1f2937;
       color: #9ca3af;
     }
-    .chip { font-size: 13px; margin-bottom: 16px; color: #9ca3af; }
   </style>
 </head>
 <body>
   <div class="card">
     <h1>Cont în așteptare</h1>
-    <p class="text-muted" id="pending-message">
-      Contul tău este creat, dar încă nu este activ. Un admin trebuie să îl aprobe.
-    </p>
-
-    <div class="chip" id="chip"></div>
-
-    <div class="buttons">
-      <button class="btn-primary" id="btn-kyc">Completează KYC</button>
-      <button class="btn-ghost" id="btn-logout">Deloghează-mă</button>
-    </div>
+    <p>Contul tău a fost creat, dar încă nu este activ. Un admin SuperParty trebuie să îl aprobe.</p>
+    <a href="/angajat/kyc.html" class="btn-primary">Completează KYC</a>
+    <a href="/login.html" class="btn-ghost">Înapoi la login</a>
   </div>
-
-<script>
-(function() {
-  let raw = localStorage.getItem("userData");
-  let user = raw ? JSON.parse(raw) : null;
-
-  if (!user) {
-    window.location.href = "/login.html";
-    return;
-  }
-
-  document.getElementById("chip").innerHTML =
-    "Email: " + user.email + "<br>Status: " + user.status + "<br>KYC: " + user.kyc_status;
-
-  document.getElementById("btn-kyc").onclick = function() {
-    window.location.href = "/angajat/kyc.html";
-  };
-
-  document.getElementById("btn-logout").onclick = function() {
-    localStorage.clear();
-    window.location.href = "/login.html";
-  };
-})();
-</script>
-
 </body>
 </html>
