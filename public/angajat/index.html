@@ -304,6 +304,10 @@
           - Status verificare: în regulă ✅ (după ce finalizezi KYC real)
           <br /><br />
           În varianta reală, această secțiune va reflecta statusul din sistem.
+          <br /><br />
+          <span style="color:#9ca3af;font-size:11px;">
+            Dev: setează <code>localStorage.setItem("devBypassKyc","1")</code> pentru bypass, sau <code>removeItem</code> pentru test real.
+          </span>
         </div>
       </div>
     </div>
@@ -349,6 +353,10 @@
       localStorage.setItem("userEmail", userEmail);
     }
 
+    // ================== DEV TOGGLE (în loc de hard-coded email) ==================
+    // 1 = bypass (nu redirectează la KYC)
+    const DEV_BYPASS_KYC = localStorage.getItem("devBypassKyc") === "1";
+
     // ================== KYC GATE (robust + ruta corectă) ==================
     function isKycOkFromUser(user) {
       const raw = (user?.kyc_status ?? user?.kycStatus ?? "");
@@ -366,8 +374,8 @@
         const email = (userEmail || "").trim();
         if (!email) return;
 
-        // Bypass dev pentru tine (păstrezi comportamentul actual)
-        if (email.toLowerCase() === "ursache.andrei1995@gmail.com") return;
+        // bypass controlat din localStorage
+        if (DEV_BYPASS_KYC) return;
 
         const raw = localStorage.getItem("sp_approved_users");
         if (!raw) return;
@@ -378,7 +386,6 @@
         const user = approved.find(u => (u.email || "").toLowerCase() === email.toLowerCase());
         if (!user) return;
 
-        // dacă user e aprobat dar KYC nu e ok -> KYC page
         if (!isKycOkFromUser(user)) {
           window.location.href = "/angajat/kyc/index.html";
         }
