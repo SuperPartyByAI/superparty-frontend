@@ -15,13 +15,14 @@
       justify-content: center;
       background: radial-gradient(circle at top, #1d4ed8 0, #0f172a 45%, #020617 100%);
       color: #e5e7eb;
+      padding: 16px;
     }
 
     .login-card {
       background: #020617;
       border-radius: 16px;
       padding: 24px 28px;
-      max-width: 380px;
+      max-width: 420px;
       width: 100%;
       box-shadow: 0 18px 45px rgba(15, 23, 42, 0.7);
       border: 1px solid rgba(148, 163, 184, 0.4);
@@ -100,14 +101,25 @@
       transform: none;
     }
 
-    .error {
+    .msg {
       margin-top: 10px;
       font-size: 13px;
-      color: #fecaca;
-      background: rgba(127, 29, 29, 0.4);
       border-radius: 8px;
       padding: 8px 10px;
       display: none;
+      line-height: 1.35;
+    }
+
+    .error {
+      color: #fecaca;
+      background: rgba(127, 29, 29, 0.4);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+    }
+
+    .success {
+      color: #bbf7d0;
+      background: rgba(20, 83, 45, 0.35);
+      border: 1px solid rgba(34, 197, 94, 0.35);
     }
 
     .meta {
@@ -120,177 +132,157 @@
 </head>
 <body>
   <div class="login-card">
-    <h1 class="login-title">SuperParty · Angajat</h1>
-    <p class="login-subtitle">Autentificare în dashboard-ul de evenimente</p>
+    <h1 class="login-title">SuperParty · Autentificare</h1>
+    <p class="login-subtitle">Intră în cont ca să accesezi dashboard-ul</p>
 
     <form id="loginForm">
       <label for="email">Email</label>
-      <input
-        id="email"
-        type="email"
-        autocomplete="email"
-        required
-        placeholder="ex: nume@superparty.ro"
-      />
+      <input id="email" type="email" autocomplete="email" required placeholder="ex: nume@superparty.ro" />
 
       <label for="password">Parolă</label>
-      <input
-        id="password"
-        type="password"
-        autocomplete="current-password"
-        required
-        placeholder="Parola ta"
-      />
+      <input id="password" type="password" autocomplete="current-password" required placeholder="Parola ta" />
 
-      <button type="submit" id="loginBtn">Autentificare</button>
-      <div id="error" class="error"></div>
+      <button type="submit" id="loginBtn">Intră în cont</button>
+
+      <div id="errorBox" class="msg error"></div>
+      <div id="successBox" class="msg success"></div>
     </form>
 
     <p class="meta">Probleme la autentificare? Contactează managerul SuperParty.</p>
   </div>
 
   <script>
-    // URL-ul Web App-ului tău Apps Script
-    const APPS_SCRIPT_URL =
-      'https://script.google.com/macros/s/AKfycbxs819m4gt-tpTkAIIS91EnxhwYx-5wdbnh6Zi5_GcY14zs5XYqS9ykFuYCCcokhQ/exec';
+    // ================== CONFIG ==================
+    const API_BASE = "https://superparty-ai-backend-production.up.railway.app";
 
-    const form   = document.getElementById('loginForm');
-    const emailI = document.getElementById('email');
-    const passI  = document.getElementById('password');
-    const errEl  = document.getElementById('error');
-    const btn    = document.getElementById('loginBtn');
+    const form = document.getElementById("loginForm");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const loginBtn = document.getElementById("loginBtn");
+    const errorBox = document.getElementById("errorBox");
+    const successBox = document.getElementById("successBox");
 
-    function norm(v) {
-      return (v ?? '').toString().trim();
+    function showError(msg) {
+      errorBox.textContent = msg || "Eroare.";
+      errorBox.style.display = "block";
+      successBox.style.display = "none";
     }
 
-    function normLower(v) {
-      return norm(v).toLowerCase();
+    function showSuccess(msg) {
+      successBox.textContent = msg || "OK.";
+      successBox.style.display = "block";
+      errorBox.style.display = "none";
     }
 
-    function truthyOk(v) {
+    function clearMsgs() {
+      errorBox.textContent = "";
+      successBox.textContent = "";
+      errorBox.style.display = "none";
+      successBox.style.display = "none";
+    }
+
+    function setLoading(isLoading) {
+      loginBtn.disabled = isLoading;
+      loginBtn.textContent = isLoading ? "Se autentifică..." : "Intră în cont";
+    }
+
+    function norm(v) { return (v ?? "").toString().trim(); }
+    function normLower(v) { return norm(v).toLowerCase(); }
+    function ok(v) {
       const s = normLower(v);
-      return s === '1' || s === 'true' || s === 'ok' || s === 'approved' || s === 'signed' || s === 'yes';
+      return s === "1" || s === "true" || s === "ok" || s === "approved" || s === "signed" || s === "yes";
     }
 
-    function normalizeUserFromResponse(response) {
-      const u = response && response.user ? response.user : (response || {});
-      const email = norm(u.email || response.email || u.userEmail || u.mail);
+    function persistSession(user, fallbackEmail) {
+      const email = norm(user.email || fallbackEmail);
 
-      return {
+      // single source of truth pentru dashboard (sp_user + userEmail)
+      const spUser = {
         email,
-        role: normLower(u.role || response.role),
-        status: normLower(u.status || response.status),
-        // păstrăm și formatele posibile
-        kyc_status: (u.kyc_status ?? u.kycStatus ?? u.kyc ?? ''),
-        contract_signed: (u.contract_signed ?? u.contractOk ?? u.contract_ok ?? u.contract ?? ''),
-        is_approved: (u.is_approved ?? u.approved ?? u.approved_ok ?? u.isApproved ?? ''),
-        raw: u,               // ca să nu pierdem nimic din răspuns
-        updatedAt: Date.now()
+        role: normLower(user.role),
+        status: normLower(user.status),
+        kyc_status: user.kyc_status ?? user.kycStatus ?? "",
+        contract_signed: user.contract_signed ?? user.contractOk ?? user.contract_ok ?? "",
+        is_approved: user.is_approved ?? user.approved ?? user.approved_ok ?? "",
+        updatedAt: Date.now(),
+        raw: user
       };
-    }
 
-    function persistSession(spUser) {
-      try {
-        // Chei folosite de dashboard-ul tău
-        localStorage.setItem('userEmail', spUser.email);
+      localStorage.setItem("sp_user", JSON.stringify(spUser));
+      localStorage.setItem("userEmail", email);
 
-        // Chei vechi (compatibilitate)
-        localStorage.setItem('sp_user', JSON.stringify(spUser));
-        localStorage.setItem('sp_user_email', spUser.email);
-        localStorage.setItem('sp_user_role', spUser.role);
-        localStorage.setItem('sp_user_status', spUser.status);
-      } catch (e) {
-        console.warn('localStorage error', e);
-      }
+      // compat pentru alte pagini (dacă ai deja folosite)
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("sp_user_email", email);
+      localStorage.setItem("sp_user_role", spUser.role);
+      localStorage.setItem("sp_user_status", spUser.status);
+
+      return spUser;
     }
 
     function routeAfterLogin(spUser) {
       // Admin direct
-      if (spUser.role === 'admin') {
-        window.location.href = '/admin/index.html';
+      if (spUser.role === "admin") {
+        window.location.href = "/admin/index.html";
         return;
       }
 
-      const kycOk = truthyOk(spUser.kyc_status);
-      const contractOk = truthyOk(spUser.contract_signed);
+      const kycOk = ok(spUser.kyc_status);
+      const contractOk = ok(spUser.contract_signed);
 
-      // Dacă câmpul is_approved nu există în răspuns, considerăm OK (compatibil cu vechi)
-      const hasApprovedField = spUser.raw && Object.prototype.hasOwnProperty.call(spUser.raw, 'is_approved');
-      const approvedOk = !hasApprovedField || truthyOk(spUser.is_approved);
+      // dacă backend nu trimite is_approved, considerăm ok (compat)
+      const hasApprovedField =
+        spUser.raw && Object.prototype.hasOwnProperty.call(spUser.raw, "is_approved");
+      const approvedOk = !hasApprovedField || ok(spUser.is_approved);
 
-      // Nu e activ / nu e aprobat / nu are KYC+contract -> KYC
-      if (spUser.status !== 'active' || !approvedOk || !kycOk || !contractOk) {
-        window.location.href = '/angajat/kyc/index.html';
-        return;
+      if (spUser.status === "active" && approvedOk && kycOk && contractOk) {
+        window.location.href = "/angajat/index.html";
+      } else {
+        window.location.href = "/angajat/kyc/index.html";
       }
-
-      // OK -> dashboard
-      window.location.href = '/angajat/index.html';
     }
 
-    function loginCB(response) {
-      form.dataset.loading = 'false';
-      btn.disabled = false;
-      btn.textContent = 'Autentificare';
-
-      if (!response || !response.success) {
-        const msg =
-          (response && (response.error || response.message)) ||
-          'Email sau parolă incorecte.';
-        errEl.textContent = msg;
-        errEl.style.display = 'block';
-        return;
-      }
-
-      errEl.style.display = 'none';
-
-      const spUser = normalizeUserFromResponse(response);
-      persistSession(spUser);
-      routeAfterLogin(spUser);
-    }
-
-    window.loginCB = loginCB;
-
-    form.addEventListener('submit', function (e) {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      if (form.dataset.loading === 'true') return;
+      clearMsgs();
 
-      const email = emailI.value.trim();
-      const pass  = passI.value.trim();
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
 
-      if (!email || !pass) {
-        errEl.textContent = 'Te rog completează email și parola.';
-        errEl.style.display = 'block';
+      if (!email || !password) {
+        showError("Te rog să introduci emailul și parola.");
         return;
       }
 
-      errEl.style.display = 'none';
-      form.dataset.loading = 'true';
-      btn.disabled = true;
-      btn.textContent = 'Se conectează...';
+      try {
+        setLoading(true);
 
-      // JSONP call
-      const script = document.createElement('script');
-      const params = new URLSearchParams({
-        action: 'login',
-        email: email,
-        password: pass,
-        callback: 'loginCB',
-        ts: Date.now().toString()
-      });
+        const resp = await fetch(`${API_BASE}/api/auth/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
 
-      script.src = APPS_SCRIPT_URL + '?' + params.toString();
+        const data = await resp.json().catch(() => ({}));
 
-      script.onerror = function () {
-        form.dataset.loading = 'false';
-        btn.disabled = false;
-        btn.textContent = 'Autentificare';
-        errEl.textContent = 'Eroare de rețea la login.';
-        errEl.style.display = 'block';
-      };
+        if (!resp.ok || !data.success) {
+          const msg = (data && (data.error || data.message)) ? (data.error || data.message) : "Eroare la autentificare.";
+          showError(msg);
+          return;
+        }
 
-      document.body.appendChild(script);
+        const user = data.user || {};
+        const spUser = persistSession(user, email);
+
+        showSuccess("Autentificare reușită. Te redirecționăm...");
+        routeAfterLogin(spUser);
+
+      } catch (err) {
+        console.error("Login error:", err);
+        showError("Eroare de rețea sau server. Încearcă din nou.");
+      } finally {
+        setLoading(false);
+      }
     });
   </script>
 </body>
