@@ -160,6 +160,75 @@
     const errEl  = document.getElementById('error');
     const btn    = document.getElementById('loginBtn');
 
+    function norm(v) {
+      return (v ?? '').toString().trim();
+    }
+
+    function normLower(v) {
+      return norm(v).toLowerCase();
+    }
+
+    function truthyOk(v) {
+      const s = normLower(v);
+      return s === '1' || s === 'true' || s === 'ok' || s === 'approved' || s === 'signed' || s === 'yes';
+    }
+
+    function normalizeUserFromResponse(response) {
+      const u = response && response.user ? response.user : (response || {});
+      const email = norm(u.email || response.email || u.userEmail || u.mail);
+
+      return {
+        email,
+        role: normLower(u.role || response.role),
+        status: normLower(u.status || response.status),
+        // păstrăm și formatele posibile
+        kyc_status: (u.kyc_status ?? u.kycStatus ?? u.kyc ?? ''),
+        contract_signed: (u.contract_signed ?? u.contractOk ?? u.contract_ok ?? u.contract ?? ''),
+        is_approved: (u.is_approved ?? u.approved ?? u.approved_ok ?? u.isApproved ?? ''),
+        raw: u,               // ca să nu pierdem nimic din răspuns
+        updatedAt: Date.now()
+      };
+    }
+
+    function persistSession(spUser) {
+      try {
+        // Chei folosite de dashboard-ul tău
+        localStorage.setItem('userEmail', spUser.email);
+
+        // Chei vechi (compatibilitate)
+        localStorage.setItem('sp_user', JSON.stringify(spUser));
+        localStorage.setItem('sp_user_email', spUser.email);
+        localStorage.setItem('sp_user_role', spUser.role);
+        localStorage.setItem('sp_user_status', spUser.status);
+      } catch (e) {
+        console.warn('localStorage error', e);
+      }
+    }
+
+    function routeAfterLogin(spUser) {
+      // Admin direct
+      if (spUser.role === 'admin') {
+        window.location.href = '/admin/index.html';
+        return;
+      }
+
+      const kycOk = truthyOk(spUser.kyc_status);
+      const contractOk = truthyOk(spUser.contract_signed);
+
+      // Dacă câmpul is_approved nu există în răspuns, considerăm OK (compatibil cu vechi)
+      const hasApprovedField = spUser.raw && Object.prototype.hasOwnProperty.call(spUser.raw, 'is_approved');
+      const approvedOk = !hasApprovedField || truthyOk(spUser.is_approved);
+
+      // Nu e activ / nu e aprobat / nu are KYC+contract -> KYC
+      if (spUser.status !== 'active' || !approvedOk || !kycOk || !contractOk) {
+        window.location.href = '/angajat/kyc/index.html';
+        return;
+      }
+
+      // OK -> dashboard
+      window.location.href = '/angajat/index.html';
+    }
+
     function loginCB(response) {
       form.dataset.loading = 'false';
       btn.disabled = false;
@@ -176,57 +245,9 @@
 
       errEl.style.display = 'none';
 
-      // Persistăm tot ce putem (compatibil vechi/nou)
-      try {
-        const u = response.user ? response.user : response;
-
-        localStorage.setItem('sp_user', JSON.stringify(u));
-        localStorage.setItem('sp_user_email', u.email || response.email || '');
-        localStorage.setItem('sp_user_role',  (u.role  || response.role  || '').toString());
-        localStorage.setItem('sp_user_status',(u.status|| response.status|| '').toString());
-      } catch (e) {
-        console.warn('localStorage error', e);
-      }
-
-      // ---- ROUTING CORECT PENTRU FLOW-UL TĂU ----
-      const u = response.user ? response.user : response;
-
-      const role = (u.role || '').toLowerCase();
-      const status = (u.status || '').toLowerCase();
-
-      // acceptă multiple formate pentru kyc/contract
-      const kycOk =
-        u.kyc_status === true ||
-        u.kyc_status === 'approved' ||
-        u.kyc_status === 'true' ||
-        u.kyc_status === 1;
-
-      const contractOk =
-        u.contract_signed === true ||
-        u.contract_signed === 'true' ||
-        u.contract_signed === 1 ||
-        u.contract_signed === 'signed';
-
-      const approvedOk =
-        !Object.prototype.hasOwnProperty.call(u, 'is_approved') ||
-        u.is_approved === true ||
-        u.is_approved === 'true' ||
-        u.is_approved === 1;
-
-      // Admin direct
-      if (role === 'admin') {
-        window.location.href = '/admin/index.html';
-        return;
-      }
-
-      // Nu e activ / nu e aprobat / nu are KYC+contract -> KYC dedicat
-      if (status !== 'active' || !approvedOk || !kycOk || !contractOk) {
-        window.location.href = '/angajat/kyc/index.html';
-        return;
-      }
-
-      // OK -> dashboard angajat
-      window.location.href = '/angajat/index.html';
+      const spUser = normalizeUserFromResponse(response);
+      persistSession(spUser);
+      routeAfterLogin(spUser);
     }
 
     window.loginCB = loginCB;
