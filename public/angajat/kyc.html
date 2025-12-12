@@ -1,561 +1,652 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-  <meta charset="UTF-8" />
-  <title>SuperParty - Formular KYC</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: radial-gradient(circle at top, #1d4ed8 0, #0f172a 45%, #020617 100%);
-      padding: 16px;
-      color: #e5e7eb;
-    }
-
-    .page {
-      width: 100%;
-      max-width: 900px;
-      background: rgba(15, 23, 42, 0.96);
-      border-radius: 18px;
-      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.8);
-      border: 1px solid rgba(148, 163, 184, 0.3);
-      display: grid;
-      grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
-      gap: 0;
-      overflow: hidden;
-    }
-
-    @media (max-width: 850px) {
-      .page {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-
-    .left {
-      padding: 22px 22px 18px 22px;
-      border-right: 1px solid rgba(31, 41, 55, 0.95);
-    }
-
-    .right {
-      padding: 22px 22px 18px 22px;
-      background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.35), rgba(15, 23, 42, 0.98));
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-
-    .logo-mark {
-      width: 36px;
-      height: 36px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 25% 0, #f97316, #db2777 40%, #1d4ed8 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 17px;
-      font-weight: 800;
-      color: #f9fafb;
-      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.9);
-    }
-
-    .logo-text-main {
-      font-size: 17px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .logo-text-sub {
-      font-size: 10px;
-      color: #9ca3af;
-      text-transform: uppercase;
-      letter-spacing: 0.18em;
-    }
-
-    .title {
-      font-size: 20px;
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
-
-    .subtitle {
-      font-size: 13px;
-      color: #9ca3af;
-      margin-bottom: 16px;
-    }
-
-    form {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      gap: 10px 14px;
-    }
-
-    @media (max-width: 600px) {
-      form {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-
-    .full-row {
-      grid-column: 1 / -1;
-    }
-
-    label {
-      font-size: 12px;
-      color: #e5e7eb;
-      margin-bottom: 4px;
-      display: block;
-    }
-
-    label span {
-      color: #f97373;
-    }
-
-    input[type="text"],
-    input[type="email"],
-    input[type="tel"],
-    input[type="file"],
-    textarea {
-      width: 100%;
-      border-radius: 10px;
-      border: 1px solid rgba(55, 65, 81, 0.9);
-      background: rgba(15, 23, 42, 0.95);
-      color: #e5e7eb;
-      padding: 7px 9px;
-      font-size: 13px;
-      outline: none;
-      transition: border 0.15s, box-shadow 0.15s, background 0.15s;
-    }
-
-    input[type="file"] {
-      padding: 6px 7px;
-      font-size: 12px;
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 60px;
-    }
-
-    input:focus,
-    textarea:focus {
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.4);
-      background: rgba(15, 23, 42, 0.98);
-    }
-
-    .inline-note {
-      font-size: 11px;
-      color: #9ca3af;
-      margin-top: 2px;
-    }
-
-    .checkbox-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      font-size: 12px;
-      color: #e5e7eb;
-    }
-
-    .checkbox-row input {
-      margin-top: 3px;
-    }
-
-    .checkbox-row a {
-      color: #93c5fd;
-      text-decoration: underline;
-      text-decoration-thickness: 1px;
-    }
-
-    .buttons-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .btn-primary,
-    .btn-secondary {
-      border-radius: 999px;
-      border: none;
-      padding: 9px 14px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      white-space: nowrap;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #22c55e, #16a34a);
-      color: #0f172a;
-    }
-
-    .btn-secondary {
-      background: rgba(15, 23, 42, 0.85);
-      color: #e5e7eb;
-      border: 1px solid rgba(148, 163, 184, 0.8);
-    }
-
-    .status-box {
-      border-radius: 14px;
-      border: 1px solid rgba(148, 163, 184, 0.65);
-      background: rgba(15, 23, 42, 0.9);
-      padding: 12px 12px 11px 12px;
-      font-size: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .status-label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: #93c5fd;
-    }
-
-    .status-main {
-      font-size: 13px;
-      font-weight: 500;
-    }
-
-    .status-sub {
-      font-size: 11px;
-      color: #9ca3af;
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: #facc15;
-      box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.28);
-      margin-right: 6px;
-    }
-
-    .status-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .steps-list {
-      list-style: none;
-      padding-left: 0;
-      margin-top: 10px;
-      font-size: 12px;
-      color: #e5e7eb;
-    }
-
-    .steps-list li {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 6px;
-    }
-
-    .steps-list li span {
-      margin-top: 1px;
-    }
-
-    .highlight {
-      color: #bfdbfe;
-      font-weight: 500;
-    }
-
-    .small-muted {
-      font-size: 11px;
-      color: #9ca3af;
-      margin-top: 8px;
-    }
-
-    .error-msg {
-      margin-top: 8px;
-      font-size: 12px;
-      color: #fecaca;
-      background: rgba(127, 29, 29, 0.6);
-      border-radius: 10px;
-      padding: 7px 9px;
-      display: none;
-    }
-
-    .success-msg {
-      margin-top: 8px;
-      font-size: 12px;
-      color: #bbf7d0;
-      background: rgba(22, 163, 74, 0.5);
-      border-radius: 10px;
-      padding: 7px 9px;
-      display: none;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>KYC Onboarding Final</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background:#0f172a; color:#f1f5f9; padding:40px; }
+  .kyc-container { max-width:1200px; margin:0 auto; background:rgba(15,23,42,0.9); border-radius:30px; padding:50px; border:2px solid #334155; }
+  .section { background:rgba(15,23,42,0.8); border:2px solid #334155; border-radius:20px; padding:30px; margin-bottom:30px; }
+  .contract-box { margin-top:20px; padding:20px; border-radius:16px; border:2px solid #475569; background:rgba(15,23,42,0.9); max-height:260px; overflow-y:auto; font-size:14px; line-height:1.6; display:none; }
+  .contract-trigger { margin-top:10px; padding:18px 20px; border-radius:16px; border:2px solid #475569; background:rgba(15,23,42,0.5); display:flex; justify-content:space-between; align-items:center; cursor:pointer; transition:0.2s; }
+  .contract-trigger:hover { border-color:#818cf8; background:rgba(15,23,42,0.8); }
+  .contract-trigger-title { font-weight:600; }
+  .contract-trigger-hint { font-size:13px; color:#94a3b8; }
+  .upload-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(250px,1fr)); gap:20px; }
+  .upload-card { background:rgba(30,41,59,0.6); border:2px dashed #475569; border-radius:16px; padding:30px; text-align:center; cursor:pointer; transition:0.3s; }
+  .upload-card:hover { border-color:#818cf8; background:rgba(30,41,59,0.8); }
+  .upload-card input { display:none; }
+  .driver-section { display:none; margin-top:20px; padding-top:20px; border-top:2px solid #334155; }
+  .driver-section.show { display:block; }
+  .checkbox-large { display:flex; gap:15px; align-items:center; background:rgba(30,41,59,0.6); padding:20px; border-radius:16px; border:2px solid #475569; cursor:pointer; }
+  #aiDataBox { background:rgba(34,197,94,0.15); color:#4ade80; border:2px solid rgba(34,197,94,0.5); padding:20px; border-radius:16px; margin-top:20px; display:none; }
+  #kycWarnings { background:rgba(251,191,36,0.15); border:2px solid rgba(251,191,36,0.5); color:#facc15; padding:20px; border-radius:16px; margin-top:20px; display:none; }
+  .btn { width:100%; padding:18px; background:linear-gradient(135deg,#667eea,#764ba2); border-radius:9999px; color:white; font-size:18px; margin-top:20px; cursor:pointer; border:none; }
+  .btn:hover { transform:scale(1.02); }
+  .ai-fields { margin-top:15px; border-radius:16px; border:1px solid #475569; background:rgba(15,23,42,0.6); padding:16px; }
+  .ai-field-row { display:flex; justify-content:space-between; padding:6px 0; font-size:14px; border-bottom:1px dashed rgba(148,163,184,0.4); }
+  .ai-field-row:last-child { border-bottom:none; }
+  .ai-field-row .label { color:#94a3b8; }
+  .ai-field-row .value { font-weight:600; color:#e5e7eb; }
+</style>
 </head>
 <body>
-  <div class="page">
-    <!-- COL STÂNGA: FORMULAR KYC -->
-    <section class="left">
-      <div class="logo">
-        <div class="logo-mark">SP</div>
-        <div>
-          <div class="logo-text-main">SuperParty</div>
-          <div class="logo-text-sub">Formular KYC</div>
-        </div>
-      </div>
+<div class="kyc-container">
+  <h1 style="font-size:42px; margin-bottom:30px;">🪪 KYC Onboarding – Varianta Finală</h1>
 
-      <h1 class="title">Date identitate &amp; contract</h1>
-      <p class="subtitle">
-        Completează formularul de mai jos cu date reale. Informațiile sunt folosite pentru contract, plăți și verificări interne.
-      </p>
+  <!-- Documente Identitate -->
+  <div class="section">
+    <h2>👤 Documente de Identitate</h2>
+    <p style="color:#94a3b8;">1. Încarcă o poză clară a buletinului (față). După ce datele sunt extrase, contractul apare mai jos, completat automat.</p>
+    <div class="upload-grid">
+      <label class="upload-card" for="idFront">
+        <div style="font-size:48px;">🪪</div>
+        <strong>Buletin – Față</strong>
+        <input id="idFront" type="file" accept="image/*,.pdf">
+      </label>
+      <label class="upload-card" for="idBack">
+        <div style="font-size:48px;">🪪</div>
+        <strong>Buletin – Verso</strong>
+        <input id="idBack" type="file" accept="image/*,.pdf">
+      </label>
+      <label class="upload-card" for="selfie">
+        <div style="font-size:48px;">🤳</div>
+        <strong>Selfie cu CI</strong>
+        <input id="selfie" type="file" accept="image/*">
+      </label>
+    </div>
 
-      <form id="kycForm" enctype="multipart/form-data">
-        <div class="full-row">
-          <label for="fullName">Nume complet <span>*</span></label>
-          <input id="fullName" name="fullName" type="text" placeholder="ex: Popescu Andrei-Mihai" required />
-          <p class="inline-note">Trebuie să coincidă cu numele din actul de identitate.</p>
-        </div>
-
-        <div>
-          <label for="email">Email <span>*</span></label>
-          <input id="email" name="email" type="email" placeholder="emailul tău" required />
-        </div>
-
-        <div>
-          <label for="phone">Telefon <span>*</span></label>
-          <input id="phone" name="phone" type="tel" placeholder="ex: 07xxxxxxxx" required />
-        </div>
-
-        <div>
-          <label for="cnp">CNP <span>*</span></label>
-          <input id="cnp" name="cnp" type="text" placeholder="13 cifre" required />
-        </div>
-
-        <div>
-          <label for="iban">IBAN pentru plată <span>*</span></label>
-          <input id="iban" name="iban" type="text" placeholder="ex: RO49AAAA1B31007593840000" required />
-        </div>
-
-        <div class="full-row">
-          <label for="address">Adresă completă <span>*</span></label>
-          <textarea id="address" name="address" placeholder="Stradă, număr, bloc/scară, oraș, județ" required></textarea>
-        </div>
-
-        <div class="full-row">
-          <label>Poza CI față <span>*</span></label>
-          <input id="idFront" name="idFront" type="file" accept="image/*,.pdf" required />
-          <p class="inline-note">Se acceptă fotografie clară sau scan/PDF.</p>
-        </div>
-
-        <div class="full-row">
-          <label>Poza CI verso <span>*</span></label>
-          <input id="idBack" name="idBack" type="file" accept="image/*,.pdf" required />
-        </div>
-
-        <div class="full-row">
-          <label>Selfie cu CI în mână <span>*</span></label>
-          <input id="selfie" name="selfie" type="file" accept="image/*" required />
-          <p class="inline-note">Fața și actul trebuie să fie clar vizibile în poză.</p>
-        </div>
-
-        <div class="full-row">
-          <label>Contract semnat (poză sau PDF) <span>*</span></label>
-          <input id="contractSigned" name="contractSigned" type="file" accept="image/*,.pdf" required />
-        </div>
-
-        <div class="full-row">
-          <div class="checkbox-row">
-            <input id="acceptContract" type="checkbox" required />
-            <label for="acceptContract">
-              Confirm că am citit și sunt de acord cu <a href="#" onclick="return false;">contractul SuperParty</a> și
-              că datele trimise sunt reale.
-            </label>
-          </div>
-        </div>
-
-        <div class="full-row">
-          <div class="buttons-row">
-            <button type="submit" class="btn-primary" id="submitBtn">Trimite KYC pentru verificare</button>
-            <button type="button" class="btn-secondary" id="backBtn">Înapoi la status cont</button>
-          </div>
-
-          <div id="errorBox" class="error-msg"></div>
-          <div id="successBox" class="success-msg"></div>
-        </div>
-      </form>
-    </section>
-
-    <!-- COL DREAPTA: EXPLICAȚII + STATUS -->
-    <section class="right">
-      <div class="status-box">
-        <div class="status-label">Status KYC</div>
-        <div class="status-row">
-          <div class="status-dot"></div>
-          <div class="status-main" id="statusMainText">În curs de completare</div>
-        </div>
-        <div class="status-sub" id="statusSubText">
-          Completează formularul din stânga, încarcă pozele cerute și semnează contractul. După trimitere, KYC-ul intră la verificare.
-        </div>
-      </div>
-
-      <ul class="steps-list">
-        <li>
-          <span>1.</span>
-          <span>Verifică să fie corecte <span class="highlight">CNP-ul, IBAN-ul și adresa</span>. Acestea vor apărea în contract și la plată.</span>
-        </li>
-        <li>
-          <span>2.</span>
-          <span>Pozele cu actul trebuie să fie <span class="highlight">clare, nemodificate</span> și făcute direct de tine.</span>
-        </li>
-        <li>
-          <span>3.</span>
-          <span>Selfie-ul cu actul în mână trebuie să fie făcut special pentru SuperParty (nu poze vechi).</span>
-        </li>
-        <li>
-          <span>4.</span>
-          <span>După ce apeși <span class="highlight">Trimite KYC</span>, un coordonator verifică manual datele.</span>
-        </li>
-      </ul>
-
-      <p class="small-muted">
-        După aprobare, <span class="highlight">statusul KYC</span> va deveni <span class="highlight">"approved"</span>, iar contul tău
-        va putea fi activat pentru evenimente. Vei vedea automat schimbarea în pagina de <span class="highlight">"Cont în verificare"</span>.
-      </p>
-    </section>
+    <div id="aiDataBox"></div>
+    <div id="kycWarnings"></div>
   </div>
 
-  <script>
-    (function () {
-      const BACKEND_BASE_URL = "https://superparty-ai-backend-production.up.railway.app";
+  <!-- Date extrase automat din CI -->
+  <div class="section" id="aiFieldsSection" style="display:none;">
+    <h2>🔍 Date extrase automat din buletin</h2>
+    <p style="color:#94a3b8;">2. Datele sunt extrase automat. Confirmă dacă sunt corecte.</p>
+    <div class="ai-fields">
+      <div class="ai-field-row"><span class="label">Nume complet</span><span class="value" id="aiName"></span></div>
+      <div class="ai-field-row"><span class="label">CNP</span><span class="value" id="aiCnp"></span></div>
+      <div class="ai-field-row"><span class="label">Sex</span><span class="value" id="aiGender"></span></div>
+      <div class="ai-field-row"><span class="label">Adresă</span><span class="value" id="aiAddress"></span></div>
+      <div class="ai-field-row"><span class="label">Seria CI</span><span class="value" id="aiSeries"></span></div>
+      <div class="ai-field-row"><span class="label">Număr CI</span><span class="value" id="aiNumber"></span></div>
+      <div class="ai-field-row"><span class="label">Emis la</span><span class="value" id="aiIssued"></span></div>
+      <div class="ai-field-row"><span class="label">Expiră la</span><span class="value" id="aiExpire"></span></div>
+    </div>
 
-      const emailLS = localStorage.getItem("userEmail") || "";
-      const fullNameLS = localStorage.getItem("userFullName") || "";
-      const kycStatusLS = (localStorage.getItem("userKycStatus") || "").toLowerCase();
-      const statusLS = (localStorage.getItem("userStatus") || "").toLowerCase();
+    <div style="margin-top:15px;">
+      <label class="checkbox-large" style="margin-bottom:10px;">
+        <input type="radio" name="aiDataOk" id="aiDataOk">
+        <span>Datele sunt corecte și corespund buletinului meu.</span>
+      </label>
+      <label class="checkbox-large">
+        <input type="radio" name="aiDataOk" id="aiDataNotOk">
+        <span>Datele NU sunt corecte sau nu se văd clar.</span>
+      </label>
+    </div>
 
-      // Dacă nu e logat, scoatem utilizatorul afară
-      if (!emailLS) {
-        window.location.replace("/login.html");
-        return;
-      }
+    <div id="aiFixBox" style="display:none; margin-top:15px; padding:16px; border-radius:16px; border:2px dashed #f97316; background:rgba(248,171,109,0.1); font-size:14px;">
+      <p style="margin-bottom:10px;">Te rugăm să refaci poza buletinului sau să reanalizezi poza curentă:</p>
+      <button type="button" class="btn" id="retryPhotoBtn" style="width:auto; padding:10px 16px; font-size:14px; margin-right:10px;">📷 Refă poza</button>
+      <button type="button" class="btn" id="reanalyseBtn" style="width:auto; padding:10px 16px; font-size:14px; background:linear-gradient(135deg,#22c55e,#16a34a);">🔁 Reanalizează</button>
+    </div>
+  </div>
 
-      // Dacă deja e approved + activ, nu are ce căuta în KYC -> du-l în dashboard
-      if (statusLS === "active" && kycStatusLS === "approved") {
-        window.location.replace("/angajat/index.html");
-        return;
-      }
+  <!-- Contract -->
+  <div class="section" id="contractSection" style="display:none;">
+    <h2>📄 Contract de colaborare</h2>
+    <p style="color:#94a3b8; margin-bottom:10px;">3. Apasă pe câmpul de mai jos pentru a deschide și citi contractul completat automat.</p>
 
-      // Pre-populare formular
-      const fullNameInput = document.getElementById("fullName");
-      const emailInput = document.getElementById("email");
-      if (fullNameLS && fullNameInput) fullNameInput.value = fullNameLS;
-      if (emailLS && emailInput) emailInput.value = emailLS;
+    <div style="margin:12px 0 6px; padding:14px 16px; border-radius:14px; border:1px solid #334155; background:rgba(2,6,23,0.35); color:#cbd5e1; font-size:13px;">
+      ⏳ Acest contract este valabil <strong>din data de 15 (ora 00:00)</strong> până în <strong>data de 14 (ora 23:59)</strong> a lunii următoare.
+      <div style="margin-top:6px; color:#94a3b8;">Perioada curentă: <span id="contractPeriodFrom">—</span> → <span id="contractPeriodTo">—</span></div>
+    </div>
 
-      // Ajustăm status text în dreapta dacă deja există un KYC trimis
-      const statusMainText = document.getElementById("statusMainText");
-      const statusSubText = document.getElementById("statusSubText");
+    <div class="contract-trigger" id="contractTrigger">
+      <div>
+        <div class="contract-trigger-title">Contract de colaborare SuperParty</div>
+        <div class="contract-trigger-hint">Apasă pentru a deschide și a citi clauzele contractului.</div>
+      </div>
+      <div id="contractTriggerIcon">▼</div>
+    </div>
 
-      if (kycStatusLS === "pending") {
-        if (statusMainText) statusMainText.textContent = "KYC trimis - în curs de verificare";
-        if (statusSubText) statusSubText.textContent =
-          "Am primit datele și documentele tale. Un coordonator SuperParty verifică manual KYC-ul. Vei vedea statusul actualizat în pagina de 'Cont în verificare'.";
-      } else if (kycStatusLS === "rejected") {
-        if (statusMainText) statusMainText.textContent = "KYC respins - este nevoie de refacere";
-        if (statusSubText) statusSubText.textContent =
-          "Anteriorul KYC a fost respins. Te rugăm să refaci pozele sau datele conform instrucțiunilor primite și să retrimiți formularul.";
-      }
+    <div class="contract-box" id="contractBox">
+      <h3>Date colaborator (auto-completate din buletin)</h3>
+      <p><strong>Nume:</strong> <span id="cName1"></span></p>
+      <p><strong>CNP:</strong> <span id="cCnp1"></span></p>
+      <p><strong>Adresă:</strong> <span id="cAddress1"></span></p>
+      <p><strong>Seria CI:</strong> <span id="cSeries1"></span></p>
+      <p><strong>Număr CI:</strong> <span id="cNumber1"></span></p>
+      <p><strong>Emis la:</strong> <span id="cIssued1"></span></p>
+      <p><strong>Expiră la:</strong> <span id="cExpire1"></span></p>
 
-      const form = document.getElementById("kycForm");
-      const submitBtn = document.getElementById("submitBtn");
-      const backBtn = document.getElementById("backBtn");
-      const errorBox = document.getElementById("errorBox");
-      const successBox = document.getElementById("successBox");
+      <hr style="border-color:#334155; margin:16px 0;">
+      <p style="white-space:pre-line; font-size:14px; color:#f1f5f9;">
+CONTRACT DE COLABORARE ARTISTICĂ ȘI TEHNICĂ
 
-      function showError(msg) {
-        if (!errorBox) return;
-        errorBox.textContent = msg;
-        errorBox.style.display = "block";
-        if (successBox) successBox.style.display = "none";
-      }
+I. PĂRȚILE CONTRACTANTE
+Prezentul contract se încheie între:
 
-      function showSuccess(msg) {
-        if (!successBox) return;
-        successBox.textContent = msg;
-        successBox.style.display = "block";
-        if (errorBox) errorBox.style.display = "none";
-      }
+BENEFICIAR
+Micul Om Mare SRL, CUI 42279262, cu sediul în Strada Stolnicul Vasile Nr. 17, Bl. 42, Scara 2, Etaj 1, Apartament 19, reprezentată legal prin Ursache Andrei, denumită în continuare BENEFICIAR,
 
-      if (backBtn) {
-        backBtn.addEventListener("click", function () {
-          window.location.href = "/angajat/pending.html";
-        });
-      }
+și
 
-      if (form) {
-        form.addEventListener("submit", async function (e) {
-          e.preventDefault();
-          if (errorBox) errorBox.style.display = "none";
-          if (successBox) successBox.style.display = "none";
+COLABORATOR
+<span id="cName2"></span>, CNP <span id="cCnp2"></span>, domiciliat în <span id="cAddress2"></span>, denumit în continuare COLABORATOR.
 
-          if (!submitBtn) return;
-          submitBtn.disabled = true;
-          submitBtn.textContent = "Se trimite KYC...";
+În casul în care COLABORATORUL este minor, prezentul contract se semnează și de părintele sau tutorele legal.
 
-          try {
-            const formData = new FormData(form);
+II. OBIECTUL CONTRACTULUI
+Art. 1
+Obiectul contractului îl constituie prestarea serviciilor artistice și tehnice pentru evenimente, incluzând animație, mascote, decoruri, baloane, vată de zahăr, popcorn, operare echipamente etc.
 
-            // ne asigurăm că emailul & numele din localStorage sunt trimise
-            formData.set("email", emailInput.value || emailLS);
-            formData.set("fullName", fullNameInput.value || fullNameLS);
-            formData.set("status", statusLS || "pending_admin");
-            formData.set("kyc_status", kycStatusLS || "none");
+Art. 2
+Toți clienții și evenimentele aparțin exclusiv BENEFICIARULUI.
 
-            const response = await fetch(BACKEND_BASE_URL + "/api/kyc/submit", {
-              method: "POST",
-              body: formData
-            });
+III. NATURA COLABORĂRII
+Art. 3
+Contract de colaborare / drepturi de autor, fără program, subordonare sau salariu.
 
-            const data = await response.json().catch(() => null);
+IV. EXCLUSIVITATE
+Art. 4
+Pe durata contractului, COLABORATORUL prestează exclusiv pentru BENEFICIAR.
 
-            if (!response.ok) {
-              const msg = (data && data.error) || "Nu am putut trimite KYC-ul. Încearcă din nou.";
-              throw new Error(msg);
-            }
+V. ÎNCĂLCAREA EXCLUSIVITĂȚII
+Art. 5–6
+Încălcarea exclusivității se sancționează cu penalități minime de 200 EUR / eveniment.
 
-            if (!data || data.success === false) {
-              const msg = (data && data.error) || "A apărut o problemă la trimiterea KYC-ului.";
-              throw new Error(msg);
-            }
+VI. MANDAT DE ÎNCASARE
+Art. 7
+Sumele încasate se predau BENEFICIARULUI în maximum 24h.
 
-            // Dacă totul e ok, marcăm KYC ca pending în localStorage și îl ducem în pending.html
-            try {
-              localStorage.setItem("userKycStatus", "pending");
-            } catch (e) {}
+VII. REMUNERAȚIE
+Art. 8–9
+Remunerație variabilă, calculată automat prin aplicație și sisteme AI.
 
-            showSuccess("KYC trimis cu succes. Vei fi redirecționat către pagina de status cont.");
-            setTimeout(function () {
-              window.location.href = "/angajat/pending.html";
-            }, 1200);
-          } catch (err) {
-            showError(err.message || "Nu am putut trimite KYC-ul. Verifică datele și pozele și încearcă din nou.");
-          } finally {
-            submitBtn.disabled = false;
-            submitBtn.textContent = "Trimite KYC pentru verificare";
-          }
-        });
-      }
-    })();
-  </script>
+VIII. RĂSPUNDERE FAȚĂ DE CLIENT
+Art. 10
+COLABORATORUL răspunde pentru sumele neachitate din culpa sa.
+
+IX. RECIZITĂ, COSTUME ȘI ECHIPAMENTE
+Art. 11–12
+Recuzita se predă pe inventar; deteriorările majore se plătesc la valoare + 300 EUR.
+
+X. AUTOVEHICUL
+Art. 13–14
+Obligații de preluare/predare; curățarea profesională se taxează cu 150 EUR.
+
+XI. DREPTURI DE IMAGINE
+Art. 15
+BENEFICIARUL poate folosi fotografii/video în scop promoțional.
+
+XII. NECONCURENȚĂ POST-CONTRACT
+Art. 16
+Timp de 12 luni după încetare, COLABORATORUL nu poate presta servicii similare pentru clienții BENEFICIARULUI.
+
+XIII. APLICAȚIA ȘI SISTEMELE AI
+Art. 17
+COLABORATORUL acceptă utilizarea aplicației și a sistemelor AI, regulile putând fi actualizate.
+
+XIV. GDPR
+Art. 18
+Acceptarea prelucrării datelor personale.
+
+XV. REZILIERE
+Art. 19
+BENEFICIARUL poate rezilia imediat pentru încălcări grave.
+
+XVI. DISPOZIȚII FINALE
+Art. 20–22
+Guvernare: legea română. Semnare inclusiv electronică. Litigii: instanțele din România.
+
+SEMNĂTURI
+BENEFICIAR: ___________________________
+COLABORATOR: ___________________________
+PĂRINTE/TUTORE (dacă este cazul): ___________________________
+</p>
+    </div>
+
+    <br>
+    <label class="checkbox-large">
+      <input type="checkbox" id="contractSignCheck" disabled>
+      <span>Confirm că am citit integral contractul afișat mai sus, îl înțeleg, iar prin bifarea acestei căsuțe îmi exprim acordul ferm și neechivoc cu toate condițiile acestuia.</span>
+    </label>
+  </div>
+
+  <!-- Minor -->
+  <div class="section" id="minorSection" style="display:none;">
+    <h2>🧒 Acord parental necesar</h2>
+    <p style="color:#facc15; margin-bottom:10px;">Observăm că ești minor. Pentru a putea semna contractul de colaborare, avem nevoie de acordul scris al părintelui sau tutorelui legal.</p>
+
+    <div id="parentConsentStatus" style="display:none; margin:10px 0 14px; padding:14px 16px; border-radius:14px; border:1px solid rgba(34,197,94,0.4); background:rgba(34,197,94,0.12); color:#86efac; font-size:13px;"></div>
+
+    <div class="upload-grid" id="parentConsentUploadWrap">
+      <label class="upload-card" for="parentConsent">
+        <div style="font-size:48px;">📄</div>
+        <strong>Acord parental semnat</strong>
+        <div style="font-size:12px; color:#94a3b8; margin-top:6px;">Încarcă poză sau PDF cu acordul</div>
+        <input id="parentConsent" type="file" accept="image/*,.pdf">
+      </label>
+    </div>
+
+    <p id="parentConsentHint" style="color:#94a3b8; margin-top:12px; font-size:13px;">✅ Bifa de semnătură a contractului va fi disponibilă doar după ce există acord parental în sistem.</p>
+  </div>
+
+  <!-- Șofer -->
+  <div class="section">
+    <h2>🚗 Opțional – Documente Șofer</h2>
+    <label class="checkbox-large"><input type="checkbox" id="driverCheck"> Doresc să fiu șofer</label>
+    <div id="driverDocs" class="driver-section">
+      <div style="margin:10px 0 14px; padding:14px 16px; border-radius:14px; border:1px solid #334155; background:rgba(2,6,23,0.35); color:#cbd5e1; font-size:13px;">
+        📌 Dacă ești șofer, <strong>cazierul se reîncarcă la fiecare 6 luni</strong>.
+        <div style="margin-top:6px; color:#94a3b8;">Status cazier: <span id="recordStatus">—</span></div>
+      </div>
+      <div class="upload-grid">
+        <label class="upload-card" for="license"><div style="font-size:48px;">🪪</div><strong>Permis</strong><input id="license" type="file" accept="image/*,.pdf"></label>
+        <label class="upload-card" for="record" id="recordCard"><div style="font-size:48px;">📄</div><strong>Cazier</strong><input id="record" type="file" accept="image/*,.pdf"></label>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn" id="submitBtn">🚀 Trimite KYC</button>
+</div>
+
+<script>
+/** CONFIG */
+const BACKEND_BASE_URL = "https://superparty-ai-backend-production.up.railway.app";
+
+/** LOGIN CHECK (ca în vechiul flow) */
+(function enforceLogin() {
+  const emailLS = localStorage.getItem("userEmail") || "";
+  if (!emailLS) {
+    window.location.replace("/login.html");
+    return;
+  }
+})();
+
+function toggleDriverSection(show){
+  const el = document.getElementById('driverDocs');
+  if (!el) return;
+  if (show) el.classList.add('show');
+  else el.classList.remove('show');
+  refreshDocRequirements();
+}
+
+function isMinorFromCnp(cnp){
+  if (!cnp || cnp.length < 13) return false;
+  const s = cnp[0];
+  let prefix;
+  if (s === '1' || s === '2') prefix = '19';
+  else if (s === '3' || s === '4') prefix = '18';
+  else if (s === '5' || s === '6') prefix = '20';
+  else return false;
+
+  const year = parseInt(prefix + cnp.substring(1,3), 10);
+  const month = parseInt(cnp.substring(3,5), 10) - 1;
+  const day = parseInt(cnp.substring(5,7), 10);
+  const dob = new Date(year, month, day);
+  if (isNaN(dob.getTime())) return false;
+
+  const today = new Date();
+  let age = today.getFullYear() - year;
+  const m = today.getMonth() - month;
+  if (m < 0 || (m === 0 && today.getDate() < day)) age--;
+  return age < 18;
+}
+
+function addMonths(date, months){
+  const d = new Date(date);
+  const day = d.getDate();
+  d.setMonth(d.getMonth() + months);
+  if (d.getDate() !== day) d.setDate(0);
+  return d;
+}
+
+function isRecordValid(recordUploadedAtISO){
+  if (!recordUploadedAtISO) return false;
+  const uploadedAt = new Date(recordUploadedAtISO);
+  const expiresAt = addMonths(uploadedAt, 6);
+  return new Date() < expiresAt;
+}
+
+/** Contract period 15 -> 14 */
+function updateContractPeriod(){
+  const fromEl = document.getElementById('contractPeriodFrom');
+  const toEl = document.getElementById('contractPeriodTo');
+  if (!fromEl || !toEl) return;
+
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = now.getMonth();
+
+  // dacă azi e înainte de 15, perioada e 15 luna trecută -> 14 luna curentă
+  const isBefore15 = now.getDate() < 15;
+
+  const from = isBefore15 ? new Date(y, m - 1, 15, 0, 0, 0) : new Date(y, m, 15, 0, 0, 0);
+  const to   = isBefore15 ? new Date(y, m, 14, 23, 59, 59) : new Date(y, m + 1, 14, 23, 59, 59);
+
+  fromEl.textContent = from.toLocaleDateString('ro-RO');
+  toEl.textContent = to.toLocaleDateString('ro-RO');
+}
+updateContractPeriod();
+
+/**
+ * (DEMO) status documente existente în sistem.
+ * Când vrei, îl legăm din backend: GET /api/kyc/status.
+ */
+let existingDocs = {
+  parentConsent: null, // { url, uploadedAt }
+  driver: { record: null } // { url, uploadedAt }
+};
+
+function refreshDocRequirements(){
+  const signCheck = document.getElementById('contractSignCheck');
+  const parentConsentStatus = document.getElementById('parentConsentStatus');
+  const parentConsentUploadWrap = document.getElementById('parentConsentUploadWrap');
+  const minorSection = document.getElementById('minorSection');
+
+  const isMinorVisible = minorSection && minorSection.style.display !== 'none';
+
+  if (isMinorVisible) {
+    if (existingDocs.parentConsent && existingDocs.parentConsent.uploadedAt) {
+      parentConsentStatus.style.display = 'block';
+      parentConsentStatus.textContent =
+        `✅ Acord parental deja încărcat în sistem (data: ${new Date(existingDocs.parentConsent.uploadedAt).toLocaleDateString('ro-RO')}).`;
+      parentConsentUploadWrap.style.display = 'none';
+      if (signCheck) signCheck.disabled = false;
+    } else {
+      parentConsentStatus.style.display = 'none';
+      parentConsentUploadWrap.style.display = 'grid';
+      if (signCheck) signCheck.disabled = true;
+    }
+  }
+
+  const driverCheck = document.getElementById('driverCheck');
+  const recordInput = document.getElementById('record');
+  const recordCard = document.getElementById('recordCard');
+  const recordStatus = document.getElementById('recordStatus');
+  const wantsDriver = !!(driverCheck && driverCheck.checked);
+
+  if (wantsDriver) {
+    const rec = existingDocs.driver.record;
+    const valid = rec && isRecordValid(rec.uploadedAt);
+
+    if (valid) {
+      if (recordStatus) recordStatus.textContent =
+        `VALID (încărcat: ${new Date(rec.uploadedAt).toLocaleDateString('ro-RO')}, reînnoire la 6 luni)`;
+      if (recordInput) recordInput.required = false;
+      if (recordCard) recordCard.style.opacity = '0.55';
+    } else {
+      if (recordStatus) recordStatus.textContent = rec
+        ? `EXPIRAT (încărcat: ${new Date(rec.uploadedAt).toLocaleDateString('ro-RO')}) – trebuie reîncărcat`
+        : 'LIPSEȘTE – trebuie încărcat';
+      if (recordInput) recordInput.required = true;
+      if (recordCard) recordCard.style.opacity = '1';
+    }
+  } else {
+    if (recordStatus) recordStatus.textContent = '—';
+    if (recordInput) recordInput.required = false;
+    if (recordCard) recordCard.style.opacity = '1';
+  }
+}
+
+const idFrontInput = document.getElementById('idFront');
+const idBackInput = document.getElementById('idBack');
+const selfieInput = document.getElementById('selfie');
+const aiBox = document.getElementById('aiDataBox');
+const warnBox = document.getElementById('kycWarnings');
+const contractSection = document.getElementById('contractSection');
+const aiFieldsSection = document.getElementById('aiFieldsSection');
+const okRadio = document.getElementById('aiDataOk');
+const notOkRadio = document.getElementById('aiDataNotOk');
+const fixBoxEl = document.getElementById('aiFixBox');
+const reanalyseBtn = document.getElementById('reanalyseBtn');
+const retryPhotoBtn = document.getElementById('retryPhotoBtn');
+const minorSectionEl = document.getElementById('minorSection');
+
+let lastIdFrontFile = null;
+
+/**
+ * IMPORTANT:
+ * Aici ai “extract” DEMO ca să funcționeze imediat UI-ul.
+ * Când ai endpoint-ul real /api/kyc/extract-id, îl înlocuim.
+ */
+async function processIdFront(file) {
+  if (!file) return;
+
+  lastIdFrontFile = file;
+
+  const fakeAiResponse = {
+    success: true,
+    data: {
+      firstName: 'ANDREI',
+      lastName: 'URSACHE',
+      gender: 'M',
+      cnp: '1950101123456',
+      address: 'București, Str. Exemplu 10',
+      series: 'XX',
+      number: '123456',
+      issuedAt: '2021-05-10',
+      expiresAt: '2031-05-10'
+    },
+    missingFields: [],
+    warnings: []
+  };
+
+  const d = fakeAiResponse.data;
+
+  document.getElementById('aiName').textContent = d.firstName + ' ' + d.lastName;
+  document.getElementById('aiCnp').textContent = d.cnp;
+  document.getElementById('aiGender').textContent = d.gender === 'F' ? 'Femeie' : 'Bărbat';
+  document.getElementById('aiAddress').textContent = d.address;
+  document.getElementById('aiSeries').textContent = d.series;
+  document.getElementById('aiNumber').textContent = d.number;
+  document.getElementById('aiIssued').textContent = d.issuedAt;
+  document.getElementById('aiExpire').textContent = d.expiresAt;
+
+  // Contract fields set 1
+  document.getElementById('cName1').textContent = d.firstName + ' ' + d.lastName;
+  document.getElementById('cCnp1').textContent = d.cnp;
+  document.getElementById('cAddress1').textContent = d.address;
+  document.getElementById('cSeries1').textContent = d.series;
+  document.getElementById('cNumber1').textContent = d.number;
+  document.getElementById('cIssued1').textContent = d.issuedAt;
+  document.getElementById('cExpire1').textContent = d.expiresAt;
+
+  // Contract fields set 2 (în textul contractului)
+  document.getElementById('cName2').textContent = d.firstName + ' ' + d.lastName;
+  document.getElementById('cCnp2').textContent = d.cnp;
+  document.getElementById('cAddress2').textContent = d.address;
+
+  aiBox.style.display = 'block';
+  aiBox.innerHTML = `✅ Datele principale au fost extrase automat din buletin. Verifică mai jos dacă sunt corecte.`;
+
+  if (fakeAiResponse.warnings.length || fakeAiResponse.missingFields.length) {
+    warnBox.style.display = 'block';
+    warnBox.innerHTML = `⚠️ AI-ul nu a putut citi clar: ${fakeAiResponse.missingFields.join(', ')}`;
+  } else {
+    warnBox.style.display = 'none';
+  }
+
+  if (aiFieldsSection) aiFieldsSection.style.display = 'block';
+  if (contractSection) contractSection.style.display = 'block';
+
+  if (okRadio) okRadio.checked = false;
+  if (notOkRadio) notOkRadio.checked = false;
+  if (fixBoxEl) fixBoxEl.style.display = 'none';
+
+  const signCheck = document.getElementById('contractSignCheck');
+  const isMinor = isMinorFromCnp(d.cnp);
+
+  if (isMinor) {
+    if (minorSectionEl) minorSectionEl.style.display = 'block';
+    if (signCheck) signCheck.disabled = true; // rămâne blocat până există acord parental
+  } else {
+    if (minorSectionEl) minorSectionEl.style.display = 'none';
+    if (signCheck) signCheck.disabled = false;
+  }
+
+  refreshDocRequirements();
+
+  if (aiFieldsSection) {
+    aiFieldsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+if (idFrontInput) {
+  idFrontInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    await processIdFront(file);
+  });
+}
+
+if (okRadio && notOkRadio && fixBoxEl) {
+  okRadio.addEventListener('change', () => {
+    if (okRadio.checked) fixBoxEl.style.display = 'none';
+  });
+  notOkRadio.addEventListener('change', () => {
+    if (notOkRadio.checked) fixBoxEl.style.display = 'block';
+  });
+}
+
+if (reanalyseBtn) {
+  reanalyseBtn.addEventListener('click', async () => {
+    if (!lastIdFrontFile) {
+      alert('Nu există nicio poză salvată. Te rugăm să încarci din nou buletinul.');
+      return;
+    }
+    await processIdFront(lastIdFrontFile);
+  });
+}
+
+if (retryPhotoBtn) {
+  retryPhotoBtn.addEventListener('click', () => {
+    if (idFrontInput) idFrontInput.click();
+  });
+}
+
+const parentConsentInput = document.getElementById('parentConsent');
+if (parentConsentInput) {
+  parentConsentInput.addEventListener('change', () => {
+    if (parentConsentInput.files && parentConsentInput.files[0]) {
+      existingDocs.parentConsent = { url: 'uploaded', uploadedAt: new Date().toISOString() };
+      refreshDocRequirements();
+    }
+  });
+}
+
+const driverCheck = document.getElementById('driverCheck');
+if (driverCheck) {
+  driverCheck.addEventListener('change', () => toggleDriverSection(driverCheck.checked));
+}
+
+const recordInputEl = document.getElementById('record');
+if (recordInputEl) {
+  recordInputEl.addEventListener('change', () => {
+    if (recordInputEl.files && recordInputEl.files[0]) {
+      existingDocs.driver.record = { url: 'uploaded', uploadedAt: new Date().toISOString() };
+      refreshDocRequirements();
+    }
+  });
+}
+
+const contractTrigger = document.getElementById('contractTrigger');
+const contractBoxEl = document.getElementById('contractBox');
+const contractTriggerIcon = document.getElementById('contractTriggerIcon');
+if (contractTrigger && contractBoxEl && contractTriggerIcon) {
+  contractTrigger.addEventListener('click', () => {
+    const isOpen = contractBoxEl.style.display === 'block';
+    contractBoxEl.style.display = isOpen ? 'none' : 'block';
+    contractTriggerIcon.textContent = isOpen ? '▼' : '▲';
+  });
+}
+
+/** SUBMIT REAL: POST /api/kyc/submit (multipart) */
+async function submitKYC() {
+  const emailLS = localStorage.getItem("userEmail") || "";
+  if (!emailLS) { window.location.replace("/login.html"); return; }
+
+  const signCheck = document.getElementById("contractSignCheck");
+  if (!signCheck || signCheck.disabled || !signCheck.checked) {
+    alert("Trebuie să citești contractul și să bifezi acordul (și acord parental dacă ești minor).");
+    return;
+  }
+
+  const idFront = idFrontInput?.files?.[0];
+  const idBack  = idBackInput?.files?.[0];
+  const selfie  = selfieInput?.files?.[0];
+  if (!idFront || !idBack || !selfie) {
+    alert("Încarcă CI față, CI verso și Selfie cu CI.");
+    return;
+  }
+
+  const cnp = (document.getElementById("aiCnp")?.textContent || "").trim();
+  const isMinor = isMinorFromCnp(cnp);
+  const parentConsentFile = document.getElementById("parentConsent")?.files?.[0];
+  const hasParentConsentInSystem = !!(existingDocs?.parentConsent?.uploadedAt);
+
+  if (isMinor && !hasParentConsentInSystem && !parentConsentFile) {
+    alert("Ești minor: trebuie încărcat acordul parental ca să poți trimite KYC.");
+    return;
+  }
+
+  const wantsDriver = !!driverCheck?.checked;
+  const licenseFile = document.getElementById("license")?.files?.[0];
+  const recordFile  = document.getElementById("record")?.files?.[0];
+
+  const recordValidInSystem = !!(existingDocs?.driver?.record?.uploadedAt) && isRecordValid(existingDocs.driver.record.uploadedAt);
+  if (wantsDriver && !recordValidInSystem && !recordFile) {
+    alert("Ești șofer: cazierul este obligatoriu (lipsește sau e expirat).");
+    return;
+  }
+
+  const fd = new FormData();
+  fd.set("email", emailLS);
+  fd.set("fullName", (document.getElementById("aiName")?.textContent || "").trim() || localStorage.getItem("userFullName") || "");
+  fd.set("cnp", cnp);
+  fd.set("address", (document.getElementById("aiAddress")?.textContent || "").trim());
+
+  fd.append("idFront", idFront);
+  fd.append("idBack", idBack);
+  fd.append("selfie", selfie);
+
+  if (isMinor && parentConsentFile) fd.append("parentConsent", parentConsentFile);
+
+  fd.set("isDriver", wantsDriver ? "1" : "0");
+  if (wantsDriver && licenseFile) fd.append("license", licenseFile);
+  if (wantsDriver && recordFile)  fd.append("record", recordFile);
+
+  fd.set("aiDataConfirmed", document.getElementById("aiDataOk")?.checked ? "1" : "0");
+
+  const btn = document.getElementById("submitBtn");
+  if (btn) { btn.disabled = true; btn.textContent = "Se trimite KYC..."; }
+
+  try {
+    const res = await fetch(`${BACKEND_BASE_URL}/api/kyc/submit`, {
+      method: "POST",
+      body: fd
+    });
+
+    const data = await res.json().catch(() => null);
+    if (!res.ok || !data || data.success === false) {
+      throw new Error((data && data.error) || "Nu am putut trimite KYC-ul.");
+    }
+
+    try { localStorage.setItem("userKycStatus", "pending"); } catch(e){}
+    alert("✅ KYC trimis cu succes. Vei fi redirecționat.");
+    window.location.href = "/angajat/pending.html";
+
+  } catch (e) {
+    alert("❌ Eroare: " + (e.message || "unknown"));
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = "🚀 Trimite KYC"; }
+  }
+}
+
+document.getElementById("submitBtn")?.addEventListener("click", submitKYC);
+</script>
 </body>
 </html>
