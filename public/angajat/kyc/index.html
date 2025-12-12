@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>KYC Onboarding – SuperParty</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  background:#0f172a;
+  color:#f1f5f9;
+  padding:40px;
+}
+.kyc-container{
+  max-width:1200px;
+  margin:auto;
+  background:rgba(15,23,42,.92);
+  border-radius:30px;
+  padding:50px;
+  border:2px solid #334155;
+}
+.section{
+  background:rgba(15,23,42,.85);
+  border:2px solid #334155;
+  border-radius:20px;
+  padding:30px;
+  margin-bottom:30px;
+}
+.upload-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:20px;
+}
+.upload-card{
+  background:rgba(30,41,59,.6);
+  border:2px dashed #475569;
+  border-radius:16px;
+  padding:30px;
+  text-align:center;
+  cursor:pointer;
+}
+.upload-card input{display:none}
+.checkbox-large{
+  display:flex;
+  gap:15px;
+  align-items:center;
+  background:rgba(30,41,59,.6);
+  padding:20px;
+  border-radius:16px;
+  border:2px solid #475569;
+}
+.btn{
+  width:100%;
+  padding:18px;
+  background:linear-gradient(135deg,#667eea,#764ba2);
+  border-radius:9999px;
+  color:white;
+  font-size:18px;
+  margin-top:20px;
+  cursor:pointer;
+  border:none;
+}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.contract-box{
+  margin-top:15px;
+  padding:20px;
+  border-radius:16px;
+  border:2px solid #475569;
+  background:rgba(15,23,42,.9);
+  max-height:260px;
+  overflow-y:auto;
+  font-size:14px;
+  line-height:1.6;
+}
+#minorSection{display:none}
+#driverDocs{display:none}
+.small-note{color:#94a3b8;font-size:13px;margin-top:10px}
+.warn{color:#facc15;font-size:13px;margin-top:10px}
+</style>
+</head>
+
+<body>
+<div class="kyc-container">
+  <h1 style="font-size:40px;margin-bottom:30px;">🪪 KYC Onboarding</h1>
+
+  <!-- CONTRACT -->
+  <div class="section">
+    <h2>📄 Contract de colaborare</h2>
+    <div class="contract-box">
+      <strong>CONTRACT DE COLABORARE ARTISTICĂ ȘI TEHNICĂ</strong><br><br>
+      BENEFICIAR: <strong>Micul Om Mare SRL</strong>, CUI <strong>42279262</strong><br>
+      COLABORATOR: datele tale din buletin.<br><br>
+
+      Prin semnare confirmi acceptarea tuturor clauzelor (exclusivitate, AI, răspundere).<br><br>
+
+      <em>Notă:</em> Dacă ești minor, contractul se semnează și de părinte/tutore, iar acordul parental încărcat este obligatoriu.
+    </div>
+
+    <label class="checkbox-large" style="margin-top:15px;">
+      <input type="checkbox" id="contractSignCheck" disabled>
+      <span>Confirm că am citit și semnez electronic contractul</span>
+    </label>
+    <div class="small-note" id="signHint">Încarcă buletinul și introdu CNP-ul ca să putem verifica dacă ești minor și să activăm semnarea.</div>
+  </div>
+
+  <!-- DOCUMENTE -->
+  <div class="section">
+    <h2>👤 Documente identitate</h2>
+    <div class="small-note">
+      În varianta finală, CNP-ul va fi extras automat din buletin. Acum îl introduci manual ca să funcționeze logica “minor”.
+    </div>
+
+    <div style="margin-top:14px;">
+      <label style="display:block;margin-bottom:6px;color:#e5e7eb;font-size:13px;">CNP (pentru verificare minor)</label>
+      <input id="cnpInput" inputmode="numeric" maxlength="13" placeholder="Ex: 5xxxxxxxxxxxx" style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid #475569;background:rgba(15,23,42,.6);color:#f1f5f9;outline:none;">
+      <div class="warn" id="cnpWarn" style="display:none;"></div>
+    </div>
+
+    <div class="upload-grid" style="margin-top:18px;">
+      <label class="upload-card">
+        🪪<br><strong>Buletin (față)</strong>
+        <div class="small-note">Obligatoriu</div>
+        <input type="file" id="idFront" accept="image/*">
+      </label>
+      <label class="upload-card">
+        🤳<br><strong>Selfie cu buletin</strong>
+        <div class="small-note">Obligatoriu</div>
+        <input type="file" id="selfie" accept="image/*">
+      </label>
+    </div>
+  </div>
+
+  <!-- MINOR -->
+  <div class="section" id="minorSection">
+    <h2>🧒 Acord parental</h2>
+    <p style="color:#facc15;margin-bottom:15px;">
+      Ești minor. Acordul parental este obligatoriu ca să poți semna contractul și trimite KYC.
+    </p>
+    <label class="upload-card">
+      📄<br><strong>Acord parental semnat</strong>
+      <div class="small-note">Poză sau PDF</div>
+      <input type="file" id="parentConsent" accept="image/*,.pdf">
+    </label>
+  </div>
+
+  <!-- ȘOFER -->
+  <div class="section">
+    <h2>🚗 Opțional – Șofer</h2>
+    <label class="checkbox-large">
+      <input type="checkbox" id="driverCheck">
+      <span>Doresc să fiu și șofer</span>
+    </label>
+
+    <div id="driverDocs" style="margin-top:20px;">
+      <div class="upload-grid">
+        <label class="upload-card">
+          🪪<br><strong>Permis</strong>
+          <div class="small-note">Obligatoriu dacă bifezi șofer</div>
+          <input type="file" id="license" accept="image/*,.pdf">
+        </label>
+        <label class="upload-card">
+          📄<br><strong>Cazier</strong>
+          <div class="small-note">Obligatoriu dacă bifezi șofer</div>
+          <input type="file" id="record" accept="image/*,.pdf">
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn" id="submitBtn" onclick="submitKYC()">🚀 Trimite KYC</button>
+</div>
+
+<script>
+const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbwpScVyziDaoVeuxcqdBQ3qx6j-QHy5FYoWtvlqMSsu15eXGI_l5fmo1Bg8zqP1BLyJ/exec';
+
+const els = {
+  idFront: document.getElementById('idFront'),
+  selfie: document.getElementById('selfie'),
+  cnp: document.getElementById('cnpInput'),
+  cnpWarn: document.getElementById('cnpWarn'),
+  minorSection: document.getElementById('minorSection'),
+  parentConsent: document.getElementById('parentConsent'),
+  sign: document.getElementById('contractSignCheck'),
+  signHint: document.getElementById('signHint'),
+  driverCheck: document.getElementById('driverCheck'),
+  driverDocs: document.getElementById('driverDocs'),
+  license: document.getElementById('license'),
+  record: document.getElementById('record'),
+  submitBtn: document.getElementById('submitBtn')
+};
+
+function normalizeCnp(raw){
+  return (raw || '').replace(/\D/g,'').slice(0,13);
+}
+
+function isMinorFromCnp(cnp){
+  cnp = normalizeCnp(cnp);
+  if(!cnp || cnp.length !== 13) return null; // null = nu putem decide
+
+  const s = cnp[0]; // string
+  let prefix;
+  if (s === '1' || s === '2') prefix = '19';
+  else if (s === '3' || s === '4') prefix = '18';
+  else if (s === '5' || s === '6') prefix = '20';
+  else return null;
+
+  const year = parseInt(prefix + cnp.substring(1,3), 10);
+  const month = parseInt(cnp.substring(3,5), 10) - 1;
+  const day = parseInt(cnp.substring(5,7), 10);
+
+  const dob = new Date(year, month, day);
+  if (isNaN(dob.getTime())) return null;
+
+  const now = new Date();
+  let age = now.getFullYear() - year;
+  const m = now.getMonth() - month;
+  if (m < 0 || (m === 0 && now.getDate() < day)) age--;
+
+  return age < 18;
+}
+
+function refreshMinorUi(){
+  const cnpVal = normalizeCnp(els.cnp.value);
+  els.cnp.value = cnpVal;
+
+  const minor = isMinorFromCnp(cnpVal);
+
+  // mesaje
+  els.cnpWarn.style.display = 'none';
+  els.cnpWarn.textContent = '';
+
+  // minor = null -> nu știm încă
+  if (minor === null) {
+    els.minorSection.style.display = 'none';
+    els.sign.disabled = true;
+    els.sign.checked = false;
+    els.signHint.textContent = 'Încarcă buletinul și introdu un CNP valid (13 cifre) ca să activăm semnarea.';
+    return;
+  }
+
+  if (minor) {
+    els.minorSection.style.display = 'block';
+    // semnarea rămâne blocată până la acord parental
+    const hasConsent = els.parentConsent.files && els.parentConsent.files[0];
+    els.sign.disabled = !hasConsent;
+    if (!hasConsent) {
+      els.sign.checked = false;
+      els.signHint.textContent = 'Ești minor: încarcă acordul parental ca să poți semna contractul.';
+    } else {
+      els.signHint.textContent = 'Acord parental încărcat: poți semna contractul.';
+    }
+  } else {
+    els.minorSection.style.display = 'none';
+    els.sign.disabled = false;
+    els.signHint.textContent = 'Poți semna contractul.';
+  }
+}
+
+els.driverCheck.addEventListener('change', e=>{
+  els.driverDocs.style.display = e.target.checked ? 'block' : 'none';
+});
+
+els.cnp.addEventListener('input', refreshMinorUi);
+els.parentConsent.addEventListener('change', refreshMinorUi);
+
+// Activăm logica și când se încarcă buletinul (ca să fie “flow” logic)
+els.idFront.addEventListener('change', ()=>{
+  // dacă nu are 13 cifre, arată warning (nu blocăm upload, doar ghidăm)
+  const cnpVal = normalizeCnp(els.cnp.value);
+  if (cnpVal.length !== 13) {
+    els.cnpWarn.textContent = 'Introdu CNP-ul complet (13 cifre) ca să verificăm automat dacă ești minor.';
+    els.cnpWarn.style.display = 'block';
+  } else {
+    els.cnpWarn.style.display = 'none';
+  }
+  refreshMinorUi();
+});
+
+// inițial
+refreshMinorUi();
+
+async function submitKYC(){
+  // Validări minime documente
+  if (!(els.idFront.files && els.idFront.files[0])) { alert('Încarcă buletinul (față).'); return; }
+  if (!(els.selfie.files && els.selfie.files[0])) { alert('Încarcă selfie cu buletin.'); return; }
+
+  // Minor gating
+  const minor = isMinorFromCnp(els.cnp.value);
+  if (minor === null) { alert('Introdu un CNP valid (13 cifre).'); return; }
+  if (minor && !(els.parentConsent.files && els.parentConsent.files[0])) {
+    alert('Ești minor: acordul parental este obligatoriu.');
+    return;
+  }
+
+  // Contract semnat obligatoriu
+  if(!els.sign.checked){ alert('Semnează contractul înainte să trimiți KYC.'); return; }
+
+  // Șofer - docuri obligatorii dacă bifează
+  if (els.driverCheck.checked) {
+    if (!(els.license.files && els.license.files[0])) { alert('Ai bifat șofer: încarcă permisul.'); return; }
+    if (!(els.record.files && els.record.files[0])) { alert('Ai bifat șofer: încarcă cazierul.'); return; }
+  }
+
+  // user din localStorage
+  let user;
+  try{ user = JSON.parse(localStorage.getItem('superparty_user')); } catch(e){}
+  if(!user || !user.email){
+    alert('Reloghează-te (nu am găsit utilizatorul curent).');
+    window.location.href = '../index.html';
+    return;
+  }
+
+  // Apel backend (simplu, ca la tine)
+  els.submitBtn.disabled = true;
+  els.submitBtn.textContent = 'Se trimite...';
+
+  try{
+    const url = `${BACKEND_URL}?action=completeKYC&email=${encodeURIComponent(user.email)}`;
+    const r = await fetch(url);
+    const j = await r.json();
+    // dacă backend întoarce user nou, îl salvăm
+    if (j && j.success && j.user) user = j.user;
+  } catch(e){
+    // ok, mergem pe local fallback
+  }
+
+  // fallback local
+  user.kyc_status = true;
+  user.contract_signed = true;
+  user.driver_opt_in = !!els.driverCheck.checked;
+
+  localStorage.setItem('superparty_user', JSON.stringify(user));
+
+  alert('✅ KYC finalizat');
+  window.location.href = '../index.html';
+}
+</script>
+</body>
+</html>
