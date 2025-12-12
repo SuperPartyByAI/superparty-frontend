@@ -1,82 +1,264 @@
-// Endpoint backend Railway
-const API_BASE = "https://superparty-ai-backend-production.up.railway.app";
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <title>SuperParty - Autentificare</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-const form = document.getElementById("loginForm");
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
-const loginBtn = document.getElementById("loginBtn");
-const errorBox = document.getElementById("errorBox");
-const successBox = document.getElementById("successBox");
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top, #1d4ed8 0, #0f172a 45%, #020617 100%);
+      color: #e5e7eb;
+      padding: 16px;
+    }
 
-function setLoading(isLoading) {
-  loginBtn.disabled = isLoading;
-  loginBtn.textContent = isLoading ? "Se autentifică..." : "Intră în cont";
-}
+    .login-card {
+      background: #020617;
+      border-radius: 16px;
+      padding: 24px 28px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+    }
 
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  errorBox.textContent = "";
-  successBox.textContent = "";
+    .login-title {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      text-align: center;
+    }
 
-  const email = emailInput.value.trim();
-  const password = passwordInput.value;
+    .login-subtitle {
+      font-size: 13px;
+      color: #9ca3af;
+      text-align: center;
+      margin-bottom: 20px;
+    }
 
-  if (!email || !password) {
-    errorBox.textContent = "Te rog să introduci emailul și parola.";
-    return;
-  }
+    label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 4px;
+      color: #e5e7eb;
+    }
 
-  try {
-    setLoading(true);
+    input {
+      width: 100%;
+      padding: 10px 11px;
+      border-radius: 10px;
+      border: 1px solid #1f2937;
+      background: #020617;
+      color: #e5e7eb;
+      font-size: 14px;
+      margin-bottom: 12px;
+      outline: none;
+    }
 
-    const resp = await fetch(`${API_BASE}/api/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
+    input::placeholder { color: #6b7280; }
+
+    input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.6);
+    }
+
+    button {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: none;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(135deg, #3b82f6, #22c55e);
+      color: white;
+      margin-top: 8px;
+      transition: transform 0.08s ease, box-shadow 0.08s ease, opacity 0.08s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.7);
+      opacity: 0.96;
+    }
+
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.7);
+      opacity: 0.9;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: default;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .msg {
+      margin-top: 10px;
+      font-size: 13px;
+      border-radius: 8px;
+      padding: 8px 10px;
+      display: none;
+      line-height: 1.35;
+    }
+
+    .error {
+      color: #fecaca;
+      background: rgba(127, 29, 29, 0.4);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+    }
+
+    .success {
+      color: #bbf7d0;
+      background: rgba(20, 83, 45, 0.35);
+      border: 1px solid rgba(34, 197, 94, 0.35);
+    }
+
+    .meta {
+      margin-top: 12px;
+      font-size: 11px;
+      color: #6b7280;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <h1 class="login-title">SuperParty · Autentificare</h1>
+    <p class="login-subtitle">Intră în cont ca să accesezi dashboard-ul</p>
+
+    <form id="loginForm">
+      <label for="email">Email</label>
+      <input id="email" type="email" autocomplete="email" required placeholder="ex: nume@superparty.ro" />
+
+      <label for="password">Parolă</label>
+      <input id="password" type="password" autocomplete="current-password" required placeholder="Parola ta" />
+
+      <button type="submit" id="loginBtn">Intră în cont</button>
+
+      <div id="errorBox" class="msg error"></div>
+      <div id="successBox" class="msg success"></div>
+    </form>
+
+    <p class="meta">Probleme la autentificare? Contactează managerul SuperParty.</p>
+  </div>
+
+  <script>
+    const API_BASE = "https://superparty-ai-backend-production.up.railway.app";
+
+    const form = document.getElementById("loginForm");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const loginBtn = document.getElementById("loginBtn");
+    const errorBox = document.getElementById("errorBox");
+    const successBox = document.getElementById("successBox");
+
+    function showError(msg) {
+      errorBox.textContent = msg || "Eroare.";
+      errorBox.style.display = "block";
+      successBox.style.display = "none";
+    }
+
+    function showSuccess(msg) {
+      successBox.textContent = msg || "OK.";
+      successBox.style.display = "block";
+      errorBox.style.display = "none";
+    }
+
+    function setLoading(isLoading) {
+      loginBtn.disabled = isLoading;
+      loginBtn.textContent = isLoading ? "Se autentifică..." : "Intră în cont";
+    }
+
+    function norm(v){ return (v ?? "").toString().trim(); }
+    function lower(v){ return norm(v).toLowerCase(); }
+    function ok(v){
+      const s = lower(v);
+      return s==="1" || s==="true" || s==="ok" || s==="approved" || s==="signed" || s==="yes";
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      errorBox.style.display = "none";
+      successBox.style.display = "none";
+
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+
+      if (!email || !password) {
+        showError("Te rog să introduci emailul și parola.");
+        return;
+      }
+
+      try {
+        setLoading(true);
+
+        const resp = await fetch(`${API_BASE}/api/auth/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+
+        const data = await resp.json().catch(() => ({}));
+
+        if (!resp.ok || !data.success) {
+          showError((data && (data.error || data.message)) ? (data.error || data.message) : "Eroare la autentificare.");
+          return;
+        }
+
+        const user = data.user || {};
+
+        // ✅ SINGLE SOURCE OF TRUTH pentru flow
+        const spUser = {
+          email: norm(user.email || email),
+          role: lower(user.role),
+          status: lower(user.status),
+          kyc_status: user.kyc_status ?? user.kycStatus ?? "",
+          contract_signed: user.contract_signed ?? user.contractOk ?? user.contract_ok ?? "",
+          is_approved: user.is_approved ?? user.approved ?? user.approved_ok ?? "",
+          updatedAt: Date.now(),
+          raw: user
+        };
+
+        localStorage.setItem("sp_user", JSON.stringify(spUser));
+        localStorage.setItem("userEmail", spUser.email);
+        localStorage.setItem("user", JSON.stringify(user)); // compat
+
+        showSuccess("Autentificare reușită. Te redirecționăm...");
+
+        // Admin direct
+        if (spUser.role === "admin") {
+          window.location.href = "/admin/index.html";
+          return;
+        }
+
+        // Approved robust
+        const hasApprovedField = Object.prototype.hasOwnProperty.call(user, "is_approved");
+        const approvedOk = !hasApprovedField || ok(spUser.is_approved);
+        const kycOk = ok(spUser.kyc_status);
+        const contractOk = ok(spUser.contract_signed);
+
+        if (spUser.status === "active" && approvedOk && kycOk && contractOk) {
+          window.location.href = "/angajat/index.html";
+        } else {
+          window.location.href = "/angajat/kyc/index.html";
+        }
+
+      } catch (err) {
+        console.error("Login error:", err);
+        showError("Eroare de rețea sau server. Încearcă din nou.");
+      } finally {
+        setLoading(false);
+      }
     });
-
-    const data = await resp.json();
-
-    if (!resp.ok || !data.success) {
-      const msg = data && data.error ? data.error : "Eroare la autentificare.";
-      errorBox.textContent = msg;
-      setLoading(false);
-      return;
-    }
-
-    const user = data.user || {};
-
-    // Salvăm user-ul în localStorage pentru dashboard + kyc
-    localStorage.setItem("user", JSON.stringify(user));
-    localStorage.setItem("userEmail", user.email || email);
-
-    successBox.textContent = "Autentificare reușită. Te redirecționăm...";
-
-    // Logica de routing după status / kyc
-    const isApproved =
-      user.kyc_status === "approved" &&
-      user.status === "active" &&
-      user.is_approved === true;
-
-    // (optional) viitor: daca role === 'admin' => /admin/index.html
-    if (user.role === "admin") {
-      window.location.href = "/admin/index.html";
-      return;
-    }
-
-    if (isApproved) {
-      // KYC ok + cont activ → dashboard angajat
-      window.location.href = "/angajat/index.html";
-    } else {
-      // orice alt status → KYC page
-      window.location.href = "/angajat/kyc.html";
-    }
-  } catch (err) {
-    console.error("Login error:", err);
-    errorBox.textContent = "Eroare de rețea sau server. Încearcă din nou.";
-  } finally {
-    setLoading(false);
-  }
-});
+  </script>
+</body>
+</html>
