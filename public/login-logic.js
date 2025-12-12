@@ -1,6 +1,10 @@
-// URL backend Apps Script (același folosit și înainte pentru login + AI)
-const SP_BACKEND_URL =
-  "https://script.google.com/macros/s/AKfycbxs819m4gt-tpTkAIIS91EnxhwYx-5wdbnh6Zi5_GcY14zs5XYqS9ykFuYCCcokhQ/exec";
+// ===============================
+// SuperParty Frontend - Login (Railway JWT)
+// Fisier: public/login-logic.js
+// ===============================
+
+// URL backend Railway (PROD)
+const SP_BACKEND_URL = "https://superparty-ai-backend-production.up.railway.app";
 
 (function initLogin() {
   const form = document.getElementById("loginForm");
@@ -12,11 +16,10 @@ const SP_BACKEND_URL =
   const goToRegister = document.getElementById("goToRegister");
   const goToKyc = document.getElementById("goToKyc");
 
-  // Link-uri dummy deocamdată – le legăm când ai paginile separate
+  // Link-uri dummy deocamdata – le legam cand ai paginile separate
   if (goToRegister) {
     goToRegister.addEventListener("click", function (e) {
       e.preventDefault();
-      // când avem pagina de înregistrare: window.location.href = "/register.html";
       alert("Pagina de creare cont o facem imediat după ce stabilizăm login-ul.");
     });
   }
@@ -24,7 +27,6 @@ const SP_BACKEND_URL =
   if (goToKyc) {
     goToKyc.addEventListener("click", function (e) {
       e.preventDefault();
-      // când avem pagina de KYC: window.location.href = "/angajat/kyc.html";
       alert("Pagina KYC o legăm după ce finalizăm flow-ul de login.");
     });
   }
@@ -42,54 +44,58 @@ const SP_BACKEND_URL =
     if (passInput) passInput.disabled = disabled;
   }
 
-  // JSONP login (la fel ca testele tale cu ?callback=)
-  function loginRequest(email, password) {
-    return new Promise((resolve) => {
-      const cbName = "spLoginCB_" + Date.now() + "_" + Math.floor(Math.random() * 100000);
+  async function loginRequest(email, password) {
+    try {
+      const r = await fetch(SP_BACKEND_URL + "/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-      window[cbName] = function (res) {
-        try {
-          resolve(res);
-        } finally {
-          if (script.parentNode) script.parentNode.removeChild(script);
-          delete window[cbName];
-        }
-      };
+      const j = await r.json().catch(() => null);
 
-      const url =
-        SP_BACKEND_URL +
-        "?action=login" +
-        "&email=" +
-        encodeURIComponent(email) +
-        "&password=" +
-        encodeURIComponent(password) +
-        "&callback=" +
-        cbName;
+      if (!r.ok) {
+        return {
+          success: false,
+          error: (j && j.error) ? j.error : "Login eșuat.",
+          status: r.status,
+        };
+      }
 
-      const script = document.createElement("script");
-      script.src = url;
-      script.onerror = function () {
-        if (window[cbName]) {
-          resolve({
-            success: false,
-            error: "Eroare de rețea sau Apps Script nu răspunde.",
-          });
-          delete window[cbName];
-        }
-        if (script.parentNode) script.parentNode.removeChild(script);
-      };
-
-      document.body.appendChild(script);
-    });
+      // asteptat: { success:true, user:{...}, token:"..." }
+      return j;
+    } catch (e) {
+      return { success: false, error: "Eroare de rețea: backend indisponibil." };
+    }
   }
+
+  function safeJSONParse(v) {
+    try {
+      return JSON.parse(v);
+    } catch {
+      return null;
+    }
+  }
+
+  // Optional: daca esti deja logat, poti redirecta direct
+  // (comenteaza daca nu vrei comportamentul asta)
+  try {
+    const existingToken = localStorage.getItem("sp_token");
+    const existingUser = safeJSONParse(localStorage.getItem("sp_user") || "null");
+    if (existingToken && existingUser && existingUser.email) {
+      // esti deja logat
+      // window.location.href = "/angajat/index.html";
+      // return;
+    }
+  } catch {}
 
   if (!form) return;
 
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
 
-    const email = (emailInput.value || "").trim();
-    const pass = (passInput.value || "").trim();
+    const email = ((emailInput && emailInput.value) || "").trim();
+    const pass = ((passInput && passInput.value) || "").trim();
 
     if (!email || !pass) {
       setStatus("Te rog introdu emailul și parola.", "error");
@@ -110,26 +116,34 @@ const SP_BACKEND_URL =
       return;
     }
 
-    // Login OK
-    try {
-      // salvăm emailul în localStorage ca să-l folosim în dashboard + AI
-      localStorage.setItem("superparty_user_email", email);
-      localStorage.setItem("loggedUserEmail", email);
+    // Validari minime (ca sa nu salvezi junk)
+    if (!res.token || !res.user || !res.user.email) {
+      setStatus("Răspuns invalid de la server (lipsește token/user).", "error");
+      disableForm(false);
+      return;
+    }
 
-      // dacă backendul trimite și rolul, îl putem salva
-      if (res.role) {
-        localStorage.setItem("superparty_user_role", res.role);
-      }
-    } catch (e) {
-      console.warn("Nu pot salva în localStorage:", e);
+    // Login OK: salvam token + user
+    try {
+      localStorage.setItem("sp_token", res.token);
+      localStorage.setItem("sp_user", JSON.stringify(res.user));
+
+      // compatibilitate cu chei vechi (daca ai cod care le foloseste)
+      localStorage.setItem("superparty_user_email", res.user.email);
+      localStorage.setItem("loggedUserEmail", res.user.email);
+      if (res.user.role) localStorage.setItem("superparty_user_role", res.user.role);
+    } catch (err) {
+      console.warn("Nu pot salva în localStorage:", err);
+      setStatus("Nu pot salva sesiunea (localStorage blocat).", "error");
+      disableForm(false);
+      return;
     }
 
     setStatus("Autentificare reușită. Te duc în dashboard…", "success");
 
     // Redirect standard: dashboard angajat
-    // (admin/GM se vor deschide doar din comanda secretă prin AI)
     setTimeout(function () {
       window.location.href = "/angajat/index.html";
-    }, 400);
+    }, 250);
   });
 })();
