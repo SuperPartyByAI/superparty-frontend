@@ -38,3 +38,6 @@ temp_extract/
 **/api-keys.js
 config/secrets.js
 .vercel
+backend/
+scan_superparty.sh
+public/angajat/kyc_OLD_BACKUP.html
