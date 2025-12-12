@@ -1,491 +1,107 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-  <meta charset="UTF-8" />
-  <title>SuperParty - Dashboard angajat</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <title>Dashboard Angajat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      min-height: 100vh;
-      background: radial-gradient(circle at top, #1d4ed8 0, #0f172a 45%, #020617 100%);
-      color: #e5e7eb;
-      display: flex;
-      justify-content: center;
-      padding: 16px;
-    }
-
-    .page {
-      width: 100%;
-      max-width: 1100px;
-      background: rgba(15,23,42,0.9);
-      border-radius: 18px;
-      box-shadow: 0 24px 60px rgba(15,23,42,0.8);
-      border: 1px solid rgba(148,163,184,0.25);
-      padding: 18px 20px 26px;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-    .header-left { display: flex; flex-direction: column; gap: 4px; }
-    .hello { font-size: 20px; font-weight: 600; }
-    .sub { font-size: 13px; color: #9ca3af; }
-    .header-right { display: flex; align-items: center; gap: 10px; font-size: 12px; color: #9ca3af; }
-
-    .pill {
-      padding: 5px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,184,0.35);
-      font-size: 11px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .layout { display: grid; grid-template-columns: minmax(0, 2.1fr) minmax(0, 1.3fr); gap: 18px; }
-
-    .card {
-      background: #020617;
-      border-radius: 14px;
-      padding: 14px 14px 16px;
-      border: 1px solid #1f2937;
-      box-shadow: 0 16px 40px rgba(15,23,42,0.7);
-    }
-
-    .card-title { font-size: 14px; font-weight: 500; margin-bottom: 6px; }
-    .card-sub { font-size: 12px; color: #9ca3af; margin-bottom: 12px; }
-
-    .stats-row { display: flex; gap: 8px; margin-top: 4px; }
-
-    .stat-pill {
-      flex: 1;
-      padding: 8px 10px;
-      border-radius: 10px;
-      border: 1px solid #1f2937;
-      background: radial-gradient(circle at top left, #1d4ed8 0, #020617 60%);
-      font-size: 11px;
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-
-    .stat-label { color: #9ca3af; }
-    .stat-value { font-size: 13px; font-weight: 600; }
-
-    .events-list { display: flex; flex-direction: column; gap: 10px; margin-top: 6px; }
-
-    .event-item {
-      border-radius: 12px;
-      border: 1px solid #1f2937;
-      background: radial-gradient(circle at top left, rgba(37,99,235,0.4) 0, #020617 60%);
-      padding: 10px 10px 12px;
-      font-size: 12px;
-      cursor: pointer;
-    }
-
-    .event-title { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
-
-    .event-line { display: flex; gap: 10px; align-items: center; color: #9ca3af; margin-top: 2px; }
-    .event-line span { display: inline-flex; align-items: center; gap: 4px; }
-
-    .event-id { font-size: 11px; color: #9ca3af; margin-top: 4px; }
-
-    .event-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-size: 11px; }
-
-    .event-ai-btn {
-      padding: 4px 8px;
-      border-radius: 999px;
-      background: rgba(37,99,235,0.25);
-      border: 1px solid rgba(59,130,246,0.7);
-      cursor: pointer;
-      color: #e5e7eb;
-    }
-
-    .kyc-box {
-      margin-top: 4px;
-      padding: 10px;
-      border-radius: 10px;
-      background: linear-gradient(120deg, rgba(34,197,94,0.08), rgba(37,99,235,0.23));
-      border: 1px solid rgba(34,197,94,0.5);
-      font-size: 12px;
-    }
-
-    /* ================== AI CHAT FLOATING ================== */
-    .ai-toggle-btn {
-      position: fixed;
-      right: 26px;
-      bottom: 24px;
-      width: 58px;
-      height: 58px;
-      border-radius: 999px;
-      border: 2px solid rgba(59,130,246,0.9);
-      background: radial-gradient(circle at 30% 0%, #38bdf8 0, #1d4ed8 35%, #020617 90%);
-      box-shadow: 0 18px 40px rgba(15,23,42,0.9);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 50;
-    }
-    .ai-toggle-btn span { font-size: 26px; }
-
-    .ai-chat-wrapper {
-      position: fixed;
-      right: 20px;
-      bottom: 24px;
-      width: 320px;
-      max-width: calc(100% - 40px);
-      border-radius: 16px;
-      background: #020617;
-      border: 1px solid #1f2937;
-      box-shadow: 0 24px 60px rgba(15,23,42,0.95);
-      display: none;
-      flex-direction: column;
-      overflow: hidden;
-      z-index: 60;
-    }
-
-    .ai-chat-header {
-      padding: 10px 12px;
-      border-bottom: 1px solid #111827;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      background: radial-gradient(circle at top left, rgba(37,99,235,0.7) 0, #020617 60%);
-    }
-
-    .ai-chat-header-left { display: flex; align-items: center; gap: 8px; }
-
-    .ai-avatar {
-      width: 26px;
-      height: 26px;
-      border-radius: 999px;
-      background: #020617;
-      border: 1px solid rgba(191,219,254,0.7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 15px;
-    }
-
-    .ai-header-text { display: flex; flex-direction: column; font-size: 11px; }
-    .ai-header-text strong { font-size: 12px; }
-
-    .ai-header-close { cursor: pointer; font-size: 16px; color: #e5e7eb; }
-
-    .ai-chat-body {
-      padding: 10px;
-      max-height: 260px;
-      overflow-y: auto;
-      background: radial-gradient(circle at top, #020617 0, #020617 100%);
-      display: flex;
-      flex-direction: column;
-    }
-
-    .ai-msg {
-      font-size: 12px;
-      padding: 7px 9px;
-      border-radius: 10px;
-      margin-bottom: 6px;
-      max-width: 92%;
-      white-space: pre-wrap;
-    }
-    .ai-msg.ai { background: #020617; border: 1px solid #1f2937; align-self: flex-start; }
-    .ai-msg.user { background: linear-gradient(135deg, #2563eb, #1d4ed8); border: 1px solid rgba(147,197,253,0.8); align-self: flex-end; }
-
-    .ai-chat-footer { border-top: 1px solid #111827; padding: 8px; display: flex; gap: 6px; background: #020617; }
-    .ai-chat-footer input {
-      flex: 1;
-      border-radius: 999px;
-      border: 1px solid #1f2937;
-      background: #020617;
-      color: #e5e7eb;
-      font-size: 12px;
-      padding: 6px 10px;
-      outline: none;
-    }
-    .ai-chat-footer button {
-      border-radius: 999px;
-      border: none;
-      background: #2563eb;
-      color: white;
-      font-size: 12px;
-      padding: 6px 10px;
-      cursor: pointer;
-    }
-
-    .ai-hint { font-size: 10px; color: #6b7280; padding: 0 10px 6px; }
-
-    @media (max-width: 800px) {
-      .layout { grid-template-columns: minmax(0, 1fr); }
-      .page { padding: 14px 12px 20px; }
-      .ai-chat-wrapper { right: 10px; left: 10px; width: auto; }
-    }
+    body{background:#0f172a;color:#fff;font-family:Arial;padding:40px}
+    .card{max-width:760px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:18px 20px;margin-top:18px}
+    .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);font-size:13px}
+    .ok{background:rgba(16,185,129,.18);border-color:rgba(16,185,129,.35)}
+    .bad{background:rgba(239,68,68,.18);border-color:rgba(239,68,68,.35)}
+    a{color:#93c5fd}
+    code{background:rgba(255,255,255,.08);padding:2px 6px;border-radius:6px}
   </style>
+
+  <!-- AUTH GUARD: ruleaza primul -->
+  <script src="/angajat/auth-guard.js"></script>
 </head>
 <body>
-  <div class="page">
-    <div class="header">
-      <div class="header-left">
-        <div class="hello">Salut, Andrei 👋</div>
-        <div class="sub">Aici vezi evenimentele, KYC, contractul și poți vorbi cu SuperParty AI.</div>
-      </div>
-      <div class="header-right">
-        <div class="pill">Status cont: <span style="color:#22c55e;">Activ</span></div>
-        <div class="pill">Rol: Angajat</div>
-      </div>
-    </div>
 
-    <div class="layout">
-      <div class="card">
-        <div class="card-title">Evenimentele tale</div>
-        <div class="card-sub">Exemplu de evenimente (în viitor le luăm direct din Sheets)</div>
+  <h1>Dashboard Angajat</h1>
+  <p id="headline">Se verifică accesul...</p>
 
-        <div class="stats-row">
-          <div class="stat-pill">
-            <div class="stat-label">Evenimente azi</div>
-            <div class="stat-value">2</div>
-          </div>
-          <div class="stat-pill">
-            <div class="stat-label">Weekend</div>
-            <div class="stat-value">1</div>
-          </div>
-          <div class="stat-pill">
-            <div class="stat-label">Dovezi lipsă</div>
-            <div class="stat-value">3</div>
-          </div>
-        </div>
-
-        <div class="events-list">
-          <div class="event-item">
-            <div class="event-title">Elsa 2h + Olaf 2h</div>
-            <div class="event-line">
-              <span>📅 Azi · 15:00 - 17:00</span>
-              <span>📍 București, Sector 3</span>
-            </div>
-            <div class="event-id">ID: EVT_001 · Rol principal: Animație copii · Plată: 650 lei</div>
-            <div class="event-actions">
-              <span>ℹ️ Apasă mai jos pentru ajutor AI la dovezi.</span>
-              <button class="event-ai-btn" onclick="openAIWithPrompt('Ce dovezi trebuie să fac la EVT_001?')">Întreabă AI despre dovezi</button>
-            </div>
-          </div>
-
-          <div class="event-item">
-            <div class="event-title">Spider-Man 2h</div>
-            <div class="event-line">
-              <span>📅 Azi · 11:00 - 13:00</span>
-              <span>📍 București, Sector 4</span>
-            </div>
-            <div class="event-id">ID: EVT_002 · Rol: Animație copii · Plată: 350 lei</div>
-            <div class="event-actions">
-              <span>ℹ️ Întreabă AI despre obligativitatea pozelor.</span>
-              <button class="event-ai-btn" onclick="openAIWithPrompt('Ce poze obligatorii sunt la EVT_002?')">Întreabă AI despre dovezi</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">Rezumat cont & KYC</div>
-        <div class="card-sub">Aici vezi status KYC / contract și poți cere clarificări AI-ului.</div>
-
-        <div class="kyc-box">
-          <strong>KYC & Contract</strong>
-          <br />
-          - Poza buletin: încărcată ✅ (demo)<br />
-          - Contract digital: acceptat ✅ (demo)<br />
-          - Status verificare: în regulă ✅ (după ce finalizezi KYC real)
-          <br /><br />
-          În varianta reală, această secțiune va reflecta statusul din sistem.
-          <br /><br />
-          <span style="color:#9ca3af;font-size:11px;">
-            Dev: setează <code>localStorage.setItem("devBypassKyc","1")</code> pentru bypass, sau <code>removeItem</code> pentru test real.
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="ai-toggle-btn" id="aiToggleBtn" title="Deschide SuperParty AI">
-    <span>🤖</span>
-  </div>
-
-  <div class="ai-chat-wrapper" id="aiChat">
-    <div class="ai-chat-header">
-      <div class="ai-chat-header-left">
-        <div class="ai-avatar">🤖</div>
-        <div class="ai-header-text">
-          <strong>SuperParty AI</strong>
-          <span>Întreabă-mă despre dovezi, KYC, contract, evenimente.</span>
-        </div>
-      </div>
-      <div class="ai-header-close" id="aiCloseBtn">✕</div>
-    </div>
-    <div class="ai-chat-body" id="aiMessages">
-      <div class="ai-msg ai">
-        Salut! Sunt SuperParty AI. Îți pot răspunde la întrebări despre dovezi foto, KYC, contract sau status cont. Scrie-mi ce ai nevoie.
-      </div>
-    </div>
-    <div class="ai-hint">
-      Exemple: „ce dovezi trebuie la EVT_001?”, „explică-mi KYC”, „explică-mi contractul”.
-    </div>
-    <div class="ai-chat-footer">
-      <input id="aiInput" type="text" placeholder="Scrie un mesaj către AI..." />
-      <button id="aiSendBtn">Trimite</button>
+  <div class="card">
+    <div><strong>Debug status (ca să vezi clar ce citește dashboard-ul)</strong></div>
+    <div class="row" id="debugRow"></div>
+    <div style="margin-top:12px;font-size:13px;opacity:.9">
+      Dacă vezi redirect loop: verifică regulile de KYC/status și URL-urile.
     </div>
   </div>
 
   <script>
-    // ================== CONFIG ==================
-    const AI_API_URL = "https://superparty-ai-backend-production.up.railway.app/api/ai";
+    (function(){
+      // IMPORTANT: la tine pagina KYC e /angajat/kyc.html (nu /angajat/kyc/index.html)
+      const KYC_URL = "/angajat/kyc.html";
+      const PENDING_URL = "/angajat/pending.html";
 
-    const userEmail = localStorage.getItem("userEmail") || "";
-    const userMode = localStorage.getItem("userMode") || "employee";
+      // MUST HAVE token + user
+      const token = localStorage.getItem("sp_token");
+      const rawUser = localStorage.getItem("sp_user");
 
-    // ================== DEV TOGGLE ==================
-    const DEV_BYPASS_KYC = localStorage.getItem("devBypassKyc") === "1";
+      if (!token || !rawUser) {
+        localStorage.removeItem("sp_token");
+        localStorage.removeItem("sp_user");
+        location.href = "/login.html";
+        return;
+      }
 
-    // ================== KYC GATE (REAL: uses sp_user from login) ==================
-    function _norm(v) { return (v ?? "").toString().trim().toLowerCase(); }
-    function _ok(v) {
-      const s = _norm(v);
-      return s === "1" || s === "true" || s === "ok" || s === "approved" || s === "signed" || s === "yes";
-    }
-
-    (function enforceKycGate() {
+      let u;
       try {
-        if (DEV_BYPASS_KYC) return;
-
-        const raw = localStorage.getItem("sp_user");
-        if (!raw) {
-          window.location.href = "/login.html";
-          return;
-        }
-
-        let u = null;
-        try { u = JSON.parse(raw); } catch (e) {}
-
-        const email = _norm(u?.email || userEmail);
-        if (!email) {
-          window.location.href = "/login.html";
-          return;
-        }
-
-        const status = _norm(u?.status);
-        const kycOk = _ok(u?.kyc_status);
-        const contractOk = _ok(u?.contract_signed);
-
-        if (status !== "active" || !kycOk || !contractOk) {
-          window.location.href = "/angajat/kyc/index.html";
-          return;
-        }
+        u = JSON.parse(rawUser);
       } catch (e) {
-        console.error("Eroare la enforceKycGate:", e);
+        localStorage.removeItem("sp_token");
+        localStorage.removeItem("sp_user");
+        location.href = "/login.html";
+        return;
       }
+
+      // Normalize strings
+      const role = String(u.role || "angajat").toLowerCase();
+      const status = String(u.status || "active").toLowerCase();
+      const kyc = String(u.kyc_status || u.kycStatus || "pending").toLowerCase();
+
+      // Debug pills
+      const debugRow = document.getElementById("debugRow");
+      function pill(label, value, ok) {
+        const el = document.createElement("span");
+        el.className = "pill " + (ok ? "ok" : "bad");
+        el.textContent = label + ": " + (value || "(gol)");
+        debugRow.appendChild(el);
+      }
+
+      pill("token", token ? "prezent" : "lipsa", !!token);
+      pill("email", u.email || "(gol)", !!u.email);
+      pill("role", role, role === "angajat" || role === "admin" || role === "gm");
+      pill("status", status, status === "active");
+      pill("kyc_status", kyc, kyc === "approved");
+
+      // Role redirect
+      if (role === "admin") { location.href = "/admin/index.html"; return; }
+      if (role === "gm") { location.href = "/gm/index.html"; return; }
+
+      // Status gate
+      if (status !== "active") {
+        location.href = PENDING_URL;
+        return;
+      }
+
+      // KYC gate
+      if (kyc !== "approved") {
+        const qs = new URLSearchParams({
+          from: "dashboard",
+          kyc: kyc || "none"
+        }).toString();
+        location.href = KYC_URL + "?" + qs;
+        return;
+      }
+
+      // OK
+      document.getElementById("headline").textContent = "Dacă vezi asta, ești OK ✅";
     })();
-
-    // ================== UI ==================
-    const aiToggleBtn = document.getElementById("aiToggleBtn");
-    const aiChat = document.getElementById("aiChat");
-    const aiCloseBtn = document.getElementById("aiCloseBtn");
-    const aiMessages = document.getElementById("aiMessages");
-    const aiInput = document.getElementById("aiInput");
-    const aiSendBtn = document.getElementById("aiSendBtn");
-
-    aiToggleBtn.addEventListener("click", () => {
-      aiChat.style.display = "flex";
-      aiToggleBtn.style.display = "none";
-      aiInput.focus();
-    });
-
-    aiCloseBtn.addEventListener("click", () => {
-      aiChat.style.display = "none";
-      aiToggleBtn.style.display = "flex";
-    });
-
-    function addMessage(text, from) {
-      const div = document.createElement("div");
-      div.className = "ai-msg " + (from === "user" ? "user" : "ai");
-      div.textContent = text;
-      aiMessages.appendChild(div);
-      aiMessages.scrollTop = aiMessages.scrollHeight;
-    }
-
-    async function sendMessageToAI() {
-      const message = aiInput.value.trim();
-      if (!message) return;
-
-      addMessage(message, "user");
-      aiInput.value = "";
-
-      aiSendBtn.disabled = true;
-      aiSendBtn.textContent = "Se trimite...";
-
-      try {
-        const res = await fetch(AI_API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: userEmail,
-            mode: userMode,
-            message: message
-          })
-        });
-
-        const data = await res.json();
-        let reply = data.reply || "";
-
-        if (reply.includes("__MODE_GM__")) {
-          addMessage("Acces GM permis. Deschid modul GM...", "ai");
-          openGmMode();
-          return;
-        }
-
-        if (reply.includes("__MODE_ADMIN__")) {
-          addMessage("Acces ADMIN permis. Deschid modul ADMIN...", "ai");
-          openAdminMode();
-          return;
-        }
-
-        addMessage(reply, "ai");
-      } catch (err) {
-        addMessage("Eroare AI: " + err.message, "ai");
-      } finally {
-        aiSendBtn.disabled = false;
-        aiSendBtn.textContent = "Trimite";
-      }
-    }
-
-    aiSendBtn.addEventListener("click", sendMessageToAI);
-    aiInput.addEventListener("keydown", e => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        sendMessageToAI();
-      }
-    });
-
-    function openAIWithPrompt(promptText) {
-      aiChat.style.display = "flex";
-      aiToggleBtn.style.display = "none";
-      aiInput.value = promptText;
-      sendMessageToAI();
-    }
-    window.openAIWithPrompt = openAIWithPrompt;
-
-    function openGmMode() {
-      window.location.href = "/gm/index.html";
-    }
-
-    function openAdminMode() {
-      window.location.href = "/admin/index.html";
-    }
   </script>
+
 </body>
 </html>
