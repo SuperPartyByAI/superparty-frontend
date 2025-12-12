@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>KYC Onboarding Final</title>
+
+<style>
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  background:#0f172a;
+  color:#f1f5f9;
+  padding:40px;
+}
+.kyc-container{
+  max-width:1200px;
+  margin:auto;
+  background:rgba(15,23,42,.9);
+  border-radius:30px;
+  padding:50px;
+  border:2px solid #334155;
+}
+.section{
+  background:rgba(15,23,42,.8);
+  border:2px solid #334155;
+  border-radius:20px;
+  padding:30px;
+  margin-bottom:30px;
+}
+.upload-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:20px;
+}
+.upload-card{
+  background:rgba(30,41,59,.6);
+  border:2px dashed #475569;
+  border-radius:16px;
+  padding:30px;
+  text-align:center;
+  cursor:pointer;
+}
+.upload-card input{display:none;}
+.checkbox-large{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  background:rgba(30,41,59,.6);
+  padding:20px;
+  border-radius:16px;
+  border:2px solid #475569;
+}
+.contract-box{
+  display:none;
+  margin-top:20px;
+  padding:20px;
+  border-radius:16px;
+  border:2px solid #475569;
+  background:rgba(15,23,42,.9);
+  max-height:300px;
+  overflow-y:auto;
+}
+.btn{
+  width:100%;
+  padding:18px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#667eea,#764ba2);
+  border:none;
+  color:white;
+  font-size:18px;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+<div class="kyc-container">
+<h1>🪪 KYC Onboarding – Varianta Finală</h1>
+
+<div class="section">
+<h2>👤 Documente identitate</h2>
+<div class="upload-grid">
+<label class="upload-card">
+🪪 Buletin – Față
+<input id="idFront" type="file" accept="image/*">
+</label>
+<label class="upload-card">
+🪪 Buletin – Verso
+<input id="idBack" type="file" accept="image/*">
+</label>
+<label class="upload-card">
+🤳 Selfie cu CI
+<input id="selfie" type="file" accept="image/*">
+</label>
+</div>
+</div>
+
+<div class="section" id="contractSection" style="display:none;">
+<h2>📄 Contract colaborare</h2>
+
+<div class="checkbox-large">
+<input type="checkbox" id="contractSignCheck" disabled>
+<span>Confirm că am citit și accept contractul</span>
+</div>
+
+<div class="contract-box" id="contractBox">
+<p>
+<strong>COLABORATOR:</strong> <span id="cName"></span><br>
+<strong>CNP:</strong> <span id="cCnp"></span><br>
+<strong>Adresă:</strong> <span id="cAddress"></span>
+</p>
+
+<p>
+În cazul în care colaboratorul este minor, este obligatoriu acordul parental.
+</p>
+</div>
+</div>
+
+<div class="section" id="minorSection" style="display:none;">
+<h2>🧒 Acord parental necesar</h2>
+<p>Ești minor. Încarcă acord parental semnat.</p>
+
+<label class="upload-card">
+📄 Acord parental
+<input id="parentConsent" type="file" accept="image/*,.pdf">
+</label>
+</div>
+
+<button class="btn" onclick="submitKYC()">🚀 Trimite KYC</button>
+</div>
+
+<script>
+function isMinorFromCnp(cnp){
+  const s=cnp[0];
+  let prefix="19";
+  if(s==='5'||s==='6')prefix='20';
+  const year=parseInt(prefix+cnp.substring(1,3));
+  const month=parseInt(cnp.substring(3,5))-1;
+  const day=parseInt(cnp.substring(5,7));
+  const dob=new Date(year,month,day);
+  const today=new Date();
+  let age=today.getFullYear()-year;
+  if(today.getMonth()<month||(today.getMonth()==month&&today.getDate()<day))age--;
+  return age<18;
+}
+
+document.getElementById("idFront").addEventListener("change",()=>{
+  // DEMO AI RESPONSE (MINOR)
+  const data={
+    name:"TEST MINOR",
+    cnp:"5230101123456",
+    address:"București"
+  };
+
+  document.getElementById("cName").textContent=data.name;
+  document.getElementById("cCnp").textContent=data.cnp;
+  document.getElementById("cAddress").textContent=data.address;
+
+  document.getElementById("contractSection").style.display="block";
+  document.getElementById("contractBox").style.display="block";
+
+  const isMinor=isMinorFromCnp(data.cnp);
+  const signCheck=document.getElementById("contractSignCheck");
+
+  if(isMinor){
+    document.getElementById("minorSection").style.display="block";
+    signCheck.disabled=true;
+  }else{
+    signCheck.disabled=false;
+  }
+});
+
+document.getElementById("parentConsent").addEventListener("change",()=>{
+  document.getElementById("contractSignCheck").disabled=false;
+});
+
+function submitKYC(){
+  alert("KYC trimis (demo)");
+}
+</script>
+</body>
+</html>
