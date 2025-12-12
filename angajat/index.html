@@ -375,7 +375,7 @@
                         const role = (result.role || '').toLowerCase();
 
                         if (!kycDone || !contractSigned) {
-                            showPage('kyc');
+                            window.location.href='kyc/index.html'; return;
                         } else if (role === 'admin') {
                             showPage('admin');
                             loadAdminData();
@@ -483,7 +483,7 @@
                     const contractSigned = !!currentUser.contract_signed;
 
                     if (!kycDone || !contractSigned) {
-                        showPage('kyc');
+                        window.location.href='kyc/index.html'; return;
                     } else if (role === 'admin') {
                         showPage('admin');
                         loadAdminData();
