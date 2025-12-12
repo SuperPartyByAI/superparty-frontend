@@ -60,9 +60,7 @@
       outline: none;
     }
 
-    input::placeholder {
-      color: #6b7280;
-    }
+    input::placeholder { color: #6b7280; }
 
     input:focus {
       border-color: #3b82f6;
@@ -148,9 +146,7 @@
       <div id="error" class="error"></div>
     </form>
 
-    <p class="meta">
-      Probleme la autentificare? Contactează managerul SuperParty.
-    </p>
+    <p class="meta">Probleme la autentificare? Contactează managerul SuperParty.</p>
   </div>
 
   <script>
@@ -180,15 +176,56 @@
 
       errEl.style.display = 'none';
 
+      // Persistăm tot ce putem (compatibil vechi/nou)
       try {
-        localStorage.setItem('sp_user_email', response.email || '');
-        localStorage.setItem('sp_user_role',  response.role  || '');
-        localStorage.setItem('sp_user_status',response.status|| '');
+        const u = response.user ? response.user : response;
+
+        localStorage.setItem('sp_user', JSON.stringify(u));
+        localStorage.setItem('sp_user_email', u.email || response.email || '');
+        localStorage.setItem('sp_user_role',  (u.role  || response.role  || '').toString());
+        localStorage.setItem('sp_user_status',(u.status|| response.status|| '').toString());
       } catch (e) {
         console.warn('localStorage error', e);
       }
 
-      // Redirect în dashboard angajat
+      // ---- ROUTING CORECT PENTRU FLOW-UL TĂU ----
+      const u = response.user ? response.user : response;
+
+      const role = (u.role || '').toLowerCase();
+      const status = (u.status || '').toLowerCase();
+
+      // acceptă multiple formate pentru kyc/contract
+      const kycOk =
+        u.kyc_status === true ||
+        u.kyc_status === 'approved' ||
+        u.kyc_status === 'true' ||
+        u.kyc_status === 1;
+
+      const contractOk =
+        u.contract_signed === true ||
+        u.contract_signed === 'true' ||
+        u.contract_signed === 1 ||
+        u.contract_signed === 'signed';
+
+      const approvedOk =
+        !Object.prototype.hasOwnProperty.call(u, 'is_approved') ||
+        u.is_approved === true ||
+        u.is_approved === 'true' ||
+        u.is_approved === 1;
+
+      // Admin direct
+      if (role === 'admin') {
+        window.location.href = '/admin/index.html';
+        return;
+      }
+
+      // Nu e activ / nu e aprobat / nu are KYC+contract -> KYC dedicat
+      if (status !== 'active' || !approvedOk || !kycOk || !contractOk) {
+        window.location.href = '/angajat/kyc/index.html';
+        return;
+      }
+
+      // OK -> dashboard angajat
       window.location.href = '/angajat/index.html';
     }
 
@@ -212,6 +249,7 @@
       btn.disabled = true;
       btn.textContent = 'Se conectează...';
 
+      // JSONP call
       const script = document.createElement('script');
       const params = new URLSearchParams({
         action: 'login',
