@@ -346,48 +346,45 @@
     // ================== CONFIG ==================
     const AI_API_URL = "https://superparty-ai-backend-production.up.railway.app/api/ai";
 
-    const userEmail = localStorage.getItem("userEmail") || "ursache.andrei1995@gmail.com";
+    const userEmail = localStorage.getItem("userEmail") || "";
     const userMode = localStorage.getItem("userMode") || "employee";
 
-    if (!localStorage.getItem("userEmail")) {
-      localStorage.setItem("userEmail", userEmail);
-    }
-
-    // ================== DEV TOGGLE (în loc de hard-coded email) ==================
-    // 1 = bypass (nu redirectează la KYC)
+    // ================== DEV TOGGLE ==================
     const DEV_BYPASS_KYC = localStorage.getItem("devBypassKyc") === "1";
 
-    // ================== KYC GATE (robust + ruta corectă) ==================
-    function isKycOkFromUser(user) {
-      const raw = (user?.kyc_status ?? user?.kycStatus ?? "");
-      const kycVal = raw.toString().trim().toLowerCase();
-      return (
-        kycVal === "ok" ||
-        kycVal === "approved" ||
-        kycVal === "true" ||
-        kycVal === "1"
-      );
+    // ================== KYC GATE (REAL: uses sp_user from login) ==================
+    function _norm(v) { return (v ?? "").toString().trim().toLowerCase(); }
+    function _ok(v) {
+      const s = _norm(v);
+      return s === "1" || s === "true" || s === "ok" || s === "approved" || s === "signed" || s === "yes";
     }
 
     (function enforceKycGate() {
       try {
-        const email = (userEmail || "").trim();
-        if (!email) return;
-
-        // bypass controlat din localStorage
         if (DEV_BYPASS_KYC) return;
 
-        const raw = localStorage.getItem("sp_approved_users");
-        if (!raw) return;
+        const raw = localStorage.getItem("sp_user");
+        if (!raw) {
+          window.location.href = "/login.html";
+          return;
+        }
 
-        const approved = JSON.parse(raw);
-        if (!Array.isArray(approved)) return;
+        let u = null;
+        try { u = JSON.parse(raw); } catch (e) {}
 
-        const user = approved.find(u => (u.email || "").toLowerCase() === email.toLowerCase());
-        if (!user) return;
+        const email = _norm(u?.email || userEmail);
+        if (!email) {
+          window.location.href = "/login.html";
+          return;
+        }
 
-        if (!isKycOkFromUser(user)) {
+        const status = _norm(u?.status);
+        const kycOk = _ok(u?.kyc_status);
+        const contractOk = _ok(u?.contract_signed);
+
+        if (status !== "active" || !kycOk || !contractOk) {
           window.location.href = "/angajat/kyc/index.html";
+          return;
         }
       } catch (e) {
         console.error("Eroare la enforceKycGate:", e);
