@@ -5,11 +5,7 @@
   <title>SuperParty - Dashboard angajat</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -36,36 +32,11 @@
       overflow: hidden;
     }
 
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .header-left {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .hello {
-      font-size: 20px;
-      font-weight: 600;
-    }
-
-    .sub {
-      font-size: 13px;
-      color: #9ca3af;
-    }
-
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 12px;
-      color: #9ca3af;
-    }
+    .header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .header-left { display: flex; flex-direction: column; gap: 4px; }
+    .hello { font-size: 20px; font-weight: 600; }
+    .sub { font-size: 13px; color: #9ca3af; }
+    .header-right { display: flex; align-items: center; gap: 10px; font-size: 12px; color: #9ca3af; }
 
     .pill {
       padding: 5px 10px;
@@ -77,11 +48,7 @@
       gap: 6px;
     }
 
-    .layout {
-      display: grid;
-      grid-template-columns: minmax(0, 2.1fr) minmax(0, 1.3fr);
-      gap: 18px;
-    }
+    .layout { display: grid; grid-template-columns: minmax(0, 2.1fr) minmax(0, 1.3fr); gap: 18px; }
 
     .card {
       background: #020617;
@@ -91,23 +58,10 @@
       box-shadow: 0 16px 40px rgba(15,23,42,0.7);
     }
 
-    .card-title {
-      font-size: 14px;
-      font-weight: 500;
-      margin-bottom: 6px;
-    }
+    .card-title { font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+    .card-sub { font-size: 12px; color: #9ca3af; margin-bottom: 12px; }
 
-    .card-sub {
-      font-size: 12px;
-      color: #9ca3af;
-      margin-bottom: 12px;
-    }
-
-    .stats-row {
-      display: flex;
-      gap: 8px;
-      margin-top: 4px;
-    }
+    .stats-row { display: flex; gap: 8px; margin-top: 4px; }
 
     .stat-pill {
       flex: 1;
@@ -121,21 +75,10 @@
       gap: 3px;
     }
 
-    .stat-label {
-      color: #9ca3af;
-    }
+    .stat-label { color: #9ca3af; }
+    .stat-value { font-size: 13px; font-weight: 600; }
 
-    .stat-value {
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .events-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 6px;
-    }
+    .events-list { display: flex; flex-direction: column; gap: 10px; margin-top: 6px; }
 
     .event-item {
       border-radius: 12px;
@@ -146,39 +89,14 @@
       cursor: pointer;
     }
 
-    .event-title {
-      font-size: 13px;
-      font-weight: 500;
-      margin-bottom: 2px;
-    }
+    .event-title { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
 
-    .event-line {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      color: #9ca3af;
-      margin-top: 2px;
-    }
+    .event-line { display: flex; gap: 10px; align-items: center; color: #9ca3af; margin-top: 2px; }
+    .event-line span { display: inline-flex; align-items: center; gap: 4px; }
 
-    .event-line span {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
+    .event-id { font-size: 11px; color: #9ca3af; margin-top: 4px; }
 
-    .event-id {
-      font-size: 11px;
-      color: #9ca3af;
-      margin-top: 4px;
-    }
-
-    .event-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 8px;
-      font-size: 11px;
-    }
+    .event-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-size: 11px; }
 
     .event-ai-btn {
       padding: 4px 8px;
@@ -186,6 +104,7 @@
       background: rgba(37,99,235,0.25);
       border: 1px solid rgba(59,130,246,0.7);
       cursor: pointer;
+      color: #e5e7eb;
     }
 
     .kyc-box {
@@ -198,7 +117,6 @@
     }
 
     /* ================== AI CHAT FLOATING ================== */
-
     .ai-toggle-btn {
       position: fixed;
       right: 26px;
@@ -215,10 +133,7 @@
       cursor: pointer;
       z-index: 50;
     }
-
-    .ai-toggle-btn span {
-      font-size: 26px;
-    }
+    .ai-toggle-btn span { font-size: 26px; }
 
     .ai-chat-wrapper {
       position: fixed;
@@ -246,11 +161,7 @@
       background: radial-gradient(circle at top left, rgba(37,99,235,0.7) 0, #020617 60%);
     }
 
-    .ai-chat-header-left {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+    .ai-chat-header-left { display: flex; align-items: center; gap: 8px; }
 
     .ai-avatar {
       width: 26px;
@@ -264,21 +175,10 @@
       font-size: 15px;
     }
 
-    .ai-header-text {
-      display: flex;
-      flex-direction: column;
-      font-size: 11px;
-    }
+    .ai-header-text { display: flex; flex-direction: column; font-size: 11px; }
+    .ai-header-text strong { font-size: 12px; }
 
-    .ai-header-text strong {
-      font-size: 12px;
-    }
-
-    .ai-header-close {
-      cursor: pointer;
-      font-size: 16px;
-      color: #e5e7eb;
-    }
+    .ai-header-close { cursor: pointer; font-size: 16px; color: #e5e7eb; }
 
     .ai-chat-body {
       padding: 10px;
@@ -297,27 +197,10 @@
       max-width: 92%;
       white-space: pre-wrap;
     }
+    .ai-msg.ai { background: #020617; border: 1px solid #1f2937; align-self: flex-start; }
+    .ai-msg.user { background: linear-gradient(135deg, #2563eb, #1d4ed8); border: 1px solid rgba(147,197,253,0.8); align-self: flex-end; }
 
-    .ai-msg.ai {
-      background: #020617;
-      border: 1px solid #1f2937;
-      align-self: flex-start;
-    }
-
-    .ai-msg.user {
-      background: linear-gradient(135deg, #2563eb, #1d4ed8);
-      border: 1px solid rgba(147,197,253,0.8);
-      align-self: flex-end;
-    }
-
-    .ai-chat-footer {
-      border-top: 1px solid #111827;
-      padding: 8px;
-      display: flex;
-      gap: 6px;
-      background: #020617;
-    }
-
+    .ai-chat-footer { border-top: 1px solid #111827; padding: 8px; display: flex; gap: 6px; background: #020617; }
     .ai-chat-footer input {
       flex: 1;
       border-radius: 999px;
@@ -328,7 +211,6 @@
       padding: 6px 10px;
       outline: none;
     }
-
     .ai-chat-footer button {
       border-radius: 999px;
       border: none;
@@ -339,24 +221,12 @@
       cursor: pointer;
     }
 
-    .ai-hint {
-      font-size: 10px;
-      color: #6b7280;
-      padding: 0 10px 6px;
-    }
+    .ai-hint { font-size: 10px; color: #6b7280; padding: 0 10px 6px; }
 
     @media (max-width: 800px) {
-      .layout {
-        grid-template-columns: minmax(0, 1fr);
-      }
-      .page {
-        padding: 14px 12px 20px;
-      }
-      .ai-chat-wrapper {
-        right: 10px;
-        left: 10px;
-        width: auto;
-      }
+      .layout { grid-template-columns: minmax(0, 1fr); }
+      .page { padding: 14px 12px 20px; }
+      .ai-chat-wrapper { right: 10px; left: 10px; width: auto; }
     }
   </style>
 </head>
@@ -374,7 +244,6 @@
     </div>
 
     <div class="layout">
-      <!-- Col stânga: evenimente -->
       <div class="card">
         <div class="card-title">Evenimentele tale</div>
         <div class="card-sub">Exemplu de evenimente (în viitor le luăm direct din Sheets)</div>
@@ -423,7 +292,6 @@
         </div>
       </div>
 
-      <!-- Col dreapta: rezumat + KYC -->
       <div class="card">
         <div class="card-title">Rezumat cont & KYC</div>
         <div class="card-sub">Aici vezi status KYC / contract și poți cere clarificări AI-ului.</div>
@@ -441,12 +309,10 @@
     </div>
   </div>
 
-  <!-- Buton AI (robot) -->
   <div class="ai-toggle-btn" id="aiToggleBtn" title="Deschide SuperParty AI">
     <span>🤖</span>
   </div>
 
-  <!-- Chat AI floating -->
   <div class="ai-chat-wrapper" id="aiChat">
     <div class="ai-chat-header">
       <div class="ai-chat-header-left">
@@ -479,22 +345,29 @@
     const userEmail = localStorage.getItem("userEmail") || "ursache.andrei1995@gmail.com";
     const userMode = localStorage.getItem("userMode") || "employee";
 
-    // Asigurăm că emailul este salvat în localStorage pentru acces GM
     if (!localStorage.getItem("userEmail")) {
       localStorage.setItem("userEmail", userEmail);
     }
 
-    // ================== GATE KYC (doar pentru useri aprobați local) ==================
+    // ================== KYC GATE (robust + ruta corectă) ==================
+    function isKycOkFromUser(user) {
+      const raw = (user?.kyc_status ?? user?.kycStatus ?? "");
+      const kycVal = raw.toString().trim().toLowerCase();
+      return (
+        kycVal === "ok" ||
+        kycVal === "approved" ||
+        kycVal === "true" ||
+        kycVal === "1"
+      );
+    }
+
     (function enforceKycGate() {
       try {
-        const email = userEmail || "";
+        const email = (userEmail || "").trim();
         if (!email) return;
 
-        // Nu blocăm nimic pentru tine (Andrei) sau alte cazuri speciale,
-        // pentru a nu încurca dezvoltarea.
-        if (email.toLowerCase() === "ursache.andrei1995@gmail.com") {
-          return;
-        }
+        // Bypass dev pentru tine (păstrezi comportamentul actual)
+        if (email.toLowerCase() === "ursache.andrei1995@gmail.com") return;
 
         const raw = localStorage.getItem("sp_approved_users");
         if (!raw) return;
@@ -505,9 +378,9 @@
         const user = approved.find(u => (u.email || "").toLowerCase() === email.toLowerCase());
         if (!user) return;
 
-        if (user.kycStatus && user.kycStatus !== "ok") {
-          // user aprobat, dar fără KYC ok -> îl trimitem la pagina de KYC
-          window.location.href = "/angajat/kyc.html";
+        // dacă user e aprobat dar KYC nu e ok -> KYC page
+        if (!isKycOkFromUser(user)) {
+          window.location.href = "/angajat/kyc/index.html";
         }
       } catch (e) {
         console.error("Eroare la enforceKycGate:", e);
@@ -565,14 +438,12 @@
         const data = await res.json();
         let reply = data.reply || "";
 
-        // === Mod GM ===
         if (reply.includes("__MODE_GM__")) {
           addMessage("Acces GM permis. Deschid modul GM...", "ai");
           openGmMode();
           return;
         }
 
-        // === Mod ADMIN ===
         if (reply.includes("__MODE_ADMIN__")) {
           addMessage("Acces ADMIN permis. Deschid modul ADMIN...", "ai");
           openAdminMode();
