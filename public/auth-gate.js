@@ -1,6 +1,6 @@
 // public/auth-gate.js
-// Se include DOAR pe paginile protejate care au flow: waiting / kyc / dashboard
-// Necesită: /sp-config.js + /auth.js încărcate înainte.
+// Se include DOAR pe paginile protejate (waiting / kyc / dashboard).
+// Necesită înainte: <script src="/sp-config.js"></script> + <script src="/auth.js"></script>
 
 (function () {
   "use strict";
@@ -12,6 +12,7 @@
     dashboard: "/dashboard.html",
   });
 
+  // Require auth (compatibil cu auth.js-ul tău)
   if (!window.auth || !auth.isLoggedIn()) {
     window.location.href = routes.login;
     return;
@@ -32,6 +33,7 @@
     if (t && path !== t) window.location.href = to;
   }
 
+  // grupuri status (ca să nu se rupă când mai adaugi variante)
   const isPendingAdmin =
     status === "pending_admin" ||
     status === "pending" ||
@@ -48,13 +50,28 @@
     status === "approved" ||
     status === "ok";
 
-  if (isPendingAdmin) { go(P.waiting); return; }
-  if (isKycNeeded) { go(P.kyc); return; }
-
-  if (isOk) {
-    if (path === P.waiting.toLowerCase() || path === P.kyc.toLowerCase()) go(P.dash);
+  // 1) dacă e pending admin -> merge doar pe waiting
+  if (isPendingAdmin) {
+    go(P.waiting);
     return;
   }
 
-  if (path === P.waiting.toLowerCase() || path === P.kyc.toLowerCase()) go(P.dash);
+  // 2) dacă trebuie KYC -> merge doar pe kyc
+  if (isKycNeeded) {
+    go(P.kyc);
+    return;
+  }
+
+  // 3) dacă e ok -> nu are voie să stea pe waiting/kyc
+  if (isOk) {
+    if (path === P.waiting.toLowerCase() || path === P.kyc.toLowerCase()) {
+      go(P.dash);
+    }
+    return;
+  }
+
+  // fallback: status necunoscut -> trimitem în dashboard
+  if (path === P.waiting.toLowerCase() || path === P.kyc.toLowerCase()) {
+    go(P.dash);
+  }
 })();
