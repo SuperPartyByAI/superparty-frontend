@@ -290,8 +290,12 @@ PĂRINTE/TUTORE (dacă este cazul): ___________________________
 /** CONFIG */
 const BACKEND_BASE_URL = "https://superparty-ai-backend-production.up.railway.app";
 
-/** HARD GATE: dacă nu e logat, auth-gate.js a făcut deja redirect.
-    Dar păstrăm o verificare minimă în caz că pagina e accesată fără gate. */
+/** IMPORTANT:
+    Dacă backend-ul NU are endpoint-ul /api/kyc/status, lăsăm pe false ca să NU mai apară 404 în console.
+    Când implementezi endpoint-ul, pui pe true. */
+const ENABLE_KYC_STATUS_PRELOAD = false;
+
+/** HARD GATE: dacă nu e logat, auth-gate.js a făcut deja redirect. */
 (function hardGate() {
   try {
     if (window.auth && typeof window.auth.requireAuth === "function") {
@@ -383,20 +387,24 @@ function updateContractPeriod(){
 }
 updateContractPeriod();
 
-/** Existing docs (optional preload from backend if you add endpoint) */
+/** Existing docs (optional preload) */
 let existingDocs = {
   parentConsent: null, // { url, uploadedAt }
   driver: { record: null } // { url, uploadedAt }
 };
 
 async function preloadExistingDocs(){
+  if (!ENABLE_KYC_STATUS_PRELOAD) return;
+
   const { token } = getSession();
   if (!token) return;
+
   try {
     const r = await fetch(`${BACKEND_BASE_URL}/api/kyc/status`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     if (!r.ok) return;
+
     const j = await r.json().catch(()=>null);
     if (!j || j.success === false) return;
 
@@ -408,7 +416,6 @@ async function preloadExistingDocs(){
 
     const rec = docs.driver?.record || docs.record || docs.cazier || null;
     if (rec?.uploadedAt) existingDocs.driver.record = rec;
-
   } catch(e) {}
 }
 
@@ -438,12 +445,15 @@ function refreshDocRequirements(){
   }
 
   const driverCheck = document.getElementById('driverCheck');
+  const licenseInput = document.getElementById('license');
   const recordInput = document.getElementById('record');
   const recordCard = document.getElementById('recordCard');
   const recordStatus = document.getElementById('recordStatus');
   const wantsDriver = !!(driverCheck && driverCheck.checked);
 
   if (wantsDriver) {
+    if (licenseInput) licenseInput.required = true;
+
     const rec = existingDocs.driver.record;
     const valid = rec && isRecordValid(rec.uploadedAt);
 
@@ -460,6 +470,7 @@ function refreshDocRequirements(){
       if (recordCard) recordCard.style.opacity = '1';
     }
   } else {
+    if (licenseInput) licenseInput.required = false;
     if (recordStatus) recordStatus.textContent = '—';
     if (recordInput) recordInput.required = false;
     if (recordCard) recordCard.style.opacity = '1';
@@ -489,6 +500,7 @@ const fixBoxEl = document.getElementById('aiFixBox');
 const reanalyseBtn = document.getElementById('reanalyseBtn');
 const retryPhotoBtn = document.getElementById('retryPhotoBtn');
 const minorSectionEl = document.getElementById('minorSection');
+const driverCheck = document.getElementById('driverCheck');
 
 let lastIdFrontFile = null;
 
@@ -499,6 +511,7 @@ async function processIdFront(file) {
 
   lastIdFrontFile = file;
 
+  // DEMO (înlocuiești cu extract real când ai endpoint)
   const fakeAiResponse = {
     success: true,
     data: {
@@ -621,7 +634,6 @@ if (parentConsentInput) {
   });
 }
 
-const driverCheck = document.getElementById('driverCheck');
 if (driverCheck) {
   driverCheck.addEventListener('change', () => toggleDriverSection(driverCheck.checked));
 }
@@ -658,6 +670,12 @@ async function submitKYC() {
     return;
   }
 
+  const cnp = (document.getElementById("aiCnp")?.textContent || "").trim();
+  if (!cnp) {
+    pageMsg("Încarcă Buletin – Față ca să se extragă datele (CNP) înainte de trimitere.", "error");
+    return;
+  }
+
   const signCheck = document.getElementById("contractSignCheck");
   if (!signCheck || signCheck.disabled || !signCheck.checked) {
     pageMsg("Trebuie să citești contractul și să bifezi acordul (și acord parental dacă ești minor).", "error");
@@ -672,7 +690,6 @@ async function submitKYC() {
     return;
   }
 
-  const cnp = (document.getElementById("aiCnp")?.textContent || "").trim();
   const isMinor = isMinorFromCnp(cnp);
 
   const parentConsentFile = document.getElementById("parentConsent")?.files?.[0] || null;
@@ -686,6 +703,11 @@ async function submitKYC() {
   const wantsDriver = !!(driverCheck && driverCheck.checked);
   const licenseFile = document.getElementById("license")?.files?.[0] || null;
   const recordFile  = document.getElementById("record")?.files?.[0] || null;
+
+  if (wantsDriver && !licenseFile) {
+    pageMsg("Ești șofer: permisul este obligatoriu.", "error");
+    return;
+  }
 
   const recordValidInSystem =
     !!(existingDocs && existingDocs.driver && existingDocs.driver.record && existingDocs.driver.record.uploadedAt) &&
