@@ -1,6 +1,6 @@
-// auth-gate.js (ROOT)
+// public/auth-gate.js
 // Se include DOAR pe paginile protejate care au flow: waiting / kyc / dashboard
-// Necesită: sp-config.js + auth.js încărcate înainte.
+// Necesită: /sp-config.js + /auth.js încărcate înainte.
 
 (function () {
   "use strict";
@@ -12,7 +12,6 @@
     dashboard: "/dashboard.html",
   });
 
-  // "requireAuth" compatibil cu auth.js-ul tău
   if (!window.auth || !auth.isLoggedIn()) {
     window.location.href = routes.login;
     return;
@@ -49,25 +48,13 @@
     status === "approved" ||
     status === "ok";
 
-  if (isPendingAdmin) {
-    go(P.waiting);
-    return;
-  }
-
-  if (isKycNeeded) {
-    go(P.kyc);
-    return;
-  }
+  if (isPendingAdmin) { go(P.waiting); return; }
+  if (isKycNeeded) { go(P.kyc); return; }
 
   if (isOk) {
-    if (path === P.waiting.toLowerCase() || path === P.kyc.toLowerCase()) {
-      go(P.dash);
-    }
+    if (path === P.waiting.toLowerCase() || path === P.kyc.toLowerCase()) go(P.dash);
     return;
   }
 
-  // fallback status necunoscut
-  if (path === P.waiting.toLowerCase() || path === P.kyc.toLowerCase()) {
-    go(P.dash);
-  }
+  if (path === P.waiting.toLowerCase() || path === P.kyc.toLowerCase()) go(P.dash);
 })();
