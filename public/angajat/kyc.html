@@ -444,12 +444,12 @@ function refreshDocRequirements(){
     }
   }
 
-  const driverCheck = document.getElementById('driverCheck');
+  const driverCheckLocal = document.getElementById('driverCheck');
   const licenseInput = document.getElementById('license');
   const recordInput = document.getElementById('record');
   const recordCard = document.getElementById('recordCard');
   const recordStatus = document.getElementById('recordStatus');
-  const wantsDriver = !!(driverCheck && driverCheck.checked);
+  const wantsDriver = !!(driverCheckLocal && driverCheckLocal.checked);
 
   if (wantsDriver) {
     if (licenseInput) licenseInput.required = true;
@@ -749,8 +749,13 @@ async function submitKYC() {
       body: fd
     });
 
+    console.log("KYC submit HTTP:", res.status);
+
+    // IMPORTANT: citește RAW ca să vezi eroarea reală la 500 (poate fi text/html)
+    let raw = "";
     let data = null;
-    try { data = await res.json(); } catch(e) { data = null; }
+    try { raw = await res.text(); } catch(e) { raw = ""; }
+    try { data = raw ? JSON.parse(raw) : null; } catch(e) { data = null; }
 
     if (res.status === 401 || res.status === 403) {
       try { localStorage.removeItem("sp_token"); } catch(e){}
@@ -760,7 +765,9 @@ async function submitKYC() {
     }
 
     if (!res.ok || !data || data.success === false) {
-      const msg = (data && (data.error || data.message)) ? (data.error || data.message) : `Nu am putut trimite KYC-ul (HTTP ${res.status}).`;
+      const msg =
+        (data && (data.error || data.message)) ? (data.error || data.message)
+        : (raw ? raw.slice(0, 800) : `Nu am putut trimite KYC-ul (HTTP ${res.status}).`);
       pageMsg(msg, "error");
       return;
     }
