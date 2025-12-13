@@ -1,5 +1,5 @@
-// login.logic.js (ROOT)
-// Păstrează vizualul tău, doar schimbă modul de login (prin auth.js)
+// public/login.logic.js (ROOT)
+// Login stabil: Bridge -> (user + token) -> localStorage(sp_user + sp_token) -> redirect
 
 (function () {
   "use strict";
@@ -11,11 +11,65 @@
     login: "/login.html",
     admin: "/admin/index.html",
     angajatHome: "/angajat/index.html",
-    angajatKyc: "/angajat/kyc/index.html"
+    // IMPORTANT: în proiectul tău KYC este aici:
+    angajatKyc: "/angajat/kyc.html"
   };
 
   function setMsg(t) {
     if (msg) msg.textContent = t || "";
+  }
+
+  function safeLower(v) {
+    return String(v || "").toLowerCase();
+  }
+
+  function normalizeToken(res) {
+    return (
+      (res && typeof res.token === "string" && res.token) ||
+      (res && typeof res.jwt === "string" && res.jwt) ||
+      (res && typeof res.accessToken === "string" && res.accessToken) ||
+      (res && typeof res.access_token === "string" && res.access_token) ||
+      ""
+    );
+  }
+
+  function normalizeUser(res, emailFallback) {
+    const u = (res && res.user) ? res.user : (res || {});
+    const email = u.email || emailFallback || "";
+
+    return {
+      id: u.id ?? u.user_id ?? u.userId ?? null,
+      full_name: u.full_name ?? u.fullName ?? u.name ?? "",
+      phone: u.phone ?? u.telefon ?? "",
+      email,
+      role: safeLower(u.role || ""),
+      status: safeLower(u.status || ""),
+      kyc_status: safeLower(u.kyc_status || u.kycStatus || ""),
+      contract_signed: safeLower(u.contract_signed || u.contractSigned || ""),
+      is_approved: u.is_approved ?? u.isApproved ?? "",
+      updatedAt: Date.now(),
+      raw: u
+    };
+  }
+
+  async function bridgeLogin(email, password) {
+    const r = await fetch("/api/bridge?action=login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+
+    const j = await r.json().catch(() => null);
+
+    if (!r.ok) {
+      return {
+        success: false,
+        status: r.status,
+        error: (j && j.error) ? j.error : "Login eșuat."
+      };
+    }
+
+    return j; // așteptat: {success:true, user:{...}, token:"..."}
   }
 
   if (!btn) {
@@ -36,28 +90,39 @@
     setMsg("Se autentifică...");
 
     try {
-      // 1) Login prin SDK (salvează sp_token + user backend în sp_user)
-      const u = await auth.login(email, password);
+      // curățăm doar ca să nu rămâi cu user fără token
+      try {
+        localStorage.removeItem("sp_user");
+        localStorage.removeItem("sp_token");
+      } catch {}
 
-      // 2) Păstrăm COMPATIBILITATE cu forma ta de sp_user (ca să nu rupi paginile existente)
-      const spUser = {
-        id: u.id ?? u.user_id ?? u.userId ?? null,
-        full_name: u.full_name ?? u.fullName ?? u.name ?? "",
-        phone: u.phone ?? u.telefon ?? "",
-        email: (u.email || email),
-        role: String(u.role || "").toLowerCase(),
-        status: String(u.status || "").toLowerCase(),
-        kyc_status: String(u.kyc_status || u.kycStatus || "").toLowerCase(),
-        contract_signed: String(u.contract_signed || u.contractSigned || "").toLowerCase(),
-        is_approved: u.is_approved ?? u.isApproved ?? "",
-        updatedAt: Date.now()
-      };
+      const res = await bridgeLogin(email, password);
 
-      // suprascriem sp_user cu forma compatibilă (tokenul rămâne în sp_token din auth.js)
+      if (!res || res.success !== true) {
+        setMsg((res && res.error) ? res.error : "Email sau parolă incorecte.");
+        return;
+      }
+
+      const token = normalizeToken(res);
+      const spUser = normalizeUser(res, email);
+
+      if (!token || token.length < 20) {
+        setMsg("Login OK dar lipsește token-ul (JWT). Nu pot crea sesiune.");
+        return;
+      }
+
+      // salvăm sesiunea REALĂ
+      localStorage.setItem("sp_token", token);
       localStorage.setItem("sp_user", JSON.stringify(spUser));
-      localStorage.setItem("userEmail", spUser.email); // dacă ai cod vechi care folosește asta
 
-      // 3) Redirect exact ca la tine
+      // compatibilitate chei vechi
+      localStorage.setItem("userEmail", spUser.email);
+      if (spUser.full_name) localStorage.setItem("userFullName", spUser.full_name);
+      if (spUser.role) localStorage.setItem("superparty_user_role", spUser.role);
+      localStorage.setItem("loggedUserEmail", spUser.email);
+      localStorage.setItem("superparty_user_email", spUser.email);
+
+      // redirect
       if (spUser.role === "admin") {
         location.href = routes.admin;
         return;
@@ -74,7 +139,7 @@
       }
     } catch (e) {
       console.error(e);
-      setMsg("Eroare login (token/user invalid sau rețea).");
+      setMsg("Eroare login (rețea/bridge).");
     } finally {
       btn.disabled = false;
     }
