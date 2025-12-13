@@ -266,12 +266,12 @@ function readLSJson(key){
   catch(e) { return null; }
 }
 function getSession(){
-  const token = String(localStorage.getItem("sp_token") || "");
+  const token = String(localStorage.getItem("sp_token") || "").trim();
   const user  = readLSJson("sp_user");
-  const email = (user && user.email) ? String(user.email) : "";
+  const email = (user && user.email) ? String(user.email).trim() : "";
   const fullName =
     (user && (user.full_name || user.fullName || user.name))
-      ? String(user.full_name || user.fullName || user.name)
+      ? String(user.full_name || user.fullName || user.name).trim()
       : "";
   return { token, user, email, fullName };
 }
@@ -378,11 +378,11 @@ function refreshDocRequirements(){
     }
   }
 
-  const driverCheck = document.getElementById('driverCheck');
+  const driverCheckLocal = document.getElementById('driverCheck');
   const recordInput = document.getElementById('record');
   const recordCard = document.getElementById('recordCard');
   const recordStatus = document.getElementById('recordStatus');
-  const wantsDriver = !!(driverCheck && driverCheck.checked);
+  const wantsDriver = !!(driverCheckLocal && driverCheckLocal.checked);
 
   if (wantsDriver) {
     const rec = existingDocs.driver.record;
@@ -638,7 +638,7 @@ async function submitKYC() {
     const res = await fetch(`${BACKEND_BASE_URL}/api/kyc/submit`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${token}`
+        "Authorization": `Bearer ${token}`
       },
       body: fd
     });
