@@ -255,13 +255,31 @@ PĂRINTE/TUTORE (dacă este cazul): ___________________________
 </div>
 
 <script>
+"use strict";
+
 /** CONFIG */
 const BACKEND_BASE_URL = "https://superparty-ai-backend-production.up.railway.app";
 
-/** LOGIN CHECK (ca în vechiul flow) */
+/** SESSION (sp_user/sp_token) */
+function readLSJson(key){
+  try { return JSON.parse(localStorage.getItem(key) || "null"); }
+  catch(e) { return null; }
+}
+function getSession(){
+  const token = String(localStorage.getItem("sp_token") || "");
+  const user  = readLSJson("sp_user");
+  const email = (user && user.email) ? String(user.email) : "";
+  const fullName =
+    (user && (user.full_name || user.fullName || user.name))
+      ? String(user.full_name || user.fullName || user.name)
+      : "";
+  return { token, user, email, fullName };
+}
+
+/** LOGIN CHECK (ALINIAT la sesiunea reală) */
 (function enforceLogin() {
-  const emailLS = localStorage.getItem("userEmail") || "";
-  if (!emailLS) {
+  const { email, token } = getSession();
+  if (!email || !token) {
     window.location.replace("/login.html");
     return;
   }
@@ -322,7 +340,6 @@ function updateContractPeriod(){
   const y = now.getFullYear();
   const m = now.getMonth();
 
-  // dacă azi e înainte de 15, perioada e 15 luna trecută -> 14 luna curentă
   const isBefore15 = now.getDate() < 15;
 
   const from = isBefore15 ? new Date(y, m - 1, 15, 0, 0, 0) : new Date(y, m, 15, 0, 0, 0);
@@ -333,10 +350,7 @@ function updateContractPeriod(){
 }
 updateContractPeriod();
 
-/**
- * (DEMO) status documente existente în sistem.
- * Când vrei, îl legăm din backend: GET /api/kyc/status.
- */
+/** (DEMO) status documente existente în sistem. */
 let existingDocs = {
   parentConsent: null, // { url, uploadedAt }
   driver: { record: null } // { url, uploadedAt }
@@ -409,11 +423,6 @@ const minorSectionEl = document.getElementById('minorSection');
 
 let lastIdFrontFile = null;
 
-/**
- * IMPORTANT:
- * Aici ai “extract” DEMO ca să funcționeze imediat UI-ul.
- * Când ai endpoint-ul real /api/kyc/extract-id, îl înlocuim.
- */
 async function processIdFront(file) {
   if (!file) return;
 
@@ -447,7 +456,6 @@ async function processIdFront(file) {
   document.getElementById('aiIssued').textContent = d.issuedAt;
   document.getElementById('aiExpire').textContent = d.expiresAt;
 
-  // Contract fields set 1
   document.getElementById('cName1').textContent = d.firstName + ' ' + d.lastName;
   document.getElementById('cCnp1').textContent = d.cnp;
   document.getElementById('cAddress1').textContent = d.address;
@@ -456,7 +464,6 @@ async function processIdFront(file) {
   document.getElementById('cIssued1').textContent = d.issuedAt;
   document.getElementById('cExpire1').textContent = d.expiresAt;
 
-  // Contract fields set 2 (în textul contractului)
   document.getElementById('cName2').textContent = d.firstName + ' ' + d.lastName;
   document.getElementById('cCnp2').textContent = d.cnp;
   document.getElementById('cAddress2').textContent = d.address;
@@ -483,7 +490,7 @@ async function processIdFront(file) {
 
   if (isMinor) {
     if (minorSectionEl) minorSectionEl.style.display = 'block';
-    if (signCheck) signCheck.disabled = true; // rămâne blocat până există acord parental
+    if (signCheck) signCheck.disabled = true;
   } else {
     if (minorSectionEl) minorSectionEl.style.display = 'none';
     if (signCheck) signCheck.disabled = false;
@@ -566,8 +573,8 @@ if (contractTrigger && contractBoxEl && contractTriggerIcon) {
 
 /** SUBMIT REAL: POST /api/kyc/submit (multipart) */
 async function submitKYC() {
-  const emailLS = localStorage.getItem("userEmail") || "";
-  if (!emailLS) { window.location.replace("/login.html"); return; }
+  const { email, token, fullName: sessionFullName } = getSession();
+  if (!email || !token) { window.location.replace("/login.html"); return; }
 
   const signCheck = document.getElementById("contractSignCheck");
   if (!signCheck || signCheck.disabled || !signCheck.checked) {
@@ -604,8 +611,11 @@ async function submitKYC() {
   }
 
   const fd = new FormData();
-  fd.set("email", emailLS);
-  fd.set("fullName", (document.getElementById("aiName")?.textContent || "").trim() || localStorage.getItem("userFullName") || "");
+  fd.set("email", email);
+  fd.set(
+    "fullName",
+    (document.getElementById("aiName")?.textContent || "").trim() || sessionFullName || ""
+  );
   fd.set("cnp", cnp);
   fd.set("address", (document.getElementById("aiAddress")?.textContent || "").trim());
 
@@ -627,6 +637,9 @@ async function submitKYC() {
   try {
     const res = await fetch(`${BACKEND_BASE_URL}/api/kyc/submit`, {
       method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
       body: fd
     });
 
@@ -636,6 +649,11 @@ async function submitKYC() {
     }
 
     try { localStorage.setItem("userKycStatus", "pending"); } catch(e){}
+    try {
+      const u = readLSJson("sp_user");
+      if (u) { u.status = "pending"; localStorage.setItem("sp_user", JSON.stringify(u)); }
+    } catch(e){}
+
     alert("✅ KYC trimis cu succes. Vei fi redirecționat.");
     window.location.href = "/angajat/pending.html";
 
