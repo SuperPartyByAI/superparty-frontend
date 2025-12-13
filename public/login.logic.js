@@ -11,7 +11,6 @@
     login: "/login.html",
     admin: "/admin/index.html",
     angajatHome: "/angajat/index.html",
-    // IMPORTANT: în proiectul tău KYC este aici:
     angajatKyc: "/angajat/kyc.html"
   };
 
@@ -69,7 +68,7 @@
       };
     }
 
-    return j; // așteptat: {success:true, user:{...}, token:"..."}
+    return j; // {success:true, user:{...}, token:"..."}
   }
 
   if (!btn) {
@@ -90,7 +89,7 @@
     setMsg("Se autentifică...");
 
     try {
-      // curățăm doar ca să nu rămâi cu user fără token
+      // curățăm sesiunea ca să nu rămâi cu user fără token
       try {
         localStorage.removeItem("sp_user");
         localStorage.removeItem("sp_token");
@@ -111,7 +110,6 @@
         return;
       }
 
-      // salvăm sesiunea REALĂ
       localStorage.setItem("sp_token", token);
       localStorage.setItem("sp_user", JSON.stringify(spUser));
 
@@ -122,7 +120,6 @@
       localStorage.setItem("loggedUserEmail", spUser.email);
       localStorage.setItem("superparty_user_email", spUser.email);
 
-      // redirect
       if (spUser.role === "admin") {
         location.href = routes.admin;
         return;
