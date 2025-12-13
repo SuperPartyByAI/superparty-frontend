@@ -230,7 +230,7 @@
     </div>
 
     <script>
-        const BACKEND_URL = '/api/gas_wp';
+        const BACKEND_URL = (window.SUPERPARTY_BACKEND_URL || "https://superparty-ai-backend-production.up.railway.app");
 
         let currentUser = null;
 
