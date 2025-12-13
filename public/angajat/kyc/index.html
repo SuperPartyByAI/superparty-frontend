@@ -1,14 +1,29 @@
 // public/auth-gate.js
 // Se include DOAR pe paginile protejate.
-// Necesită <script src="/auth.js"></script> înainte.
+// Necesită <script src="/sp-config.js"></script> și <script src="/auth.js"></script> înainte.
 
 (function () {
   "use strict";
 
-  const user = auth.requireAuth(); // dacă nu e logat -> redirect /login.html
-  if (!user) return;
+  // Dacă SDK-ul nu e încărcat corect, nu putem valida sesiunea.
+  if (!window.auth) {
+    window.location.href = "/login.html";
+    return;
+  }
 
-  const status = user.status ? String(user.status) : "";
+  // Dacă nu e logat -> redirect /login.html
+  if (!auth.isLoggedIn()) {
+    window.location.href = "/login.html";
+    return;
+  }
+
+  const user = auth.getUser();
+  if (!user) {
+    window.location.href = "/login.html";
+    return;
+  }
+
+  const status = user.status ? String(user.status).toLowerCase() : "";
   const path = (window.location.pathname || "").toLowerCase();
 
   // paginile tale (le poți redenumi aici o singură dată dacă schimbi ceva pe viitor)
@@ -19,7 +34,8 @@
   };
 
   function go(to) {
-    if (path !== to.toLowerCase()) window.location.href = to;
+    const target = String(to || "").toLowerCase();
+    if (target && path !== target) window.location.href = to;
   }
 
   // grupuri status (ca să nu se rupă când mai adaugi variante)
