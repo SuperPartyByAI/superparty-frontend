@@ -27,7 +27,9 @@ export default async function handler(req, res) {
         data += chunk;
         // safety cap ~2MB
         if (data.length > 2 * 1024 * 1024) {
-          try { req.destroy(); } catch {}
+          try {
+            req.destroy();
+          } catch {}
           resolve("");
         }
       });
@@ -42,13 +44,21 @@ export default async function handler(req, res) {
 
     if (Buffer.isBuffer(b)) {
       const s = b.toString("utf8");
-      try { return s ? JSON.parse(s) : {}; } catch { return {}; }
+      try {
+        return s ? JSON.parse(s) : {};
+      } catch {
+        return {};
+      }
     }
 
     if (typeof b === "string") {
       const s = b.trim();
       if (!s) return {};
-      try { return JSON.parse(s); } catch { return {}; }
+      try {
+        return JSON.parse(s);
+      } catch {
+        return {};
+      }
     }
 
     if (b && typeof b === "object") {
@@ -63,7 +73,11 @@ export default async function handler(req, res) {
 
     // JSON
     if (ct.includes("application/json")) {
-      try { return JSON.parse(raw); } catch { return {}; }
+      try {
+        return JSON.parse(raw);
+      } catch {
+        return {};
+      }
     }
 
     // x-www-form-urlencoded
@@ -79,7 +93,11 @@ export default async function handler(req, res) {
     }
 
     // fallback: încearcă JSON
-    try { return JSON.parse(raw); } catch { return {}; }
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return {};
+    }
   }
 
   async function call(path, { method = "GET", json, headers } = {}) {
@@ -159,7 +177,9 @@ export default async function handler(req, res) {
       const password = trimStr(body.password || req.query.password);
 
       if (!name || !email || !phone || !password) {
-        return res.status(400).json({ success: false, error: "Missing register fields" });
+        return res
+          .status(400)
+          .json({ success: false, error: "Missing register fields" });
       }
 
       const out = await call("/api/auth/register", {
@@ -173,11 +193,12 @@ export default async function handler(req, res) {
     // =========================
     // COMPLETE KYC
     // Forwardează tot body-ul + Authorization
+    // IMPORTANT: în Railway ruta corectă este /api/kyc/submit
     // =========================
     if (action === "completeKYC") {
       const body = await readBodySafe(req);
 
-      const out = await call("/api/kyc/complete", {
+      const out = await call("/api/kyc/submit", {
         method: "POST",
         json: body,
         headers: req.headers.authorization
