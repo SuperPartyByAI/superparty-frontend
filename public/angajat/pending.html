@@ -167,9 +167,7 @@
       color: #9ca3af;
     }
 
-    .strong {
-      font-weight: 600;
-    }
+    .strong { font-weight: 600; }
 
     .user-line {
       font-size: 12px;
@@ -193,9 +191,7 @@
       </div>
     </div>
 
-    <div class="user-line" id="userLine">
-      <!-- Completat din JS cu nume + email -->
-    </div>
+    <div class="user-line" id="userLine"></div>
 
     <h1 class="title">Cont în verificare / KYC</h1>
     <p class="subtitle" id="subtitleText">
@@ -203,23 +199,14 @@
     </p>
 
     <div class="status-chip" id="statusChip">
-      <div class="status-dot"></div>
-      <span id="statusLabel">Status: în așteptare</span>
+      <div class="status-dot" id="statusDot"></div>
+      <span id="statusLabel">Status: verific...</span>
     </div>
 
     <ul class="info-list" id="infoList">
-      <li>
-        <span>1.</span>
-        <span>Completează formularul de <span class="highlight">KYC</span> cu datele reale (CNP, adresă, date bancare).</span>
-      </li>
-      <li>
-        <span>2.</span>
-        <span>Încarcă pozele cerute: <span class="highlight">CI față-verso + poză tip selfie</span> cu buletinul în mână.</span>
-      </li>
-      <li>
-        <span>3.</span>
-        <span>Semnează <span class="highlight">contractul</span> și așteaptă aprobarea coordonatorului.</span>
-      </li>
+      <li><span>1.</span><span>Completează formularul de <span class="highlight">KYC</span> cu datele reale.</span></li>
+      <li><span>2.</span><span>Încarcă pozele cerute: <span class="highlight">CI față-verso + selfie</span>.</span></li>
+      <li><span>3.</span><span>Semnează <span class="highlight">contractul</span> și așteaptă aprobarea coordonatorului.</span></li>
     </ul>
 
     <div class="buttons-row">
@@ -229,109 +216,202 @@
     </div>
 
     <p class="footer-note" id="footerNote">
-      După ce contul tău este <span class="strong">aprobat</span> și KYC-ul este <span class="strong">validat</span>, vei fi dus automat în dashboard-ul de evenimente.
+      După ce contul tău este <span class="strong">aprobat</span>, vei fi redirecționat automat în dashboard.
     </p>
   </div>
 
   <script>
     (function () {
-      // Citim ce a setat login-ul în localStorage
-      var email = localStorage.getItem("userEmail") || "";
-      var fullName = localStorage.getItem("userFullName") || "";
-      var status = (localStorage.getItem("userStatus") || "").toLowerCase();
-      var kycStatus = (localStorage.getItem("userKycStatus") || "").toLowerCase();
+      const BACKEND = "https://superparty-ai-backend-production.up.railway.app";
+      const DASHBOARD_URL = "/angajat/index.html";
+      const LOGIN_URL = "/login.html";
+      const KYC_URL = "/angajat/kyc.html";
 
-      var userLineEl = document.getElementById("userLine");
-      var statusLabelEl = document.getElementById("statusLabel");
-      var subtitleTextEl = document.getElementById("subtitleText");
-      var infoListEl = document.getElementById("infoList");
-      var footerNoteEl = document.getElementById("footerNote");
+      const userLineEl = document.getElementById("userLine");
+      const statusLabelEl = document.getElementById("statusLabel");
+      const subtitleTextEl = document.getElementById("subtitleText");
+      const infoListEl = document.getElementById("infoList");
+      const footerNoteEl = document.getElementById("footerNote");
 
-      // Dacă nu există email deloc, îl dăm afară la login (siguranță)
-      if (!email) {
-        window.location.replace("/login.html");
-        return;
+      const kycBtn = document.getElementById("kycBtn");
+      const refreshBtn = document.getElementById("refreshBtn");
+      const logoutBtn = document.getElementById("logoutBtn");
+
+      function safeJsonParse(s) { try { return JSON.parse(s); } catch (e) { return null; } }
+
+      function logout() {
+        try {
+          localStorage.removeItem("sp_token");
+          localStorage.removeItem("sp_user");
+
+          // curățăm și cheile vechi, ca să nu încurce
+          localStorage.removeItem("userEmail");
+          localStorage.removeItem("userFullName");
+          localStorage.removeItem("userRole");
+          localStorage.removeItem("userStatus");
+          localStorage.removeItem("userKycStatus");
+        } catch (e) {}
+        window.location.href = LOGIN_URL;
       }
 
-      // Afișăm cine e logat
-      userLineEl.textContent = "Logat ca: " +
-        (fullName ? fullName + " (" + email + ")" : email);
+      function setUserLineFromLocal() {
+        const u = safeJsonParse(localStorage.getItem("sp_user") || "{}") || {};
+        const name = u.full_name || u.fullName || u.name || "";
+        const email = u.email || "";
+        if (!email) return;
 
-      // Ajustăm textul în funcție de status + kycStatus
-      var linesHtml = "";
-
-      if (status === "blocked") {
-        statusLabelEl.textContent = "Status: blocat";
-        subtitleTextEl.textContent =
-          "Contul tău este blocat. Te rugăm să iei legătura cu un coordonator SuperParty pentru detalii.";
-        linesHtml += "<li><span>1.</span><span>Contactează coordonatorul sau managerul tău pentru a clarifica motivul blocării.</span></li>";
-        linesHtml += "<li><span>2.</span><span>Nu poți accepta sau onora evenimente până la deblocarea contului.</span></li>";
-        infoListEl.innerHTML = linesHtml;
-        footerNoteEl.textContent = "Această pagină este doar informativă. Doar coordonatorul poate reactiva contul.";
-      } else if (!kycStatus || kycStatus === "none") {
-        statusLabelEl.textContent = "Status: KYC necompletat";
-        subtitleTextEl.textContent =
-          "Pentru a putea primi evenimente, trebuie să completezi formularul de KYC și să încarci documentele.";
-        // lăsăm lista default din HTML
-      } else if (kycStatus === "pending") {
-        statusLabelEl.textContent = "Status: KYC trimis, așteaptă aprobare";
-        subtitleTextEl.textContent =
-          "Am primit KYC-ul tău. Un coordonator SuperParty urmează să îl verifice și să îți activeze contul.";
-        linesHtml += "<li><span>1.</span><span>Poți verifica periodic această pagină după ce ai fost informat că s-a făcut verificarea.</span></li>";
-        linesHtml += "<li><span>2.</span><span>Nu este nevoie să retrimiți KYC-ul dacă deja l-ai completat corect.</span></li>";
-        infoListEl.innerHTML = linesHtml;
-        footerNoteEl.textContent = "După aprobarea KYC-ului și activarea contului, vei fi redirecționat automat în dashboard.";
-      } else if (kycStatus === "rejected") {
-        statusLabelEl.textContent = "Status: KYC respins, este nevoie de refacere";
-        subtitleTextEl.textContent =
-          "KYC-ul trimis a fost respins. Este necesar să refaci pozele sau datele conform instrucțiunilor primite de la coordonator.";
-        linesHtml += "<li><span>1.</span><span>Verifică mesajele primite de la coordonator pentru motivul respingerii (ex: poze neclare, date greșite).</span></li>";
-        linesHtml += "<li><span>2.</span><span>Apasă pe <span class=\"highlight\">Completează KYC</span> și retrimite documentele corecte.</span></li>";
-        infoListEl.innerHTML = linesHtml;
-      } else if (status === "pending_admin" || status === "pending" || status === "") {
-        statusLabelEl.textContent = "Status: în așteptarea aprobării coordonatorului";
-        subtitleTextEl.textContent =
-          "Datele tale au fost înregistrate. Urmează ca un coordonator SuperParty să îți aprobe contul.";
-        linesHtml += "<li><span>1.</span><span>Dacă nu ai completat încă KYC-ul, te rugăm să o faci apăsând pe <span class=\"highlight\">Completează KYC</span>.</span></li>";
-        linesHtml += "<li><span>2.</span><span>Dacă ai completat deja KYC-ul, așteaptă confirmarea din partea coordonatorului.</span></li>";
-        infoListEl.innerHTML = linesHtml;
-      } else if (status === "active" && kycStatus === "approved") {
-        // Nu ar trebui să ajungă aici; dacă ajunge, îl trimitem direct în dashboard
-        window.location.replace("/angajat/index.html");
-        return;
+        userLineEl.textContent = "Logat ca: " + (name ? (name + " (" + email + ")") : email);
       }
 
-      // Buton "Completează KYC" → trimite la pagina de KYC
-      var kycBtn = document.getElementById("kycBtn");
-      if (kycBtn) {
-        kycBtn.addEventListener("click", function () {
-          window.location.href = "/angajat/kyc.html";
-        });
+      function renderState(state) {
+        // state: { status, label, subtitle, linesHtml, footer }
+        statusLabelEl.textContent = "Status: " + state.label;
+        subtitleTextEl.textContent = state.subtitle;
+
+        if (state.linesHtml) infoListEl.innerHTML = state.linesHtml;
+
+        if (state.footer !== undefined) footerNoteEl.textContent = state.footer;
+
+        // buton KYC: îl lăsăm mereu, dar la approved oricum redirecționăm
+        if (state.hideKycBtn) kycBtn.style.display = "none";
+        else kycBtn.style.display = "";
       }
 
-      // Buton "Am completat, verifică din nou"
-      // Deocamdată doar reîncarcă pagina (în viitor putem trage din backend status-ul actualizat)
-      var refreshBtn = document.getElementById("refreshBtn");
-      if (refreshBtn) {
-        refreshBtn.addEventListener("click", function () {
-          window.location.reload();
-        });
+      function mapBackendStatusToUI(s) {
+        const status = String(s || "").toLowerCase();
+
+        if (status === "blocked") {
+          return {
+            label: "blocat",
+            subtitle: "Contul tău este blocat. Te rugăm să iei legătura cu un coordonator SuperParty pentru detalii.",
+            linesHtml:
+              "<li><span>1.</span><span>Contactează coordonatorul/managerul pentru motivul blocării.</span></li>" +
+              "<li><span>2.</span><span>Nu poți primi evenimente până la deblocarea contului.</span></li>",
+            footer: "Doar coordonatorul poate reactiva contul."
+          };
+        }
+
+        if (status === "kyc_required") {
+          return {
+            label: "KYC necompletat",
+            subtitle: "Pentru a putea primi evenimente, trebuie să completezi KYC și să încarci documentele.",
+            linesHtml:
+              "<li><span>1.</span><span>Apasă pe <span class=\"highlight\">Completează KYC</span>.</span></li>" +
+              "<li><span>2.</span><span>Încarcă documentele cerute și semnează contractul.</span></li>" +
+              "<li><span>3.</span><span>După trimitere, revino aici pentru status.</span></li>",
+            footer: "După trimiterea KYC-ului, statusul se actualizează automat."
+          };
+        }
+
+        // statusuri “în așteptare”
+        if (
+          status === "pending" ||
+          status === "pending_admin" ||
+          status === "kyc_submitted" ||
+          status === "submitted" ||
+          status === "in_review" ||
+          status === "review" ||
+          status === "kyc_pending"
+        ) {
+          return {
+            label: "KYC trimis, așteaptă aprobare",
+            subtitle: "Am primit KYC-ul tău. Un coordonator SuperParty urmează să îl verifice și să îți activeze contul.",
+            linesHtml:
+              "<li><span>1.</span><span>Poți verifica periodic această pagină.</span></li>" +
+              "<li><span>2.</span><span>Nu este nevoie să retrimiți KYC-ul dacă l-ai completat corect.</span></li>",
+            footer: "După aprobarea KYC-ului și activarea contului, vei fi redirecționat automat în dashboard."
+          };
+        }
+
+        if (status === "kyc_rejected" || status === "rejected") {
+          return {
+            label: "KYC respins",
+            subtitle: "KYC-ul trimis a fost respins. Este necesar să refaci datele/pozele conform instrucțiunilor.",
+            linesHtml:
+              "<li><span>1.</span><span>Verifică motivul respingerii (poze neclare, date greșite etc.).</span></li>" +
+              "<li><span>2.</span><span>Apasă pe <span class=\"highlight\">Completează KYC</span> și retrimite corect.</span></li>",
+            footer: "După retrimitere, contul va intra din nou în verificare."
+          };
+        }
+
+        // fallback generic
+        return {
+          label: status || "în verificare",
+          subtitle: "Contul tău este în proces de verificare. Revino periodic pentru status.",
+          footer: "După aprobare, vei fi redirecționat automat în dashboard."
+        };
       }
 
-      // Buton "Delogare"
-      var logoutBtn = document.getElementById("logoutBtn");
-      if (logoutBtn) {
-        logoutBtn.addEventListener("click", function () {
-          try {
-            localStorage.removeItem("userEmail");
-            localStorage.removeItem("userFullName");
-            localStorage.removeItem("userRole");
-            localStorage.removeItem("userStatus");
-            localStorage.removeItem("userKycStatus");
-          } catch (e) {}
-          window.location.href = "/login.html";
-        });
+      async function checkStatusAndMaybeRedirect() {
+        const token = localStorage.getItem("sp_token") || "";
+        if (!token) { window.location.replace(LOGIN_URL); return; }
+
+        setUserLineFromLocal();
+
+        try {
+          const r = await fetch(`${BACKEND}/api/auth/me`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+
+          const j = await r.json().catch(() => null);
+
+          if (!r.ok || !j?.success || !j?.tokenUser) {
+            renderState({
+              label: "sesiune invalidă",
+              subtitle: "Sesiunea ta nu mai este validă. Te deloghez...",
+              linesHtml: "<li><span>1.</span><span>Re-autentifică-te.</span></li>",
+              footer: "Redirecționare la login..."
+            });
+            setTimeout(logout, 800);
+            return;
+          }
+
+          const tu = j.tokenUser;
+
+          // sincronizează sp_user ca să nu rămână status vechi
+          const u = safeJsonParse(localStorage.getItem("sp_user") || "{}") || {};
+          u.id = tu.id; u.email = tu.email; u.role = tu.role; u.status = tu.status;
+          localStorage.setItem("sp_user", JSON.stringify(u));
+
+          // redirect dacă e aprobat
+          if (String(tu.status).toLowerCase() === "approved") {
+            window.location.replace(DASHBOARD_URL);
+            return;
+          }
+
+          // opțional: dacă devine kyc_required, trimite direct la KYC
+          if (String(tu.status).toLowerCase() === "kyc_required") {
+            // dacă vrei să NU redirecționeze automat, comentează linia următoare:
+            // window.location.replace(KYC_URL);
+            // return;
+          }
+
+          renderState(mapBackendStatusToUI(tu.status));
+        } catch (e) {
+          renderState({
+            label: "eroare de rețea",
+            subtitle: "Nu pot verifica acum statusul (rețea). Reîncerc automat.",
+            footer: "Dacă problema persistă, reîncearcă peste câteva minute."
+          });
+        }
       }
+
+      // Handlere butoane
+      kycBtn.addEventListener("click", function () {
+        window.location.href = KYC_URL;
+      });
+
+      refreshBtn.addEventListener("click", function () {
+        checkStatusAndMaybeRedirect();
+      });
+
+      logoutBtn.addEventListener("click", function () {
+        logout();
+      });
+
+      // start + polling
+      checkStatusAndMaybeRedirect();
+      setInterval(checkStatusAndMaybeRedirect, 8000);
     })();
   </script>
 </body>
