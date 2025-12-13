@@ -2,6 +2,12 @@
 // Legacy bridge: /api/bridge?action=...
 // Traduce action-uri vechi (?action=...) către Railway API (fără Apps Script).
 
+export const config = {
+  api: {
+    bodyParser: false, // citim noi body-ul ca să funcționeze sigur pe Vercel
+  },
+};
+
 export default async function handler(req, res) {
   // CORS
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -16,16 +22,13 @@ export default async function handler(req, res) {
 
   const action = String(req.query.action || "").trim();
 
-  function trimStr(v) {
-    return String(v ?? "").trim();
-  }
+  const trimStr = (v) => String(v ?? "").trim();
 
   async function readRawBody(req) {
     return await new Promise((resolve) => {
       let data = "";
       req.on("data", (chunk) => {
         data += chunk;
-        // safety cap ~2MB
         if (data.length > 2 * 1024 * 1024) {
           try {
             req.destroy();
@@ -39,13 +42,14 @@ export default async function handler(req, res) {
   }
 
   async function readBodySafe(req) {
-    // 1) dacă framework-ul a parsat deja
+    // (cu bodyParser: false, de obicei req.body e undefined; citim raw)
     let b = req.body;
 
     if (Buffer.isBuffer(b)) {
-      const s = b.toString("utf8");
+      const s = b.toString("utf8").trim();
+      if (!s) return {};
       try {
-        return s ? JSON.parse(s) : {};
+        return JSON.parse(s);
       } catch {
         return {};
       }
@@ -61,17 +65,13 @@ export default async function handler(req, res) {
       }
     }
 
-    if (b && typeof b === "object") {
-      return b; // deja obiect
-    }
+    if (b && typeof b === "object") return b;
 
-    // 2) fallback: citește raw body din stream
     const raw = (await readRawBody(req)).trim();
     if (!raw) return {};
 
     const ct = String(req.headers["content-type"] || "").toLowerCase();
 
-    // JSON
     if (ct.includes("application/json")) {
       try {
         return JSON.parse(raw);
@@ -80,7 +80,6 @@ export default async function handler(req, res) {
       }
     }
 
-    // x-www-form-urlencoded
     if (ct.includes("application/x-www-form-urlencoded")) {
       try {
         const params = new URLSearchParams(raw);
@@ -92,7 +91,6 @@ export default async function handler(req, res) {
       }
     }
 
-    // fallback: încearcă JSON
     try {
       return JSON.parse(raw);
     } catch {
@@ -135,23 +133,14 @@ export default async function handler(req, res) {
       return res.status(200).json({ ok: true, bridge: true, railway: RAILWAY });
     }
 
-    // =========================
-    // LOGIN
-    // Acceptă:
-    // - POST JSON body: { email, password }
-    // - Query string: ?email=...&password=...
-    // =========================
+    // LOGIN: POST JSON {email,password} sau query ?email=&password=
     if (action === "login") {
       const body = await readBodySafe(req);
-
       const email = trimStr(body.email || req.query.email);
       const password = trimStr(body.password || req.query.password);
 
       if (!email || !password) {
-        return res.status(400).json({
-          success: false,
-          error: "Missing email/password",
-        });
+        return res.status(400).json({ success: false, error: "Missing email/password" });
       }
 
       const out = await call("/api/auth/login", {
@@ -162,12 +151,7 @@ export default async function handler(req, res) {
       return sendOut(res, out);
     }
 
-    // =========================
-    // REGISTER
-    // Acceptă:
-    // - POST JSON: { full_name/name, email, phone, password }
-    // - Query: ?name=...&email=...&phone=...&password=...
-    // =========================
+    // REGISTER: POST JSON {full_name/name,email,phone,password} sau query
     if (action === "register") {
       const body = await readBodySafe(req);
 
@@ -177,9 +161,7 @@ export default async function handler(req, res) {
       const password = trimStr(body.password || req.query.password);
 
       if (!name || !email || !phone || !password) {
-        return res
-          .status(400)
-          .json({ success: false, error: "Missing register fields" });
+        return res.status(400).json({ success: false, error: "Missing register fields" });
       }
 
       const out = await call("/api/auth/register", {
@@ -190,11 +172,8 @@ export default async function handler(req, res) {
       return sendOut(res, out);
     }
 
-    // =========================
-    // COMPLETE KYC
-    // Forwardează tot body-ul + Authorization
-    // IMPORTANT: în Railway ruta corectă este /api/kyc/submit
-    // =========================
+    // COMPLETE KYC: forward body + Authorization către Railway
+    // Railway: POST /api/kyc/submit (requireAuth)
     if (action === "completeKYC") {
       const body = await readBodySafe(req);
 
@@ -209,9 +188,13 @@ export default async function handler(req, res) {
       return sendOut(res, out);
     }
 
-    // =========================
-    // GET ALL USERS (admin)
-    // =========================
+    // DOC STATUS: proxy către Railway
+    if (action === "docStatus") {
+      const out = await call("/api/kyc/doc-status", { method: "GET" });
+      return sendOut(res, out);
+    }
+
+    // ADMIN USERS: forward Authorization
     if (action === "getAllUsers") {
       const out = await call("/api/admin/users", {
         method: "GET",
@@ -219,7 +202,6 @@ export default async function handler(req, res) {
           ? { Authorization: req.headers.authorization }
           : undefined,
       });
-
       return sendOut(res, out);
     }
 
