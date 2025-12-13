@@ -22,41 +22,10 @@ button{background:#2563eb;color:white;font-weight:bold}
   <div id="msg" class="msg"></div>
 </div>
 
-<script>
-const API="https://superparty-ai-backend-production.up.railway.app";
-const btn=document.getElementById("btn");
-const msg=document.getElementById("msg");
+<!-- CONFIG + AUTH SDK + LOGICA LOGIN (separat) -->
+<script src="/sp-config.js"></script>
+<script src="/auth.js"></script>
+<script src="/login.logic.js"></script>
 
-btn.onclick=async()=>{
-  const email=document.getElementById("email").value.trim();
-  const password=document.getElementById("password").value;
-  if(!email||!password){msg.textContent="Completează datele";return;}
-  btn.disabled=true;msg.textContent="Se autentifică...";
-  try{
-    const r=await fetch(API+"/api/auth/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email,password})});
-    const d=await r.json();
-    if(!r.ok||!d.success){msg.textContent=d.error||"Eroare";btn.disabled=false;return;}
-    const u=d.user||{};
-    const spUser={
-      email:u.email||email,
-      role:(u.role||"").toLowerCase(),
-      status:(u.status||"").toLowerCase(),
-      kyc_status:u.kyc_status||"",
-      contract_signed:u.contract_signed||"",
-      is_approved:u.is_approved||"",
-      updatedAt:Date.now()
-    };
-    localStorage.setItem("sp_user",JSON.stringify(spUser));
-    localStorage.setItem("userEmail",spUser.email);
-
-    if(spUser.role==="admin"){location.href="/admin/index.html";return;}
-    if(spUser.status==="active"&&spUser.kyc_status==="approved"&&spUser.contract_signed==="signed"){
-      location.href="/angajat/index.html";
-    }else{
-      location.href="/angajat/kyc/index.html";
-    }
-  }catch(e){msg.textContent="Eroare rețea";}finally{btn.disabled=false;}
-}
-</script>
 </body>
 </html>

@@ -21,100 +21,27 @@
       align-items: center;
     }
 
-    header h1 {
-      margin: 0;
-    }
-
     #logoutBtn {
       background: white;
       color: #047857;
       border: none;
       padding: 8px 14px;
       font-weight: bold;
-      font-size: 14px;
       border-radius: 6px;
       cursor: pointer;
-    }
-
-    #logoutBtn:hover {
-      background: #d1fae5;
-    }
-
-    .content {
-      padding: 20px;
-    }
-
-    .card {
-      background: white;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-      margin-bottom: 20px;
-    }
-
-    .card h2 {
-      margin-top: 0;
-      color: #111827;
     }
   </style>
 </head>
 
 <body>
-
   <header>
     <h1>SuperParty GM</h1>
     <button id="logoutBtn">Logout</button>
   </header>
 
-  <div class="content">
-    <div class="card">
-      <h2>Panou GM</h2>
-      <p>Aici vei avea panoul pentru gestionarea generală (Game Master / coordonare).</p>
-    </div>
-
-    <div class="card">
-      <h2>Funcții viitoare</h2>
-      <ul>
-        <li>Vizualizare toate evenimentele</li>
-        <li>Supraveghere status dovezi</li>
-        <li>Distribuire roluri speciale</li>
-        <li>Mesaje către echipă</li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- 🔐 AUTENTIFICARE + PROTECȚIE ROL GM / ADMIN -->
-  <script>
-    (function () {
-      console.log("[AUTH] Verific sesiunea pentru GM...");
-
-      const raw = localStorage.getItem("user");
-      if (!raw) {
-        window.location.href = "/frontend/login.html";
-        return;
-      }
-
-      let user;
-      try { user = JSON.parse(raw); }
-      catch {
-        localStorage.removeItem("user");
-        window.location.href = "/frontend/login.html";
-        return;
-      }
-
-      if (!user.role || (user.role !== "gm" && user.role !== "admin")) {
-        alert("Acces interzis! Doar GM sau ADMIN poate intra aici.");
-        window.location.href = "/frontend/login.html";
-        return;
-      }
-
-      const logoutBtn = document.getElementById("logoutBtn");
-      logoutBtn.onclick = () => {
-        localStorage.removeItem("user");
-        window.location.href = "/frontend/login.html";
-      };
-    })();
-  </script>
-
+  <!-- CONFIG + AUTH SDK + GATE (NU mai avem localStorage "user", folosim sp_user/sp_token) -->
+  <script src="/sp-config.js"></script>
+  <script src="/auth.js"></script>
+  <script src="/gm-gate.js"></script>
 </body>
 </html>

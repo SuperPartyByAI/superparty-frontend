@@ -1,35 +1,63 @@
-<!DOCTYPE html>
-<html lang="ro">
-<head>
-<meta charset="UTF-8">
-<title>KYC</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-body{background:#020617;color:#fff;font-family:Arial;padding:40px}
-button{padding:12px 20px;border:none;border-radius:10px;background:#22c55e;color:black;font-weight:bold}
-</style>
-</head>
-<body>
+// public/auth-gate.js
+// Se include DOAR pe paginile protejate.
+// Necesită <script src="/auth.js"></script> înainte.
 
-<h2>KYC & Contract</h2>
-<p>Simulare finalizare KYC</p>
+(function () {
+  "use strict";
 
-<button id="finish">🚀 Trimite KYC</button>
+  const user = auth.requireAuth(); // dacă nu e logat -> redirect /login.html
+  if (!user) return;
 
-<script>
-document.getElementById("finish").onclick=()=>{
-  const raw=localStorage.getItem("sp_user");
-  if(!raw){alert("Sesiune lipsă");location.href="/login.html";return;}
-  const u=JSON.parse(raw);
-  u.kyc_status="approved";
-  u.contract_signed="signed";
-  u.status="active";
-  u.updatedAt=Date.now();
-  localStorage.setItem("sp_user",JSON.stringify(u));
-  localStorage.setItem("userEmail",u.email);
-  location.href="/angajat/index.html";
-}
-</script>
+  const status = user.status ? String(user.status) : "";
+  const path = (window.location.pathname || "").toLowerCase();
 
-</body>
-</html>
+  // paginile tale (le poți redenumi aici o singură dată dacă schimbi ceva pe viitor)
+  const P = {
+    waiting: "/waiting-approval.html",
+    kyc: "/kyc.html",
+    dash: "/dashboard.html",
+  };
+
+  function go(to) {
+    if (path !== to.toLowerCase()) window.location.href = to;
+  }
+
+  // grupuri status (ca să nu se rupă când mai adaugi variante)
+  const isPendingAdmin =
+    status === "pending_admin" ||
+    status === "pending" ||
+    status === "awaiting_admin" ||
+    status === "waiting_admin";
+
+  const isKycNeeded =
+    status === "kyc_required" ||
+    status === "kyc_incomplete" ||
+    status === "kyc_pending";
+
+  const isOk =
+    status === "active" ||
+    status === "approved" ||
+    status === "ok";
+
+  // 1) dacă e pending admin -> merge doar pe waiting
+  if (isPendingAdmin) {
+    if (path !== P.waiting) go(P.waiting);
+    return;
+  }
+
+  // 2) dacă trebuie KYC -> merge doar pe kyc
+  if (isKycNeeded) {
+    if (path !== P.kyc) go(P.kyc);
+    return;
+  }
+
+  // 3) dacă e ok -> nu are voie să stea pe waiting/kyc
+  if (isOk) {
+    if (path === P.waiting || path === P.kyc) go(P.dash);
+    return;
+  }
+
+  // fallback: status necunoscut -> trimitem în dashboard (sau poți trimite pe waiting)
+  // dacă vrei mai strict, schimbă în: go(P.waiting)
+  if (path === P.waiting || path === P.kyc) go(P.dash);
+})();
