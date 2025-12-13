@@ -35,7 +35,6 @@
   .ai-field-row .label { color:#94a3b8; }
   .ai-field-row .value { font-weight:600; color:#e5e7eb; }
 
-  /* status box */
   #pageStatus{
     display:none;
     margin-bottom:18px;
@@ -65,7 +64,6 @@
   <h1 style="font-size:42px; margin-bottom:10px;">🪪 KYC Onboarding – Varianta Finală</h1>
   <div id="pageStatus"></div>
 
-  <!-- Documente Identitate -->
   <div class="section">
     <h2>👤 Documente de Identitate</h2>
     <p style="color:#94a3b8;">1. Încarcă o poză clară a buletinului (față). După ce datele sunt extrase, contractul apare mai jos, completat automat.</p>
@@ -91,7 +89,6 @@
     <div id="kycWarnings"></div>
   </div>
 
-  <!-- Date extrase automat din CI -->
   <div class="section" id="aiFieldsSection" style="display:none;">
     <h2>🔍 Date extrase automat din buletin</h2>
     <p style="color:#94a3b8;">2. Datele sunt extrase automat. Confirmă dacă sunt corecte.</p>
@@ -124,7 +121,6 @@
     </div>
   </div>
 
-  <!-- Contract -->
   <div class="section" id="contractSection" style="display:none;">
     <h2>📄 Contract de colaborare</h2>
     <p style="color:#94a3b8; margin-bottom:10px;">3. Apasă pe câmpul de mai jos pentru a deschide și citi contractul completat automat.</p>
@@ -246,7 +242,6 @@ PĂRINTE/TUTORE (dacă este cazul): ___________________________
     </label>
   </div>
 
-  <!-- Minor -->
   <div class="section" id="minorSection" style="display:none;">
     <h2>🧒 Acord parental necesar</h2>
     <p style="color:#facc15; margin-bottom:10px;">Observăm că ești minor. Pentru a putea semna contractul de colaborare, avem nevoie de acordul scris al părintelui sau tutorelui legal.</p>
@@ -265,7 +260,6 @@ PĂRINTE/TUTORE (dacă este cazul): ___________________________
     <p id="parentConsentHint" style="color:#94a3b8; margin-top:12px; font-size:13px;">✅ Bifa de semnătură a contractului va fi disponibilă doar după ce există acord parental în sistem.</p>
   </div>
 
-  <!-- Șofer -->
   <div class="section">
     <h2>🚗 Opțional – Documente Șofer</h2>
     <label class="checkbox-large"><input type="checkbox" id="driverCheck"> Doresc să fiu șofer</label>
@@ -287,25 +281,18 @@ PĂRINTE/TUTORE (dacă este cazul): ___________________________
 <script>
 "use strict";
 
-/** CONFIG */
 const BACKEND_BASE_URL = "https://superparty-ai-backend-production.up.railway.app";
-
-/** IMPORTANT:
-    Dacă backend-ul NU are endpoint-ul /api/kyc/status, lăsăm pe false ca să NU mai apară 404 în console.
-    Când implementezi endpoint-ul, pui pe true. */
 const ENABLE_KYC_STATUS_PRELOAD = false;
 
-/** HARD GATE: dacă nu e logat, auth-gate.js a făcut deja redirect. */
 (function hardGate() {
   try {
     if (window.auth && typeof window.auth.requireAuth === "function") {
-      const u = window.auth.requireAuth(); // redirect dacă nu e logat
+      const u = window.auth.requireAuth();
       if (!u) return;
     }
   } catch(e) {}
 })();
 
-/** UI helpers */
 function pageMsg(text, type){
   const el = document.getElementById("pageStatus");
   if (!el) return;
@@ -316,7 +303,6 @@ function pageMsg(text, type){
   try { el.scrollIntoView({behavior:"smooth", block:"start"}); } catch(e){}
 }
 
-/** SESSION (sp_user/sp_token) */
 function readLSJson(key){
   try { return JSON.parse(localStorage.getItem(key) || "null"); }
   catch(e) { return null; }
@@ -332,7 +318,6 @@ function getSession(){
   return { token, user, email, fullName };
 }
 
-/** Utils */
 function addMonths(date, months){
   const d = new Date(date);
   const day = d.getDate();
@@ -368,7 +353,6 @@ function isMinorFromCnp(cnp){
   return age < 18;
 }
 
-/** Contract period 15 -> 14 */
 function updateContractPeriod(){
   const fromEl = document.getElementById('contractPeriodFrom');
   const toEl = document.getElementById('contractPeriodTo');
@@ -387,15 +371,13 @@ function updateContractPeriod(){
 }
 updateContractPeriod();
 
-/** Existing docs (optional preload) */
 let existingDocs = {
-  parentConsent: null, // { url, uploadedAt }
-  driver: { record: null } // { url, uploadedAt }
+  parentConsent: null,
+  driver: { record: null }
 };
 
 async function preloadExistingDocs(){
   if (!ENABLE_KYC_STATUS_PRELOAD) return;
-
   const { token } = getSession();
   if (!token) return;
 
@@ -419,7 +401,6 @@ async function preloadExistingDocs(){
   } catch(e) {}
 }
 
-/** UI requirements logic */
 function refreshDocRequirements(){
   const signCheck = document.getElementById('contractSignCheck');
   const parentConsentStatus = document.getElementById('parentConsentStatus');
@@ -477,7 +458,6 @@ function refreshDocRequirements(){
   }
 }
 
-/** Driver UI toggle */
 function toggleDriverSection(show){
   const el = document.getElementById('driverDocs');
   if (!el) return;
@@ -486,7 +466,6 @@ function toggleDriverSection(show){
   refreshDocRequirements();
 }
 
-/** DOM refs */
 const idFrontInput = document.getElementById('idFront');
 const idBackInput = document.getElementById('idBack');
 const selfieInput = document.getElementById('selfie');
@@ -504,14 +483,12 @@ const driverCheck = document.getElementById('driverCheck');
 
 let lastIdFrontFile = null;
 
-/** Extract data from ID (DEMO) */
 async function processIdFront(file) {
   if (!file) return;
   pageMsg("", "");
 
   lastIdFrontFile = file;
 
-  // DEMO (înlocuiești cu extract real când ai endpoint)
   const fakeAiResponse = {
     success: true,
     data: {
@@ -591,7 +568,6 @@ async function processIdFront(file) {
   }
 }
 
-/** Events */
 if (idFrontInput) {
   idFrontInput.addEventListener('change', async (e) => {
     const file = e.target.files && e.target.files[0];
@@ -659,7 +635,6 @@ if (contractTrigger && contractBoxEl && contractTriggerIcon) {
   });
 }
 
-/** SUBMIT REAL: POST /api/kyc/submit (multipart) */
 async function submitKYC() {
   pageMsg("", "");
 
@@ -718,26 +693,51 @@ async function submitKYC() {
     return;
   }
 
+  const fullName =
+    (document.getElementById("aiName")?.textContent || "").trim() || sessionFullName || "";
+  const address =
+    (document.getElementById("aiAddress")?.textContent || "").trim();
+
   const fd = new FormData();
+
+  // TEXT fields (camelCase + snake_case)
   fd.set("email", email);
-  fd.set(
-    "fullName",
-    (document.getElementById("aiName")?.textContent || "").trim() || sessionFullName || ""
-  );
+  fd.set("fullName", fullName);
+  fd.set("full_name", fullName);
+
   fd.set("cnp", cnp);
-  fd.set("address", (document.getElementById("aiAddress")?.textContent || "").trim());
-
-  fd.append("idFront", idFront);
-  fd.append("idBack", idBack);
-  fd.append("selfie", selfie);
-
-  if (isMinor && parentConsentFile) fd.append("parentConsent", parentConsentFile);
+  fd.set("address", address);
 
   fd.set("isDriver", wantsDriver ? "1" : "0");
-  if (wantsDriver && licenseFile) fd.append("license", licenseFile);
-  if (wantsDriver && recordFile)  fd.append("record", recordFile);
+  fd.set("is_driver", wantsDriver ? "1" : "0");
 
-  fd.set("aiDataConfirmed", (document.getElementById("aiDataOk")?.checked) ? "1" : "0");
+  const aiConfirmed = (document.getElementById("aiDataOk")?.checked) ? "1" : "0";
+  fd.set("aiDataConfirmed", aiConfirmed);
+  fd.set("ai_data_confirmed", aiConfirmed);
+
+  // FILES (camelCase + snake_case)
+  fd.append("idFront", idFront);
+  fd.append("id_front", idFront);
+
+  fd.append("idBack", idBack);
+  fd.append("id_back", idBack);
+
+  fd.append("selfie", selfie);
+  fd.append("selfie_ci", selfie);
+
+  if (isMinor && parentConsentFile) {
+    fd.append("parentConsent", parentConsentFile);
+    fd.append("parent_consent", parentConsentFile);
+  }
+
+  if (wantsDriver && licenseFile) {
+    fd.append("license", licenseFile);
+    fd.append("driver_license", licenseFile);
+  }
+  if (wantsDriver && recordFile) {
+    fd.append("record", recordFile);
+    fd.append("cazier", recordFile);
+  }
 
   const btn = document.getElementById("submitBtn");
   if (btn) { btn.disabled = true; btn.textContent = "Se trimite KYC..."; }
@@ -751,7 +751,6 @@ async function submitKYC() {
 
     console.log("KYC submit HTTP:", res.status);
 
-    // IMPORTANT: citește RAW ca să vezi eroarea reală la 500 (poate fi text/html)
     let raw = "";
     let data = null;
     try { raw = await res.text(); } catch(e) { raw = ""; }
@@ -794,7 +793,6 @@ async function submitKYC() {
 window.submitKYC = submitKYC;
 document.getElementById("submitBtn")?.addEventListener("click", submitKYC);
 
-/** init */
 (async function init(){
   await preloadExistingDocs();
   refreshDocRequirements();
