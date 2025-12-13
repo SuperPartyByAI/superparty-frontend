@@ -5,250 +5,100 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>SuperParty - În așteptarea aprobării</title>
   <style>
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background:#0f172a;
-      color:#e2e8f0;
-      padding:24px
-    }
-    .card{
-      max-width:560px;
-      width:100%;
-      background:rgba(15,23,42,.9);
-      border:1px solid #334155;
-      border-radius:18px;
-      padding:22px
-    }
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0f172a;color:#e2e8f0;padding:24px}
+    .card{max-width:520px;width:100%;background:rgba(15,23,42,.9);border:1px solid #334155;border-radius:18px;padding:22px}
     h1{margin:0 0 10px;font-size:20px}
-    p{margin:0 0 14px;line-height:1.45;color:#cbd5e1}
-    .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-    button{
-      cursor:pointer;border:0;border-radius:12px;
-      padding:10px 14px;font-weight:700;background:#2563eb;color:white
-    }
+    p{margin:0 0 16px;line-height:1.45;color:#cbd5e1}
+    button{cursor:pointer;border:0;border-radius:12px;padding:10px 14px;font-weight:600;background:#2563eb;color:white}
     button.secondary{background:#334155}
-    .muted{font-size:12px;color:#94a3b8;margin-top:12px}
-    .pill{
-      display:inline-block;
-      padding:4px 10px;
-      border-radius:999px;
-      font-size:12px;
-      border:1px solid #334155;
-      background:rgba(2,6,23,.35);
-      color:#cbd5e1;
-      margin:8px 0 14px;
-    }
-    .statusline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-    .small{font-size:12px;color:#94a3b8}
-    .warn{color:#fbbf24}
-    .ok{color:#34d399}
-    .bad{color:#fb7185}
-    .loading{opacity:.85}
-    a{color:#93c5fd}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .muted{font-size:12px;color:#94a3b8;margin-top:10px}
+    .status{margin-top:10px;font-size:12px;color:#a5b4fc}
   </style>
 </head>
-
 <body>
   <div class="card">
-    <h1 id="title">Verific statusul contului…</h1>
+    <h1>Contul tău este în așteptarea aprobării</h1>
 
-    <div class="statusline">
-      <span class="pill" id="pill">Se verifică…</span>
-      <span class="small" id="lastCheck"></span>
-    </div>
-
-    <p id="desc" class="loading">
-      Te rugăm să aștepți. Dacă ai fost aprobat, vei fi redirecționat automat.
+    <p>
+      Am primit KYC-ul tău. Un coordonator SuperParty urmează să îl verifice și să îți activeze contul.
+      Dacă ai fost aprobat între timp, vei fi redirecționat automat.
     </p>
 
     <div class="row">
-      <button id="btnRetry" type="button">Reverifică acum</button>
-      <button id="btnGoDash" type="button" class="secondary" style="display:none;">Mergi la dashboard</button>
-      <button id="btnLogin" type="button" class="secondary" style="display:none;">Mergi la login</button>
-      <button id="btnLogout" type="button" class="secondary">Delogare</button>
+      <button id="btnCheck">Am completat, verifică din nou</button>
+      <button class="secondary" onclick="location.href='/'">Înapoi</button>
+      <button class="secondary" id="btnLogout">Delogare</button>
     </div>
 
-    <div class="muted">
-      SuperParty · Dacă pagina rămâne blocată pe “pending” deși ești aprobat, apasă “Reverifică acum”.
-    </div>
+    <div class="status" id="statusLine">Status: verific...</div>
+    <div class="muted">SuperParty</div>
   </div>
 
   <script>
     (function () {
-      "use strict";
-
-      // ===== CONFIG =====
       const BACKEND = "https://superparty-ai-backend-production.up.railway.app";
-      const DASHBOARD_URL = "/angajat/";      // ajustează dacă dashboard-ul tău e în altă parte
-      const LOGIN_URL = "/login.html";
-      const CHECK_INTERVAL_MS = 12000;        // 12 sec
+      const DASHBOARD_URL = "/angajat/";          // ajustează dacă dashboard-ul e în alt path
+      const LOGIN_URL = "/login.html";           // ajustează dacă ai altă pagină de login
+      const KYC_URL = "/kyc.html";               // ajustează dacă ai alt path pentru KYC
 
-      // ===== UI =====
-      const elTitle = document.getElementById("title");
-      const elDesc = document.getElementById("desc");
-      const elPill = document.getElementById("pill");
-      const elLast = document.getElementById("lastCheck");
-
-      const btnRetry = document.getElementById("btnRetry");
-      const btnGoDash = document.getElementById("btnGoDash");
-      const btnLogin = document.getElementById("btnLogin");
+      const statusLine = document.getElementById("statusLine");
+      const btnCheck = document.getElementById("btnCheck");
       const btnLogout = document.getElementById("btnLogout");
-
-      function setLastCheck() {
-        const d = new Date();
-        elLast.textContent = "Ultima verificare: " + d.toLocaleString("ro-RO");
-      }
-
-      function setState(textPill, title, desc, pillClass) {
-        elPill.textContent = textPill;
-        elPill.className = "pill" + (pillClass ? (" " + pillClass) : "");
-        elTitle.textContent = title;
-        elDesc.innerHTML = desc;
-        setLastCheck();
-      }
-
-      function redirectTo(url) {
-        window.location.replace(url);
-      }
 
       function logout() {
         localStorage.removeItem("sp_token");
         localStorage.removeItem("sp_user");
-        redirectTo(LOGIN_URL);
+        location.href = LOGIN_URL;
       }
 
       async function checkStatus() {
-        btnRetry.disabled = true;
-
-        const token = (localStorage.getItem("sp_token") || "").trim();
-        if (!token) {
-          setState(
-            "Fără sesiune",
-            "Nu ești autentificat",
-            "Nu există token salvat. Te trimit către pagina de login.",
-            "warn"
-          );
-          btnLogin.style.display = "";
-          btnGoDash.style.display = "none";
-          btnRetry.disabled = false;
-          setTimeout(() => redirectTo(LOGIN_URL), 700);
-          return;
-        }
+        const token = localStorage.getItem("sp_token") || "";
+        if (!token) { location.href = LOGIN_URL; return; }
 
         try {
           const r = await fetch(`${BACKEND}/api/auth/me`, {
             headers: { Authorization: `Bearer ${token}` }
           });
 
-          if (r.status === 401) {
-            setState(
-              "Sesiune invalidă",
-              "Sesiunea a expirat / token invalid",
-              "Te trimit către login pentru re-autentificare.",
-              "warn"
-            );
-            btnLogin.style.display = "";
-            btnGoDash.style.display = "none";
-            btnRetry.disabled = false;
-            setTimeout(() => redirectTo(LOGIN_URL), 700);
-            return;
-          }
-
           const j = await r.json().catch(() => null);
-          const u = j && j.tokenUser ? j.tokenUser : null;
 
-          if (!u) {
-            setState(
-              "Eroare",
-              "Nu am putut citi statusul",
-              "Serverul nu a returnat datele așteptate. Apasă “Reverifică acum”.",
-              "warn"
-            );
-            btnRetry.disabled = false;
+          if (!r.ok || !j?.success || !j?.tokenUser) {
+            statusLine.textContent = "Status: sesiune invalidă. Te deloghez...";
+            setTimeout(logout, 800);
             return;
           }
 
-          // IMPORTANT: sincronizăm sp_user ca să nu rămână “pending” vechi în frontend
+          const tu = j.tokenUser;
+          statusLine.textContent = `Status: ${tu.status}`;
+
+          // sincronizează sp_user ca să nu rămână status vechi în alte pagini
+          const u = JSON.parse(localStorage.getItem("sp_user") || "{}");
+          u.id = tu.id; u.email = tu.email; u.role = tu.role; u.status = tu.status;
           localStorage.setItem("sp_user", JSON.stringify(u));
 
-          const status = String(u.status || "").toLowerCase();
-
-          if (status === "approved") {
-            setState(
-              "Aprobat",
-              "Ești aprobat",
-              "Contul este aprobat. Te redirecționez către dashboard.",
-              "ok"
-            );
-            btnGoDash.style.display = "";
-            btnLogin.style.display = "none";
-            btnRetry.disabled = false;
-
-            setTimeout(() => redirectTo(DASHBOARD_URL), 400);
+          if (tu.status === "approved") {
+            location.href = DASHBOARD_URL;
             return;
           }
 
-          if (status === "pending") {
-            setState(
-              "În așteptare",
-              "Contul tău este în așteptarea aprobării",
-              "Te rugăm să revii mai târziu. Pagina verifică periodic și te va redirecționa automat când ești aprobat.",
-              "warn"
-            );
-            btnGoDash.style.display = "none";
-            btnLogin.style.display = "none";
-            btnRetry.disabled = false;
+          if (tu.status === "kyc_required") {
+            location.href = KYC_URL;
             return;
           }
 
-          if (status === "rejected") {
-            setState(
-              "Respins",
-              "Contul a fost respins",
-              "Statusul contului este <b>rejected</b>. Dacă este o eroare, contactează administratorul sau re-trimite KYC.",
-              "bad"
-            );
-            btnGoDash.style.display = "none";
-            btnLogin.style.display = "none";
-            btnRetry.disabled = false;
-            return;
-          }
-
-          // fallback: orice alt status (ex: kyc_required etc.)
-          setState(
-            "Necesită acțiune",
-            "Contul necesită completare",
-            `Status detectat: <b>${status || "necunoscut"}</b>. Dacă trebuie KYC, completează onboarding-ul, apoi revino aici.`,
-            "warn"
-          );
-          btnGoDash.style.display = "none";
-          btnLogin.style.display = "none";
-          btnRetry.disabled = false;
-
+          // altfel rămâi aici (pending / kyc_submitted etc.)
         } catch (e) {
-          setState(
-            "Eroare rețea",
-            "Nu pot verifica statusul acum",
-            "A apărut o eroare de rețea. Apasă “Reverifică acum”.",
-            "warn"
-          );
-          btnRetry.disabled = false;
+          statusLine.textContent = "Status: eroare de rețea. Reîncerc automat...";
         }
       }
 
-      btnRetry.addEventListener("click", checkStatus);
-      btnGoDash.addEventListener("click", () => redirectTo(DASHBOARD_URL));
-      btnLogin.addEventListener("click", () => redirectTo(LOGIN_URL));
+      btnCheck.addEventListener("click", checkStatus);
       btnLogout.addEventListener("click", logout);
 
-      // init
+      // verifică imediat + apoi periodic
       checkStatus();
-      setInterval(checkStatus, CHECK_INTERVAL_MS);
+      setInterval(checkStatus, 15000);
     })();
   </script>
 </body>
