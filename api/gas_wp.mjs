@@ -1,9 +1,9 @@
-// api/gas_wp.js
+// api/gas_wp.mjs
 // Proxy Vercel -> Google Apps Script (fix CORS)
-// Înlocuiește în frontend URL-ul Apps Script cu: /api/gas_wp
+// Endpoint: /api/gas_wp
 
-module.exports = async (req, res) => {
-  // CORS (permite browserului să consume răspunsul)
+export default async function handler(req, res) {
+  // CORS
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
@@ -20,7 +20,7 @@ module.exports = async (req, res) => {
   try {
     const url = new URL(GAS_EXEC);
 
-    // Copiem query-ul: /api/gas_wp?action=getAllUsers -> .../exec?action=getAllUsers
+    // Copiem query-ul
     const q = req.query || {};
     for (const k of Object.keys(q)) {
       const v = q[k];
@@ -29,19 +29,15 @@ module.exports = async (req, res) => {
     }
 
     const method = String(req.method || "GET").toUpperCase();
-
     const headers = {};
-    let body;
 
+    let body;
     if (method !== "GET" && method !== "HEAD") {
       headers["Content-Type"] = req.headers["content-type"] || "application/json";
-
-      // Vercel parsează JSON în req.body (de obicei obiect)
-      if (headers["Content-Type"].includes("application/json")) {
-        body = JSON.stringify(req.body ?? {});
-      } else {
-        body = typeof req.body === "string" ? req.body : JSON.stringify(req.body ?? {});
-      }
+      body =
+        headers["Content-Type"].includes("application/json")
+          ? JSON.stringify(req.body ?? {})
+          : (typeof req.body === "string" ? req.body : JSON.stringify(req.body ?? {}));
     }
 
     const r = await fetch(url.toString(), { method, headers, body });
@@ -55,4 +51,4 @@ module.exports = async (req, res) => {
     console.error("gas_wp proxy error:", e);
     res.status(500).json({ error: "gas_wp_proxy_failed" });
   }
-};
+}
