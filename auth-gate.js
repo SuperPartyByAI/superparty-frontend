@@ -12,7 +12,7 @@
     dashboard: "/dashboard.html",
   });
 
-  // echivalent "requireAuth" (dar compatibil cu auth.js-ul tău)
+  // "requireAuth" compatibil cu auth.js-ul tău
   if (!window.auth || !auth.isLoggedIn()) {
     window.location.href = routes.login;
     return;
@@ -33,7 +33,6 @@
     if (t && path !== t) window.location.href = to;
   }
 
-  // grupuri status (le extinzi aici fără să se mai rupă prin pagini)
   const isPendingAdmin =
     status === "pending_admin" ||
     status === "pending" ||
@@ -50,19 +49,16 @@
     status === "approved" ||
     status === "ok";
 
-  // 1) pending admin -> doar waiting
   if (isPendingAdmin) {
     go(P.waiting);
     return;
   }
 
-  // 2) kyc required -> doar kyc
   if (isKycNeeded) {
     go(P.kyc);
     return;
   }
 
-  // 3) ok -> nu stai pe waiting/kyc
   if (isOk) {
     if (path === P.waiting.toLowerCase() || path === P.kyc.toLowerCase()) {
       go(P.dash);
@@ -70,7 +66,7 @@
     return;
   }
 
-  // fallback (status necunoscut): trimitem în dashboard
+  // fallback status necunoscut
   if (path === P.waiting.toLowerCase() || path === P.kyc.toLowerCase()) {
     go(P.dash);
   }
