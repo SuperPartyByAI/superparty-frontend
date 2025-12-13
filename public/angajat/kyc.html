@@ -4,6 +4,11 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>KYC Onboarding Final</title>
+
+<!-- AUTH (obligatoriu pe paginile protejate) -->
+<script src="/auth.js"></script>
+<script src="/auth-gate.js"></script>
+
 <style>
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background:#0f172a; color:#f1f5f9; padding:40px; }
   .kyc-container { max-width:1200px; margin:0 auto; background:rgba(15,23,42,0.9); border-radius:30px; padding:50px; border:2px solid #334155; }
@@ -54,6 +59,7 @@
   }
 </style>
 </head>
+
 <body>
 <div class="kyc-container">
   <h1 style="font-size:42px; margin-bottom:10px;">🪪 KYC Onboarding – Varianta Finală</h1>
@@ -284,6 +290,17 @@ PĂRINTE/TUTORE (dacă este cazul): ___________________________
 /** CONFIG */
 const BACKEND_BASE_URL = "https://superparty-ai-backend-production.up.railway.app";
 
+/** HARD GATE: dacă nu e logat, auth-gate.js a făcut deja redirect.
+    Dar păstrăm o verificare minimă în caz că pagina e accesată fără gate. */
+(function hardGate() {
+  try {
+    if (window.auth && typeof window.auth.requireAuth === "function") {
+      const u = window.auth.requireAuth(); // redirect dacă nu e logat
+      if (!u) return;
+    }
+  } catch(e) {}
+})();
+
 /** UI helpers */
 function pageMsg(text, type){
   const el = document.getElementById("pageStatus");
@@ -310,15 +327,6 @@ function getSession(){
       : "";
   return { token, user, email, fullName };
 }
-
-/** LOGIN CHECK */
-(function enforceLogin() {
-  const { email, token } = getSession();
-  if (!email || !token) {
-    window.location.replace("/login.html");
-    return;
-  }
-})();
 
 /** Utils */
 function addMonths(date, months){
@@ -382,7 +390,6 @@ let existingDocs = {
 };
 
 async function preloadExistingDocs(){
-  // endpoint optional; nu blochează pagina dacă nu există
   const { token } = getSession();
   if (!token) return;
   try {
@@ -393,21 +400,16 @@ async function preloadExistingDocs(){
     const j = await r.json().catch(()=>null);
     if (!j || j.success === false) return;
 
-    // acceptăm mai multe forme fără să stricăm nimic
     const docs = j.docs || j.data?.docs || j.data || null;
     if (!docs) return;
 
-    // parent consent
     if (docs.parentConsent?.uploadedAt) existingDocs.parentConsent = docs.parentConsent;
     if (docs.parent_consent?.uploadedAt) existingDocs.parentConsent = docs.parent_consent;
 
-    // driver record
     const rec = docs.driver?.record || docs.record || docs.cazier || null;
     if (rec?.uploadedAt) existingDocs.driver.record = rec;
 
-  } catch(e) {
-    // silent
-  }
+  } catch(e) {}
 }
 
 /** UI requirements logic */
@@ -497,7 +499,6 @@ async function processIdFront(file) {
 
   lastIdFrontFile = file;
 
-  // IMPORTANT: aici înlocuiești cu extract real dacă ai endpoint.
   const fakeAiResponse = {
     success: true,
     data: {
@@ -652,7 +653,8 @@ async function submitKYC() {
 
   const { email, token, fullName: sessionFullName } = getSession();
   if (!email || !token) {
-    window.location.replace("/login.html");
+    pageMsg("Nu ești autentificat. Te rugăm să te loghezi din nou.", "error");
+    setTimeout(()=>window.location.replace("/login.html"), 400);
     return;
   }
 
@@ -741,7 +743,6 @@ async function submitKYC() {
       return;
     }
 
-    // mark pending locally (compat)
     try { localStorage.setItem("userKycStatus", "pending"); } catch(e){}
     try {
       const u = readLSJson("sp_user");
@@ -762,14 +763,12 @@ async function submitKYC() {
 }
 
 window.submitKYC = submitKYC;
-
 document.getElementById("submitBtn")?.addEventListener("click", submitKYC);
 
 /** init */
 (async function init(){
   await preloadExistingDocs();
   refreshDocRequirements();
-  // set driver section initial state
   if (driverCheck) toggleDriverSection(driverCheck.checked);
 })();
 </script>
