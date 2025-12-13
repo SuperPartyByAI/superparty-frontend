@@ -29,11 +29,35 @@
   .ai-field-row:last-child { border-bottom:none; }
   .ai-field-row .label { color:#94a3b8; }
   .ai-field-row .value { font-weight:600; color:#e5e7eb; }
+
+  /* status box */
+  #pageStatus{
+    display:none;
+    margin-bottom:18px;
+    padding:14px 16px;
+    border-radius:14px;
+    border:1px solid rgba(148,163,184,0.35);
+    background:rgba(2,6,23,0.35);
+    color:#e5e7eb;
+    font-size:13px;
+    line-height:1.35;
+  }
+  #pageStatus.error{
+    border-color: rgba(239,68,68,0.45);
+    background: rgba(127,29,29,0.22);
+    color:#fecaca;
+  }
+  #pageStatus.success{
+    border-color: rgba(34,197,94,0.45);
+    background: rgba(20,83,45,0.18);
+    color:#bbf7d0;
+  }
 </style>
 </head>
 <body>
 <div class="kyc-container">
-  <h1 style="font-size:42px; margin-bottom:30px;">🪪 KYC Onboarding – Varianta Finală</h1>
+  <h1 style="font-size:42px; margin-bottom:10px;">🪪 KYC Onboarding – Varianta Finală</h1>
+  <div id="pageStatus"></div>
 
   <!-- Documente Identitate -->
   <div class="section">
@@ -260,23 +284,34 @@ PĂRINTE/TUTORE (dacă este cazul): ___________________________
 /** CONFIG */
 const BACKEND_BASE_URL = "https://superparty-ai-backend-production.up.railway.app";
 
+/** UI helpers */
+function pageMsg(text, type){
+  const el = document.getElementById("pageStatus");
+  if (!el) return;
+  if (!text) { el.style.display = "none"; el.textContent=""; el.className=""; return; }
+  el.textContent = text;
+  el.className = (type === "error") ? "error" : (type === "success" ? "success" : "");
+  el.style.display = "block";
+  try { el.scrollIntoView({behavior:"smooth", block:"start"}); } catch(e){}
+}
+
 /** SESSION (sp_user/sp_token) */
 function readLSJson(key){
   try { return JSON.parse(localStorage.getItem(key) || "null"); }
   catch(e) { return null; }
 }
 function getSession(){
-  const token = String(localStorage.getItem("sp_token") || "").trim();
+  const token = String(localStorage.getItem("sp_token") || "");
   const user  = readLSJson("sp_user");
-  const email = (user && user.email) ? String(user.email).trim() : "";
+  const email = (user && user.email) ? String(user.email) : "";
   const fullName =
     (user && (user.full_name || user.fullName || user.name))
-      ? String(user.full_name || user.fullName || user.name).trim()
+      ? String(user.full_name || user.fullName || user.name)
       : "";
   return { token, user, email, fullName };
 }
 
-/** LOGIN CHECK (ALINIAT la sesiunea reală) */
+/** LOGIN CHECK */
 (function enforceLogin() {
   const { email, token } = getSession();
   if (!email || !token) {
@@ -285,14 +320,20 @@ function getSession(){
   }
 })();
 
-function toggleDriverSection(show){
-  const el = document.getElementById('driverDocs');
-  if (!el) return;
-  if (show) el.classList.add('show');
-  else el.classList.remove('show');
-  refreshDocRequirements();
+/** Utils */
+function addMonths(date, months){
+  const d = new Date(date);
+  const day = d.getDate();
+  d.setMonth(d.getMonth() + months);
+  if (d.getDate() !== day) d.setDate(0);
+  return d;
 }
-
+function isRecordValid(recordUploadedAtISO){
+  if (!recordUploadedAtISO) return false;
+  const uploadedAt = new Date(recordUploadedAtISO);
+  const expiresAt = addMonths(uploadedAt, 6);
+  return new Date() < expiresAt;
+}
 function isMinorFromCnp(cnp){
   if (!cnp || cnp.length < 13) return false;
   const s = cnp[0];
@@ -315,21 +356,6 @@ function isMinorFromCnp(cnp){
   return age < 18;
 }
 
-function addMonths(date, months){
-  const d = new Date(date);
-  const day = d.getDate();
-  d.setMonth(d.getMonth() + months);
-  if (d.getDate() !== day) d.setDate(0);
-  return d;
-}
-
-function isRecordValid(recordUploadedAtISO){
-  if (!recordUploadedAtISO) return false;
-  const uploadedAt = new Date(recordUploadedAtISO);
-  const expiresAt = addMonths(uploadedAt, 6);
-  return new Date() < expiresAt;
-}
-
 /** Contract period 15 -> 14 */
 function updateContractPeriod(){
   const fromEl = document.getElementById('contractPeriodFrom');
@@ -339,7 +365,6 @@ function updateContractPeriod(){
   const now = new Date();
   const y = now.getFullYear();
   const m = now.getMonth();
-
   const isBefore15 = now.getDate() < 15;
 
   const from = isBefore15 ? new Date(y, m - 1, 15, 0, 0, 0) : new Date(y, m, 15, 0, 0, 0);
@@ -350,12 +375,42 @@ function updateContractPeriod(){
 }
 updateContractPeriod();
 
-/** (DEMO) status documente existente în sistem. */
+/** Existing docs (optional preload from backend if you add endpoint) */
 let existingDocs = {
   parentConsent: null, // { url, uploadedAt }
   driver: { record: null } // { url, uploadedAt }
 };
 
+async function preloadExistingDocs(){
+  // endpoint optional; nu blochează pagina dacă nu există
+  const { token } = getSession();
+  if (!token) return;
+  try {
+    const r = await fetch(`${BACKEND_BASE_URL}/api/kyc/status`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!r.ok) return;
+    const j = await r.json().catch(()=>null);
+    if (!j || j.success === false) return;
+
+    // acceptăm mai multe forme fără să stricăm nimic
+    const docs = j.docs || j.data?.docs || j.data || null;
+    if (!docs) return;
+
+    // parent consent
+    if (docs.parentConsent?.uploadedAt) existingDocs.parentConsent = docs.parentConsent;
+    if (docs.parent_consent?.uploadedAt) existingDocs.parentConsent = docs.parent_consent;
+
+    // driver record
+    const rec = docs.driver?.record || docs.record || docs.cazier || null;
+    if (rec?.uploadedAt) existingDocs.driver.record = rec;
+
+  } catch(e) {
+    // silent
+  }
+}
+
+/** UI requirements logic */
 function refreshDocRequirements(){
   const signCheck = document.getElementById('contractSignCheck');
   const parentConsentStatus = document.getElementById('parentConsentStatus');
@@ -366,23 +421,25 @@ function refreshDocRequirements(){
 
   if (isMinorVisible) {
     if (existingDocs.parentConsent && existingDocs.parentConsent.uploadedAt) {
-      parentConsentStatus.style.display = 'block';
-      parentConsentStatus.textContent =
-        `✅ Acord parental deja încărcat în sistem (data: ${new Date(existingDocs.parentConsent.uploadedAt).toLocaleDateString('ro-RO')}).`;
-      parentConsentUploadWrap.style.display = 'none';
+      if (parentConsentStatus) {
+        parentConsentStatus.style.display = 'block';
+        parentConsentStatus.textContent =
+          `✅ Acord parental deja încărcat în sistem (data: ${new Date(existingDocs.parentConsent.uploadedAt).toLocaleDateString('ro-RO')}).`;
+      }
+      if (parentConsentUploadWrap) parentConsentUploadWrap.style.display = 'none';
       if (signCheck) signCheck.disabled = false;
     } else {
-      parentConsentStatus.style.display = 'none';
-      parentConsentUploadWrap.style.display = 'grid';
+      if (parentConsentStatus) parentConsentStatus.style.display = 'none';
+      if (parentConsentUploadWrap) parentConsentUploadWrap.style.display = 'grid';
       if (signCheck) signCheck.disabled = true;
     }
   }
 
-  const driverCheckLocal = document.getElementById('driverCheck');
+  const driverCheck = document.getElementById('driverCheck');
   const recordInput = document.getElementById('record');
   const recordCard = document.getElementById('recordCard');
   const recordStatus = document.getElementById('recordStatus');
-  const wantsDriver = !!(driverCheckLocal && driverCheckLocal.checked);
+  const wantsDriver = !!(driverCheck && driverCheck.checked);
 
   if (wantsDriver) {
     const rec = existingDocs.driver.record;
@@ -407,6 +464,16 @@ function refreshDocRequirements(){
   }
 }
 
+/** Driver UI toggle */
+function toggleDriverSection(show){
+  const el = document.getElementById('driverDocs');
+  if (!el) return;
+  if (show) el.classList.add('show');
+  else el.classList.remove('show');
+  refreshDocRequirements();
+}
+
+/** DOM refs */
 const idFrontInput = document.getElementById('idFront');
 const idBackInput = document.getElementById('idBack');
 const selfieInput = document.getElementById('selfie');
@@ -423,11 +490,14 @@ const minorSectionEl = document.getElementById('minorSection');
 
 let lastIdFrontFile = null;
 
+/** Extract data from ID (DEMO) */
 async function processIdFront(file) {
   if (!file) return;
+  pageMsg("", "");
 
   lastIdFrontFile = file;
 
+  // IMPORTANT: aici înlocuiești cu extract real dacă ai endpoint.
   const fakeAiResponse = {
     success: true,
     data: {
@@ -468,14 +538,18 @@ async function processIdFront(file) {
   document.getElementById('cCnp2').textContent = d.cnp;
   document.getElementById('cAddress2').textContent = d.address;
 
-  aiBox.style.display = 'block';
-  aiBox.innerHTML = `✅ Datele principale au fost extrase automat din buletin. Verifică mai jos dacă sunt corecte.`;
+  if (aiBox) {
+    aiBox.style.display = 'block';
+    aiBox.innerHTML = `✅ Datele principale au fost extrase automat din buletin. Verifică mai jos dacă sunt corecte.`;
+  }
 
-  if (fakeAiResponse.warnings.length || fakeAiResponse.missingFields.length) {
-    warnBox.style.display = 'block';
-    warnBox.innerHTML = `⚠️ AI-ul nu a putut citi clar: ${fakeAiResponse.missingFields.join(', ')}`;
-  } else {
-    warnBox.style.display = 'none';
+  if (warnBox) {
+    if (fakeAiResponse.warnings.length || fakeAiResponse.missingFields.length) {
+      warnBox.style.display = 'block';
+      warnBox.innerHTML = `⚠️ AI-ul nu a putut citi clar: ${fakeAiResponse.missingFields.join(', ')}`;
+    } else {
+      warnBox.style.display = 'none';
+    }
   }
 
   if (aiFieldsSection) aiFieldsSection.style.display = 'block';
@@ -499,13 +573,14 @@ async function processIdFront(file) {
   refreshDocRequirements();
 
   if (aiFieldsSection) {
-    aiFieldsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    try { aiFieldsSection.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch(e){}
   }
 }
 
+/** Events */
 if (idFrontInput) {
   idFrontInput.addEventListener('change', async (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files && e.target.files[0];
     await processIdFront(file);
   });
 }
@@ -522,7 +597,7 @@ if (okRadio && notOkRadio && fixBoxEl) {
 if (reanalyseBtn) {
   reanalyseBtn.addEventListener('click', async () => {
     if (!lastIdFrontFile) {
-      alert('Nu există nicio poză salvată. Te rugăm să încarci din nou buletinul.');
+      pageMsg('Nu există nicio poză salvată. Te rugăm să încarci din nou buletinul.', 'error');
       return;
     }
     await processIdFront(lastIdFrontFile);
@@ -539,7 +614,7 @@ const parentConsentInput = document.getElementById('parentConsent');
 if (parentConsentInput) {
   parentConsentInput.addEventListener('change', () => {
     if (parentConsentInput.files && parentConsentInput.files[0]) {
-      existingDocs.parentConsent = { url: 'uploaded', uploadedAt: new Date().toISOString() };
+      existingDocs.parentConsent = { url: 'uploaded_local', uploadedAt: new Date().toISOString() };
       refreshDocRequirements();
     }
   });
@@ -554,7 +629,7 @@ const recordInputEl = document.getElementById('record');
 if (recordInputEl) {
   recordInputEl.addEventListener('change', () => {
     if (recordInputEl.files && recordInputEl.files[0]) {
-      existingDocs.driver.record = { url: 'uploaded', uploadedAt: new Date().toISOString() };
+      existingDocs.driver.record = { url: 'uploaded_local', uploadedAt: new Date().toISOString() };
       refreshDocRequirements();
     }
   });
@@ -573,40 +648,49 @@ if (contractTrigger && contractBoxEl && contractTriggerIcon) {
 
 /** SUBMIT REAL: POST /api/kyc/submit (multipart) */
 async function submitKYC() {
-  const { email, token, fullName: sessionFullName } = getSession();
-  if (!email || !token) { window.location.replace("/login.html"); return; }
+  pageMsg("", "");
 
-  const signCheck = document.getElementById("contractSignCheck");
-  if (!signCheck || signCheck.disabled || !signCheck.checked) {
-    alert("Trebuie să citești contractul și să bifezi acordul (și acord parental dacă ești minor).");
+  const { email, token, fullName: sessionFullName } = getSession();
+  if (!email || !token) {
+    window.location.replace("/login.html");
     return;
   }
 
-  const idFront = idFrontInput?.files?.[0];
-  const idBack  = idBackInput?.files?.[0];
-  const selfie  = selfieInput?.files?.[0];
+  const signCheck = document.getElementById("contractSignCheck");
+  if (!signCheck || signCheck.disabled || !signCheck.checked) {
+    pageMsg("Trebuie să citești contractul și să bifezi acordul (și acord parental dacă ești minor).", "error");
+    return;
+  }
+
+  const idFront = idFrontInput && idFrontInput.files ? idFrontInput.files[0] : null;
+  const idBack  = idBackInput && idBackInput.files ? idBackInput.files[0] : null;
+  const selfie  = selfieInput && selfieInput.files ? selfieInput.files[0] : null;
   if (!idFront || !idBack || !selfie) {
-    alert("Încarcă CI față, CI verso și Selfie cu CI.");
+    pageMsg("Încarcă CI față, CI verso și Selfie cu CI.", "error");
     return;
   }
 
   const cnp = (document.getElementById("aiCnp")?.textContent || "").trim();
   const isMinor = isMinorFromCnp(cnp);
-  const parentConsentFile = document.getElementById("parentConsent")?.files?.[0];
-  const hasParentConsentInSystem = !!(existingDocs?.parentConsent?.uploadedAt);
+
+  const parentConsentFile = document.getElementById("parentConsent")?.files?.[0] || null;
+  const hasParentConsentInSystem = !!(existingDocs && existingDocs.parentConsent && existingDocs.parentConsent.uploadedAt);
 
   if (isMinor && !hasParentConsentInSystem && !parentConsentFile) {
-    alert("Ești minor: trebuie încărcat acordul parental ca să poți trimite KYC.");
+    pageMsg("Ești minor: trebuie încărcat acordul parental ca să poți trimite KYC.", "error");
     return;
   }
 
-  const wantsDriver = !!driverCheck?.checked;
-  const licenseFile = document.getElementById("license")?.files?.[0];
-  const recordFile  = document.getElementById("record")?.files?.[0];
+  const wantsDriver = !!(driverCheck && driverCheck.checked);
+  const licenseFile = document.getElementById("license")?.files?.[0] || null;
+  const recordFile  = document.getElementById("record")?.files?.[0] || null;
 
-  const recordValidInSystem = !!(existingDocs?.driver?.record?.uploadedAt) && isRecordValid(existingDocs.driver.record.uploadedAt);
+  const recordValidInSystem =
+    !!(existingDocs && existingDocs.driver && existingDocs.driver.record && existingDocs.driver.record.uploadedAt) &&
+    isRecordValid(existingDocs.driver.record.uploadedAt);
+
   if (wantsDriver && !recordValidInSystem && !recordFile) {
-    alert("Ești șofer: cazierul este obligatoriu (lipsește sau e expirat).");
+    pageMsg("Ești șofer: cazierul este obligatoriu (lipsește sau e expirat).", "error");
     return;
   }
 
@@ -629,7 +713,7 @@ async function submitKYC() {
   if (wantsDriver && licenseFile) fd.append("license", licenseFile);
   if (wantsDriver && recordFile)  fd.append("record", recordFile);
 
-  fd.set("aiDataConfirmed", document.getElementById("aiDataOk")?.checked ? "1" : "0");
+  fd.set("aiDataConfirmed", (document.getElementById("aiDataOk")?.checked) ? "1" : "0");
 
   const btn = document.getElementById("submitBtn");
   if (btn) { btn.disabled = true; btn.textContent = "Se trimite KYC..."; }
@@ -637,34 +721,57 @@ async function submitKYC() {
   try {
     const res = await fetch(`${BACKEND_BASE_URL}/api/kyc/submit`, {
       method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`
-      },
+      headers: { Authorization: `Bearer ${token}` },
       body: fd
     });
 
-    const data = await res.json().catch(() => null);
-    if (!res.ok || !data || data.success === false) {
-      throw new Error((data && data.error) || "Nu am putut trimite KYC-ul.");
+    let data = null;
+    try { data = await res.json(); } catch(e) { data = null; }
+
+    if (res.status === 401 || res.status === 403) {
+      try { localStorage.removeItem("sp_token"); } catch(e){}
+      pageMsg("Sesiunea a expirat. Te rugăm să te loghezi din nou.", "error");
+      setTimeout(()=>window.location.replace("/login.html"), 600);
+      return;
     }
 
+    if (!res.ok || !data || data.success === false) {
+      const msg = (data && (data.error || data.message)) ? (data.error || data.message) : `Nu am putut trimite KYC-ul (HTTP ${res.status}).`;
+      pageMsg(msg, "error");
+      return;
+    }
+
+    // mark pending locally (compat)
     try { localStorage.setItem("userKycStatus", "pending"); } catch(e){}
     try {
       const u = readLSJson("sp_user");
-      if (u) { u.status = "pending"; localStorage.setItem("sp_user", JSON.stringify(u)); }
+      if (u) {
+        u.status = "pending";
+        localStorage.setItem("sp_user", JSON.stringify(u));
+      }
     } catch(e){}
 
-    alert("✅ KYC trimis cu succes. Vei fi redirecționat.");
-    window.location.href = "/angajat/pending.html";
+    pageMsg("✅ KYC trimis cu succes. Vei fi redirecționat.", "success");
+    setTimeout(() => { window.location.href = "/angajat/pending.html"; }, 650);
 
   } catch (e) {
-    alert("❌ Eroare: " + (e.message || "unknown"));
+    pageMsg("❌ Eroare: " + (e && e.message ? e.message : "unknown"), "error");
   } finally {
     if (btn) { btn.disabled = false; btn.textContent = "🚀 Trimite KYC"; }
   }
 }
 
+window.submitKYC = submitKYC;
+
 document.getElementById("submitBtn")?.addEventListener("click", submitKYC);
+
+/** init */
+(async function init(){
+  await preloadExistingDocs();
+  refreshDocRequirements();
+  // set driver section initial state
+  if (driverCheck) toggleDriverSection(driverCheck.checked);
+})();
 </script>
 </body>
 </html>
