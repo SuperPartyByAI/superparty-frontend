@@ -1,57 +1,52 @@
 // api/gas_wp.js
-// Vercel Function (Web Standard) -> Google Apps Script (fix CORS)
-// Endpoint: /api/gas_wp
+// Vercel Serverless Function -> Google Apps Script (fix CORS)
+// URL: /api/gas_wp?action=...
 
-export default {
-  async fetch(request) {
-    const corsHeaders = {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    };
+export default async function handler(req, res) {
+  // CORS
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
-    if (request.method === "OPTIONS") {
-      return new Response(null, { status: 204, headers: corsHeaders });
+  if (req.method === "OPTIONS") {
+    res.status(204).end();
+    return;
+  }
+
+  const GAS_EXEC =
+    process.env.GAS_WP_URL ||
+    "https://script.google.com/macros/s/AKfycbwpScVyziDaoVeuxcqdBQ3qx6j-QHy5FYoWtvlqMSsu15eXGI_l5fmo1Bg8zqP1BLyJ/exec";
+
+  try {
+    const outUrl = new URL(GAS_EXEC);
+
+    // Copiem query-ul către Apps Script
+    for (const [k, v] of Object.entries(req.query || {})) {
+      if (Array.isArray(v)) v.forEach((x) => outUrl.searchParams.append(k, String(x)));
+      else if (v !== undefined) outUrl.searchParams.set(k, String(v));
     }
 
-    const GAS_EXEC =
-      process.env.GAS_WP_URL ||
-      "https://script.google.com/macros/s/AKfycbwpScVyziDaoVeuxcqdBQ3qx6j-QHy5FYoWtvlqMSsu15eXGI_l5fmo1Bg8zqP1BLyJ/exec";
+    const method = String(req.method || "GET").toUpperCase();
 
-    try {
-      const inUrl = new URL(request.url);
-      const outUrl = new URL(GAS_EXEC);
+    const headers = {};
+    let body;
 
-      // copiem query-ul către Apps Script
-      inUrl.searchParams.forEach((v, k) => outUrl.searchParams.append(k, v));
-
-      const method = request.method.toUpperCase();
-
-      // forward body pentru non-GET
-      let body = undefined;
-      const headers = new Headers();
-
-      if (method !== "GET" && method !== "HEAD") {
-        const ct = request.headers.get("content-type") || "application/json";
-        headers.set("content-type", ct);
-        body = await request.text();
-      }
-
-      const r = await fetch(outUrl.toString(), { method, headers, body });
-
-      const respHeaders = new Headers(corsHeaders);
-      const ct = r.headers.get("content-type") || "application/json";
-      respHeaders.set("content-type", ct);
-
-      const text = await r.text();
-      return new Response(text, { status: r.status, headers: respHeaders });
-    } catch (e) {
-      const respHeaders = new Headers(corsHeaders);
-      respHeaders.set("content-type", "application/json");
-      return new Response(JSON.stringify({ error: "gas_wp_proxy_failed" }), {
-        status: 500,
-        headers: respHeaders,
-      });
+    if (method !== "GET" && method !== "HEAD") {
+      headers["Content-Type"] = req.headers["content-type"] || "application/json";
+      body = headers["Content-Type"].includes("application/json")
+        ? JSON.stringify(req.body ?? {})
+        : (typeof req.body === "string" ? req.body : JSON.stringify(req.body ?? {}));
     }
-  },
-};
+
+    const r = await fetch(outUrl.toString(), { method, headers, body });
+    const ct = r.headers.get("content-type") || "application/json";
+    const text = await r.text();
+
+    res.status(r.status);
+    res.setHeader("Content-Type", ct);
+    res.send(text);
+  } catch (e) {
+    console.error("gas_wp proxy error:", e);
+    res.status(500).json({ error: "gas_wp_proxy_failed" });
+  }
+}
