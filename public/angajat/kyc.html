@@ -56,6 +56,25 @@
     background: rgba(20,83,45,0.18);
     color:#bbf7d0;
   }
+
+  .input {
+    width:100%;
+    padding:14px 16px;
+    border-radius:14px;
+    border:1px solid #475569;
+    background:rgba(2,6,23,0.35);
+    color:#e5e7eb;
+    outline:none;
+    font-size:14px;
+  }
+  .input:focus{
+    border-color:#818cf8;
+  }
+  .hint {
+    color:#94a3b8;
+    font-size:13px;
+    margin-top:8px;
+  }
 </style>
 </head>
 
@@ -119,6 +138,14 @@
       <button type="button" class="btn" id="retryPhotoBtn" style="width:auto; padding:10px 16px; font-size:14px; margin-right:10px;">📷 Refă poza</button>
       <button type="button" class="btn" id="reanalyseBtn" style="width:auto; padding:10px 16px; font-size:14px; background:linear-gradient(135deg,#22c55e,#16a34a);">🔁 Reanalizează</button>
     </div>
+  </div>
+
+  <!-- IBAN (NECESAR) -->
+  <div class="section" id="paymentSection">
+    <h2>🏦 Date plată</h2>
+    <p style="color:#94a3b8;">IBAN este obligatoriu pentru procesarea plăților.</p>
+    <input class="input" id="iban" type="text" placeholder="ROxx.... (IBAN)" autocomplete="off" />
+    <div class="hint">Exemplu: RO49AAAA1B31007593840000</div>
   </div>
 
   <div class="section" id="contractSection" style="display:none;">
@@ -651,6 +678,12 @@ async function submitKYC() {
     return;
   }
 
+  const iban = (document.getElementById("iban")?.value || "").trim();
+  if (!iban) {
+    pageMsg("IBAN este obligatoriu.", "error");
+    return;
+  }
+
   const signCheck = document.getElementById("contractSignCheck");
   if (!signCheck || signCheck.disabled || !signCheck.checked) {
     pageMsg("Trebuie să citești contractul și să bifezi acordul (și acord parental dacă ești minor).", "error");
@@ -700,44 +733,25 @@ async function submitKYC() {
 
   const fd = new FormData();
 
-  // TEXT fields (camelCase + snake_case)
+  // TEXT fields
   fd.set("email", email);
   fd.set("fullName", fullName);
-  fd.set("full_name", fullName);
-
   fd.set("cnp", cnp);
   fd.set("address", address);
+  fd.set("iban", iban);
 
   fd.set("isDriver", wantsDriver ? "1" : "0");
-  fd.set("is_driver", wantsDriver ? "1" : "0");
-
   const aiConfirmed = (document.getElementById("aiDataOk")?.checked) ? "1" : "0";
   fd.set("aiDataConfirmed", aiConfirmed);
-  fd.set("ai_data_confirmed", aiConfirmed);
 
-  // FILES (camelCase + snake_case)
+  // FILES: DOAR numele acceptate de backend (multer upload.fields)
   fd.append("idFront", idFront);
-  fd.append("id_front", idFront);
-
   fd.append("idBack", idBack);
-  fd.append("id_back", idBack);
-
   fd.append("selfie", selfie);
-  fd.append("selfie_ci", selfie);
 
-  if (isMinor && parentConsentFile) {
-    fd.append("parentConsent", parentConsentFile);
-    fd.append("parent_consent", parentConsentFile);
-  }
-
-  if (wantsDriver && licenseFile) {
-    fd.append("license", licenseFile);
-    fd.append("driver_license", licenseFile);
-  }
-  if (wantsDriver && recordFile) {
-    fd.append("record", recordFile);
-    fd.append("cazier", recordFile);
-  }
+  if (parentConsentFile) fd.append("parentConsent", parentConsentFile);
+  if (wantsDriver && licenseFile) fd.append("license", licenseFile);
+  if (wantsDriver && recordFile) fd.append("record", recordFile);
 
   const btn = document.getElementById("submitBtn");
   if (btn) { btn.disabled = true; btn.textContent = "Se trimite KYC..."; }
