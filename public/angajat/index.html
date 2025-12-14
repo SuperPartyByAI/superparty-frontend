@@ -15,7 +15,7 @@
     code{background:rgba(255,255,255,.08);padding:2px 6px;border-radius:6px}
   </style>
 
-  <!-- AUTH GUARD: ruleaza primul -->
+  <!-- AUTH GUARD: rulează primul (face refresh din /api/auth/me și redirecționează unde trebuie) -->
   <script src="/angajat/auth-guard.js"></script>
 </head>
 <body>
@@ -24,45 +24,18 @@
   <p id="headline">Se verifică accesul...</p>
 
   <div class="card">
-    <div><strong>Debug status (ca să vezi clar ce citește dashboard-ul)</strong></div>
+    <div><strong>Debug (după refresh din /api/auth/me)</strong></div>
     <div class="row" id="debugRow"></div>
     <div style="margin-top:12px;font-size:13px;opacity:.9">
-      Dacă vezi redirect loop: verifică regulile de status și URL-urile.
+      Dacă status e corect în DB, aici trebuie să fie corect după refresh.
     </div>
   </div>
 
   <script>
     (function(){
-      const KYC_URL = "/angajat/kyc.html";
-      const PENDING_URL = "/angajat/pending.html";
-
-      const token = localStorage.getItem("sp_token");
-      const rawUser = localStorage.getItem("sp_user");
-
-      if (!token || !rawUser) {
-        try { localStorage.removeItem("sp_token"); localStorage.removeItem("sp_user"); } catch(e){}
-        location.href = "/login.html";
-        return;
-      }
-
-      let u;
-      try { u = JSON.parse(rawUser); } catch (e) {
-        try { localStorage.removeItem("sp_token"); localStorage.removeItem("sp_user"); } catch(e){}
-        location.href = "/login.html";
-        return;
-      }
-
-      // Normalize
-      const role = String(u.role || "angajat").toLowerCase();
-
-      // IMPORTANT: folosim DOAR users.status (backend source of truth)
-      const status = String(
-        u.status ||
-        u.raw?.status ||
-        ""
-      ).toLowerCase();
-
+      function safeParse(v){ try { return JSON.parse(v); } catch(e){ return null; } }
       const debugRow = document.getElementById("debugRow");
+
       function pill(label, value, ok) {
         const el = document.createElement("span");
         el.className = "pill " + (ok ? "ok" : "bad");
@@ -70,28 +43,19 @@
         debugRow.appendChild(el);
       }
 
-      pill("token", token ? "prezent" : "lipsa", !!token);
-      pill("email", u.email || u.raw?.email || "(gol)", !!(u.email || u.raw?.email));
-      pill("role", role, role === "angajat" || role === "admin" || role === "gm");
-      pill("users.status", status, status === "approved" || status === "pending" || status === "kyc_required" || status === "rejected");
+      const token = localStorage.getItem("sp_token") || "";
+      const u = safeParse(localStorage.getItem("sp_user") || "null") || {};
 
-      // Role redirect
-      if (role === "admin") { location.href = "/admin/index.html"; return; }
-      if (role === "gm") { location.href = "/gm/index.html"; return; }
+      const role = String(u.role || "").toLowerCase();
+      const status = String(u.status || "").toLowerCase();
 
-      // Status flow
-      if (status === "approved") {
-        document.getElementById("headline").textContent = "Dacă vezi asta, ești OK ✅";
-        return;
-      }
+      pill("token", token ? ("prezent (" + token.length + ")") : "lipsă", !!token);
+      pill("email", u.email || "", !!u.email);
+      pill("role", role || "(gol)", !!role);
+      pill("users.status", status || "(gol)", status === "approved");
 
-      if (status === "kyc_required") {
-        location.href = KYC_URL;
-        return;
-      }
-
-      // pending / rejected / unknown -> pending page
-      location.href = PENDING_URL;
+      document.getElementById("headline").textContent =
+        (status === "approved") ? "Ești OK (approved) ✅" : "Nu ești approved încă (sau nu s-a făcut refresh) …";
     })();
   </script>
 
