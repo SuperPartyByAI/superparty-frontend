@@ -1,241 +1,209 @@
-// Backend Railway
-const API_BASE = "https://superparty-ai-backend-production.up.railway.app";
+// =====================================
+// SuperParty - Admin KYC Logic
+// File: public/admin/kyc.js
+// - Always uses localStorage sp_token + /api/auth/me refresh
+// - Adds Authorization header on every admin call
+// - On 401 -> clears auth and redirects to /login.html
+// =====================================
 
-const tbody = document.getElementById("kycTbody");
-const pendingCountEl = document.getElementById("pendingCount");
-const errorBox = document.getElementById("errorBox");
-const loadingBox = document.getElementById("loadingBox");
-const emptyState = document.getElementById("emptyState");
-const tableWrapper = document.getElementById("tableWrapper");
-const filterButtons = document.querySelectorAll(".filter-btn");
+(function () {
+  "use strict";
 
-let currentStatusFilter = "pending";
+  const API_BASE = "https://superparty-ai-backend-production.up.railway.app";
+  const LOGIN_URL = "/login.html";
 
-function setLoading(isLoading) {
-  if (isLoading) {
-    loadingBox.style.display = "block";
-  } else {
-    loadingBox.style.display = "none";
-  }
-}
+  function qs(sel) { return document.querySelector(sel); }
+  function safeJSONParse(v) { try { return JSON.parse(v); } catch { return null; } }
 
-function setError(message) {
-  if (message) {
-    errorBox.textContent = message;
-    errorBox.style.display = "block";
-  } else {
-    errorBox.textContent = "";
-    errorBox.style.display = "none";
-  }
-}
-
-function maskCnp(cnp) {
-  if (!cnp || typeof cnp !== "string") return "";
-  if (cnp.length <= 4) return "****";
-  return cnp.slice(0, 3) + "*******" + cnp.slice(-3);
-}
-
-function maskIban(iban) {
-  if (!iban || typeof iban !== "string") return "";
-  if (iban.length <= 6) return "****";
-  return iban.slice(0, 4) + " **** **** " + iban.slice(-4);
-}
-
-function formatDate(iso) {
-  if (!iso) return "";
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return iso;
-  const day = String(d.getDate()).padStart(2, "0");
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const year = d.getFullYear();
-  const hours = String(d.getHours()).padStart(2, "0");
-  const mins = String(d.getMinutes()).padStart(2, "0");
-  return `${day}.${month}.${year} ${hours}:${mins}`;
-}
-
-function renderStatusTag(kycStatus) {
-  const status = (kycStatus || "").toLowerCase();
-  let clazz = "tag-status pending";
-  let label = "Pending";
-
-  if (status === "approved") {
-    clazz = "tag-status approved";
-    label = "Approved";
-  } else if (status === "rejected") {
-    clazz = "tag-status rejected";
-    label = "Rejected";
+  function clearAuth() {
+    try { localStorage.removeItem("sp_token"); } catch (_) {}
+    try { localStorage.removeItem("sp_user"); } catch (_) {}
   }
 
-  return `<span class="${clazz}">${label}</span>`;
-}
-
-function setActiveFilterButton(status) {
-  filterButtons.forEach((btn) => {
-    const s = btn.getAttribute("data-status");
-    if (s === status) {
-      btn.classList.add("active");
-    } else {
-      btn.classList.remove("active");
-    }
-  });
-}
-
-async function loadKycList(status = "pending") {
-  currentStatusFilter = status;
-  setActiveFilterButton(status);
-  setError("");
-  setLoading(true);
-  tbody.innerHTML = "";
-  emptyState.style.display = "none";
-  tableWrapper.style.display = "block";
-
-  try {
-    const resp = await fetch(
-      `${API_BASE}/api/admin/kyc/list?status=${encodeURIComponent(status)}`
-    );
-
-    const data = await resp.json();
-
-    if (!resp.ok || data.success !== true) {
-      const msg =
-        (data && data.error) ||
-        `Eroare la încărcarea listei KYC (status HTTP ${resp.status}).`;
-      setError(msg);
-      tbody.innerHTML = "";
-      emptyState.style.display = "block";
-      tableWrapper.style.display = "none";
-      pendingCountEl.textContent = "0";
-      return;
-    }
-
-    const items = Array.isArray(data.items) ? data.items : [];
-
-    if (status === "pending") {
-      pendingCountEl.textContent = String(items.length);
-    }
-
-    if (items.length === 0) {
-      tbody.innerHTML = "";
-      emptyState.style.display = "block";
-      tableWrapper.style.display = "none";
-      return;
-    }
-
-    const rowsHtml = items
-      .map((item) => {
-        const name = item.full_name || "-";
-        const email = item.email || "-";
-        const cnp = maskCnp(item.cnp || "");
-        const iban = maskIban(item.iban || "");
-        const phone = item.phone || "-";
-        const createdAt = formatDate(item.created_at);
-        const kycStatus = item.kyc_status || item.status || "pending";
-
-        return `
-          <tr data-email="${email}">
-            <td class="name">${name}</td>
-            <td class="email">${email}</td>
-            <td>${cnp}</td>
-            <td>${iban}</td>
-            <td>${phone}</td>
-            <td>${renderStatusTag(kycStatus)}</td>
-            <td class="text-muted">${createdAt}</td>
-            <td>
-              <div class="actions">
-                <button class="btn btn-approve" data-action="approve" data-email="${email}">
-                  ✓ Aprobă
-                </button>
-                <button class="btn btn-reject" data-action="reject" data-email="${email}">
-                  ✕ Respinge
-                </button>
-              </div>
-            </td>
-          </tr>
-        `;
-      })
-      .join("");
-
-    tbody.innerHTML = rowsHtml;
-  } catch (err) {
-    console.error("loadKycList error:", err);
-    setError("Eroare de rețea sau server la încărcarea listei KYC.");
-    tbody.innerHTML = "";
-    emptyState.style.display = "block";
-    tableWrapper.style.display = "none";
-    pendingCountEl.textContent = "0";
-  } finally {
-    setLoading(false);
+  function redirect(to) {
+    if ((window.location.pathname || "") !== to) window.location.href = to;
   }
-}
 
-async function handleApproveReject(email, action) {
-  if (!email || !action) return;
+  function normalizeUser(u) {
+    const user = u || {};
+    return {
+      id: user.id,
+      full_name: user.full_name || user.fullName || "",
+      email: user.email || "",
+      phone: user.phone || "",
+      role: user.role || "angajat",
+      status: user.status || "kyc_required",
+      updatedAt: Date.now(),
+      raw: user,
+    };
+  }
 
-  const actionLabel = action === "approve" ? "aprobi" : "respingi";
-  const confirmMsg = `Sigur vrei să ${actionLabel} KYC pentru ${email}?`;
+  async function refreshSession() {
+    const token = localStorage.getItem("sp_token") || "";
+    const user = safeJSONParse(localStorage.getItem("sp_user") || "null");
 
-  const ok = window.confirm(confirmMsg);
-  if (!ok) return;
+    if (!token || !user || !user.email) {
+      clearAuth();
+      redirect(LOGIN_URL);
+      return null;
+    }
 
-  setError("");
-  setLoading(true);
-
-  try {
-    const resp = await fetch(`${API_BASE}/api/admin/kyc/approve`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, action }),
+    // Source of truth: /api/auth/me (DB + fresh token)
+    const r = await fetch(API_BASE + "/api/auth/me", {
+      headers: { Authorization: "Bearer " + token },
     });
 
-    const data = await resp.json();
+    if (r.status === 401) {
+      clearAuth();
+      redirect(LOGIN_URL);
+      return null;
+    }
 
-    if (!resp.ok || data.success !== true) {
-      const msg =
-        (data && data.error) ||
-        `Eroare la ${action} pentru ${email} (status HTTP ${resp.status}).`;
-      setError(msg);
+    const j = await r.json().catch(() => null);
+    if (!r.ok || !j || !j.success || !j.tokenUser) {
+      // If backend is temporarily failing, keep existing session
+      return { token, user };
+    }
+
+    const freshToken = j.token ? String(j.token) : token;
+    const freshUser = normalizeUser(j.tokenUser);
+
+    try { localStorage.setItem("sp_token", freshToken); } catch (_) {}
+    try { localStorage.setItem("sp_user", JSON.stringify(freshUser)); } catch (_) {}
+
+    return { token: freshToken, user: freshUser };
+  }
+
+  async function apiFetch(path, opts) {
+    const sess = await refreshSession();
+    if (!sess) return null;
+
+    const headers = Object.assign({}, (opts && opts.headers) ? opts.headers : {});
+    headers.Authorization = "Bearer " + sess.token;
+
+    const r = await fetch(API_BASE + path, Object.assign({}, opts || {}, { headers }));
+
+    if (r.status === 401) {
+      clearAuth();
+      redirect(LOGIN_URL);
+      return null;
+    }
+
+    return r;
+  }
+
+  function renderJSONFallback(obj) {
+    const pre = qs("#kycJson") || qs("#json") || qs("pre");
+    if (!pre) {
+      console.log("KYC DATA:", obj);
+      return;
+    }
+    pre.textContent = JSON.stringify(obj, null, 2);
+  }
+
+  async function loadKycList() {
+    // IMPORTANT: backend-ul tău listează pending fără query param.
+    // Dacă vrei filtrare, o facem client-side.
+    const r = await apiFetch("/api/admin/kyc/list", { method: "GET" });
+    if (!r) return;
+
+    const j = await r.json().catch(() => null);
+    if (!r.ok || !j || !j.success) {
+      renderJSONFallback({ ok: false, status: r.status, body: j });
       return;
     }
 
-    // Reload lista pentru statusul curent
-    await loadKycList(currentStatusFilter);
-  } catch (err) {
-    console.error("handleApproveReject error:", err);
-    setError(
-      `Eroare de rețea sau server la ${action} pentru ${email}. Încearcă din nou.`
-    );
-  } finally {
-    setLoading(false);
+    // Prefer să nu stric HTML-ul tău existent.
+    // Dacă ai un container cu id="kycList", încerc să-l umplu minimal.
+    const listEl = qs("#kycList");
+    if (!listEl) {
+      renderJSONFallback(j);
+      return;
+    }
+
+    const rows = Array.isArray(j.pending) ? j.pending : [];
+    if (!rows.length) {
+      listEl.innerHTML = "<div style='opacity:.8'>Nu există cereri KYC în așteptare.</div>";
+      return;
+    }
+
+    listEl.innerHTML = rows.map((k) => {
+      const name = (k.kyc_full_name || k.full_name || "").replace(/</g, "&lt;");
+      const email = (k.kyc_email || k.email || "").replace(/</g, "&lt;");
+      const id = Number(k.user_id || 0);
+
+      return `
+        <div style="border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06); border-radius:12px; padding:12px; margin:10px 0;">
+          <div style="font-weight:700">${name || "(fără nume)"} <span style="opacity:.8; font-weight:400">(${email || "fără email"})</span></div>
+          <div style="opacity:.8; margin-top:6px;">user_id: ${id} • status: ${String(k.kyc_status || "pending")}</div>
+          <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
+            <button data-approve="${id}" style="padding:8px 10px; border-radius:10px; border:1px solid rgba(16,185,129,.45); background:rgba(16,185,129,.18); color:#eafff6; cursor:pointer;">Approve</button>
+            <button data-reject="${id}" style="padding:8px 10px; border-radius:10px; border:1px solid rgba(239,68,68,.45); background:rgba(239,68,68,.18); color:#ffecec; cursor:pointer;">Reject</button>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    // bind actions
+    listEl.querySelectorAll("button[data-approve]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const user_id = Number(btn.getAttribute("data-approve") || "0");
+        await approve(user_id);
+        await loadKycList();
+      });
+    });
+
+    listEl.querySelectorAll("button[data-reject]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const user_id = Number(btn.getAttribute("data-reject") || "0");
+        const reason = prompt("Motiv reject (opțional):") || "";
+        await reject(user_id, reason);
+        await loadKycList();
+      });
+    });
   }
-}
 
-// Click pe rândurile de acțiuni (event delegation)
-tbody.addEventListener("click", (event) => {
-  const target = event.target;
-  if (!(target instanceof HTMLElement)) return;
-
-  const btn = target.closest("button");
-  if (!btn) return;
-
-  const action = btn.getAttribute("data-action");
-  const email = btn.getAttribute("data-email");
-
-  if (action === "approve" || action === "reject") {
-    handleApproveReject(email, action);
+  async function approve(user_id) {
+    if (!user_id) return { ok: false, error: "Missing user_id" };
+    const r = await apiFetch("/api/admin/kyc/approve", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id }),
+    });
+    if (!r) return { ok: false, error: "No response" };
+    return await r.json().catch(() => ({ ok: false, status: r.status }));
   }
-});
 
-// Click pe filtre (pending / approved / rejected)
-filterButtons.forEach((btn) => {
-  btn.addEventListener("click", () => {
-    const status = btn.getAttribute("data-status") || "pending";
-    loadKycList(status);
+  async function reject(user_id, reason) {
+    if (!user_id) return { ok: false, error: "Missing user_id" };
+    const r = await apiFetch("/api/admin/kyc/reject", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id, reason: reason || "" }),
+    });
+    if (!r) return { ok: false, error: "No response" };
+    return await r.json().catch(() => ({ ok: false, status: r.status }));
+  }
+
+  // Expose helpers (useful in DevTools)
+  window.SuperPartyAdminKyc = {
+    refreshSession,
+    loadKycList,
+    approve,
+    reject,
+  };
+
+  document.addEventListener("DOMContentLoaded", async () => {
+    const sess = await refreshSession();
+    if (!sess) return;
+
+    const role = String(sess.user?.role || "").toLowerCase();
+    if (role !== "admin") {
+      // dacă nu ești admin, nu ai ce căuta aici
+      redirect("/angajat/");
+      return;
+    }
+
+    await loadKycList();
   });
-});
-
-// La încărcarea paginii, afișăm pending
-document.addEventListener("DOMContentLoaded", () => {
-  loadKycList("pending");
-});
+})();
