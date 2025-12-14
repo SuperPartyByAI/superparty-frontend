@@ -8,7 +8,7 @@
 
   const API_BASE = "https://superparty-ai-backend-production.up.railway.app";
 
-  fetch(`${API_BASE}/api/kyc/status?email=${encodeURIComponent(email)}`)
+  fetch(`${API_BASE}/api/kyc/status?email=${encodeURIComponent(email)}`, { headers: { Authorization: "Bearer " + (localStorage.getItem("sp_token") || "") } })
     .then(r => r.json())
     .then(data => {
       if (!data.success || data.status !== "approved") {
