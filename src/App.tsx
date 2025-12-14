@@ -4,7 +4,6 @@
 
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
-import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 
 // Componentă care protejează rutele
@@ -16,7 +15,8 @@ function ProtectedRoute({ children }: { children: JSX.Element }) {
   }
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    // IMPORTANT: ai basename="/app", deci folosim path relativ la /app
+    return <Navigate to="/login.html" replace />;
   }
 
   return children;
@@ -27,10 +27,13 @@ function App() {
     <BrowserRouter basename="/app">
       <AuthProvider>
         <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
+          {/* Home -> login static */}
+          <Route path="/" element={<Navigate to="/login.html" replace />} />
 
-          <Route path="/login" element={<Login />} />
+          {/* Orice /login din React -> login static */}
+          <Route path="/login" element={<Navigate to="/login.html" replace />} />
 
+          {/* Dashboard protejat */}
           <Route
             path="/dashboard"
             element={
