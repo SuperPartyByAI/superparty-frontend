@@ -1,29 +1,22 @@
 // =====================================
 // SuperParty - Auth Guard (Angajat)
 // File: public/angajat/auth-guard.js
+// Source of truth: GET /api/auth/me (reads DB; returns tokenUser + fresh token)
 //
-// Source of truth:
-// - token: localStorage sp_token
-// - live user: GET /api/auth/me (reads DB; returns tokenUser + fresh token)
-//
-// Redirect rules:
-// - Not logged in / invalid token -> /login.html
+// Rules:
+// - no token/user -> /login.html
 // - role admin/gm -> their dashboards
 // - users.status:
-//    - kyc_required -> /angajat/kyc.html
-//    - pending      -> /angajat/pending.html
-//    - rejected     -> /angajat/pending.html?reason=rejected
-//    - approved     -> allow
+//    approved     -> OK
+//    kyc_required -> /angajat/kyc.html
+//    pending      -> /angajat/pending.html
+//    rejected     -> /angajat/pending.html?reason=rejected
 // =====================================
 
 (function () {
   "use strict";
 
   const API_BASE = "https://superparty-ai-backend-production.up.railway.app";
-
-  const LOGIN_URL = "/login.html";
-  const KYC_URL = "/angajat/kyc.html";
-  const PENDING_URL = "/angajat/pending.html";
 
   function safeJSONParse(v) {
     try { return JSON.parse(v); } catch { return null; }
@@ -33,95 +26,103 @@
     return (v == null ? fallback : String(v)).toLowerCase();
   }
 
-  function currentPath() {
+  function pathNow() {
     return (window.location.pathname || "").toLowerCase();
   }
 
-  function clearAuth() {
-    try { localStorage.removeItem("sp_token"); } catch (_) {}
-    try { localStorage.removeItem("sp_user"); } catch (_) {}
-  }
-
   function redirect(to) {
-    if ((window.location.pathname || "") !== to) window.location.replace(to);
+    if ((window.location.pathname || "") !== to) window.location.href = to;
   }
 
-  async function fetchMe(token) {
-    const r = await fetch(API_BASE + "/api/auth/me", {
-      method: "GET",
-      headers: { Authorization: "Bearer " + token },
-      cache: "no-store",
-    });
-
-    if (!r.ok) return null;
-
-    const j = await r.json().catch(() => null);
-    if (!j || !j.success || !j.tokenUser) return null;
-
-    // rescriem localStorage cu ce spune backend-ul (DB truth)
-    try { localStorage.setItem("sp_user", JSON.stringify(j.tokenUser)); } catch (_) {}
-    if (j.token) {
-      try { localStorage.setItem("sp_token", String(j.token)); } catch (_) {}
-    }
-
-    return j.tokenUser;
+  function clearAuth() {
+    try { localStorage.removeItem("sp_token"); } catch (e) {}
+    try { localStorage.removeItem("sp_user"); } catch (e) {}
   }
 
-  (async function main() {
-    const p = currentPath();
-    const isKycPage = p.includes("/angajat/kyc");
-    const isPendingPage = p.includes("/angajat/pending");
+  function normalizeUser(u) {
+    const user = u || {};
+    return {
+      id: user.id,
+      full_name: user.full_name || user.fullName || "",
+      email: user.email || "",
+      phone: user.phone || "",
+      role: user.role || "angajat",
+      status: user.status || "kyc_required",
+      updatedAt: Date.now(),
+      raw: user
+    };
+  }
 
-    const token = String(localStorage.getItem("sp_token") || "");
-    const rawUser = String(localStorage.getItem("sp_user") || "");
+  function applyRouting(u) {
+    const role = lower(u.role, "angajat");
+    const status = lower(u.status, "kyc_required");
 
-    // 1) Must have local token + user (fast fail)
-    if (!token || !rawUser) {
-      clearAuth();
-      return redirect(LOGIN_URL);
-    }
-
-    const cached = safeJSONParse(rawUser);
-    if (!cached || !cached.email) {
-      clearAuth();
-      return redirect(LOGIN_URL);
-    }
-
-    // 2) Source of truth: /api/auth/me (DB status + fresh token)
-    const liveUser = await fetchMe(token);
-    if (!liveUser) {
-      clearAuth();
-      return redirect(LOGIN_URL);
-    }
-
-    // 3) Role routing (admin/gm)
-    const role = lower(liveUser.role, "angajat");
+    // Role dashboards
     if (role === "admin") return redirect("/admin/index.html");
     if (role === "gm") return redirect("/gm/index.html");
 
-    // 4) Angajat gate by users.status ONLY
-    const status = lower(liveUser.status, "kyc_required");
+    // Angajat pages
+    const p = pathNow();
+    const onKyc = p.includes("/angajat/kyc");
+    const onPending = p.includes("/angajat/pending");
 
-    if (status === "kyc_required" && !isKycPage) {
-      return redirect(KYC_URL + "?from=guard&status=" + encodeURIComponent(status));
+    if (status === "approved") {
+      if (onKyc || onPending) return redirect("/angajat/");
+      return;
     }
 
-    if (status === "pending" && !isPendingPage) {
-      return redirect(PENDING_URL);
+    if (status === "kyc_required") {
+      if (!onKyc) return redirect("/angajat/kyc.html");
+      return;
     }
 
-    if (status === "rejected" && !isPendingPage) {
-      return redirect(PENDING_URL + "?reason=rejected");
+    if (status === "pending") {
+      if (!onPending) return redirect("/angajat/pending.html");
+      return;
     }
 
-    // allow only approved
-    if (status !== "approved") {
-      if (!isPendingPage) return redirect(PENDING_URL + "?status=" + encodeURIComponent(status));
+    if (status === "rejected") {
+      if (!onPending) return redirect("/angajat/pending.html?reason=rejected");
+      return;
     }
 
-    // OK -> allow page load
-  })().catch(function () {
-    clearAuth();
-    redirect(LOGIN_URL);
-  });
+    if (!onPending) return redirect("/angajat/pending.html?status=" + encodeURIComponent(status));
+  }
+
+  async function refreshFromMe(token) {
+    const r = await fetch(API_BASE + "/api/auth/me", {
+      headers: { Authorization: "Bearer " + String(token) }
+    });
+
+    const j = await r.json().catch(() => null);
+    if (!r.ok || !j || !j.success || !j.tokenUser) {
+      throw new Error("ME failed");
+    }
+
+    const freshToken = j.token ? String(j.token) : String(token);
+    const freshUser = normalizeUser(j.tokenUser);
+
+    try { localStorage.setItem("sp_token", freshToken); } catch (e) {}
+    try { localStorage.setItem("sp_user", JSON.stringify(freshUser)); } catch (e) {}
+
+    return freshUser;
+  }
+
+  (async function main() {
+    const token = localStorage.getItem("sp_token") || "";
+    const user = safeJSONParse(localStorage.getItem("sp_user") || "null");
+
+    if (!token || !user || !user.email) {
+      clearAuth();
+      return redirect("/login.html");
+    }
+
+    try {
+      const freshUser = await refreshFromMe(token);
+      applyRouting(freshUser);
+    } catch (e) {
+      clearAuth();
+      return redirect("/login.html");
+    }
+  })();
 })();
