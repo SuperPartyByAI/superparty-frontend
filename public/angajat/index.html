@@ -11,11 +11,10 @@
     .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);font-size:13px}
     .ok{background:rgba(16,185,129,.18);border-color:rgba(16,185,129,.35)}
     .bad{background:rgba(239,68,68,.18);border-color:rgba(239,68,68,.35)}
-    a{color:#93c5fd}
     code{background:rgba(255,255,255,.08);padding:2px 6px;border-radius:6px}
   </style>
 
-  <!-- AUTH GUARD: rulează primul (face refresh din /api/auth/me și redirecționează unde trebuie) -->
+  <!-- IMPORTANT: auth-guard face TOT routing-ul (DB refresh via /api/auth/me). -->
   <script src="/angajat/auth-guard.js"></script>
 </head>
 <body>
@@ -24,38 +23,40 @@
   <p id="headline">Se verifică accesul...</p>
 
   <div class="card">
-    <div><strong>Debug (după refresh din /api/auth/me)</strong></div>
+    <div><strong>Debug (din localStorage după refresh-ul guard-ului)</strong></div>
     <div class="row" id="debugRow"></div>
     <div style="margin-top:12px;font-size:13px;opacity:.9">
-      Dacă status e corect în DB, aici trebuie să fie corect după refresh.
+      Dacă aici vezi <code>users.status: approved</code>, ești OK.
     </div>
   </div>
 
   <script>
     (function(){
       function safeParse(v){ try { return JSON.parse(v); } catch(e){ return null; } }
-      const debugRow = document.getElementById("debugRow");
 
-      function pill(label, value, ok) {
-        const el = document.createElement("span");
+      var row = document.getElementById("debugRow");
+      function pill(label, value, ok){
+        var el = document.createElement("span");
         el.className = "pill " + (ok ? "ok" : "bad");
         el.textContent = label + ": " + (value || "(gol)");
-        debugRow.appendChild(el);
+        row.appendChild(el);
       }
 
-      const token = localStorage.getItem("sp_token") || "";
-      const u = safeParse(localStorage.getItem("sp_user") || "null") || {};
+      var token = localStorage.getItem("sp_token") || "";
+      var u = safeParse(localStorage.getItem("sp_user") || "null") || {};
 
-      const role = String(u.role || "").toLowerCase();
-      const status = String(u.status || "").toLowerCase();
+      var role = String(u.role || "").toLowerCase();
+      var status = String(u.status || "").toLowerCase();
 
-      pill("token", token ? ("prezent (" + token.length + ")") : "lipsă", !!token);
+      pill("token_len", token ? String(token.length) : "0", !!token);
       pill("email", u.email || "", !!u.email);
       pill("role", role || "(gol)", !!role);
       pill("users.status", status || "(gol)", status === "approved");
 
       document.getElementById("headline").textContent =
-        (status === "approved") ? "Ești OK (approved) ✅" : "Nu ești approved încă (sau nu s-a făcut refresh) …";
+        (status === "approved")
+          ? "Ești OK (approved) ✅"
+          : "Nu ești approved încă (sau nu s-a făcut refresh) …";
     })();
   </script>
 
