@@ -1,51 +1,14 @@
-// ═══════════════════════════════════════════════════════════
-// App.tsx – Routing + Protected Routes SuperParty (FINAL)
-// ═══════════════════════════════════════════════════════════
+import { useEffect } from "react";
 
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider, useAuth } from "./context/AuthContext";
-import Dashboard from "./pages/Dashboard";
+export default function App() {
+  useEffect(() => {
+    const token = localStorage.getItem("sp_token");
+    if (token && token.length > 10) {
+      window.location.replace("/dashboard");
+    } else {
+      window.location.replace("/login");
+    }
+  }, []);
 
-// Componentă care protejează rutele
-function ProtectedRoute({ children }: { children: JSX.Element }) {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return <div style={{ padding: 20 }}>Se încarcă...</div>;
-  }
-
-  if (!user) {
-    // IMPORTANT: ai basename="/app", deci folosim path relativ la /app
-    return <Navigate to="/login.html" replace />;
-  }
-
-  return children;
+  return <div style={{ padding: 20 }}>Redirect...</div>;
 }
-
-function App() {
-  return (
-    <BrowserRouter basename="/app">
-      <AuthProvider>
-        <Routes>
-          {/* Home -> login static */}
-          <Route path="/" element={<Navigate to="/login.html" replace />} />
-
-          {/* Orice /login din React -> login static */}
-          <Route path="/login" element={<Navigate to="/login.html" replace />} />
-
-          {/* Dashboard protejat */}
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </AuthProvider>
-    </BrowserRouter>
-  );
-}
-
-export default App;
