@@ -1,10 +1,9 @@
 {
   "rewrites": [
     { "source": "/login", "destination": "/login.html" },
-    { "source": "/dashboard", "destination": "/angajat/index.html" },
+    { "source": "/login/", "destination": "/login.html" },
 
-    { "source": "/app", "destination": "/login.html" },
-    { "source": "/app/login", "destination": "/login.html" },
-    { "source": "/app/dashboard", "destination": "/angajat/index.html" }
+    { "source": "/dashboard", "destination": "/angajat/index.html" },
+    { "source": "/dashboard/", "destination": "/angajat/index.html" }
   ]
 }
