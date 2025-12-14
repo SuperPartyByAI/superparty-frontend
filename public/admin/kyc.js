@@ -1,9 +1,9 @@
 // =====================================
-// SuperParty - Admin KYC Logic
+// SuperParty - Admin KYC Logic (AUTH FIX)
 // File: public/admin/kyc.js
-// - Always uses localStorage sp_token + /api/auth/me refresh
-// - Adds Authorization header on every admin call
-// - On 401 -> clears auth and redirects to /login.html
+// - Refresh session via GET /api/auth/me (DB truth + fresh token)
+// - Always sends Authorization: Bearer <sp_token> for admin calls
+// - On 401 -> clear auth + redirect to /login.html
 // =====================================
 
 (function () {
@@ -34,7 +34,7 @@
       role: user.role || "angajat",
       status: user.status || "kyc_required",
       updatedAt: Date.now(),
-      raw: user,
+      raw: user
     };
   }
 
@@ -48,9 +48,8 @@
       return null;
     }
 
-    // Source of truth: /api/auth/me (DB + fresh token)
     const r = await fetch(API_BASE + "/api/auth/me", {
-      headers: { Authorization: "Bearer " + token },
+      headers: { Authorization: "Bearer " + token }
     });
 
     if (r.status === 401) {
@@ -60,26 +59,28 @@
     }
 
     const j = await r.json().catch(() => null);
-    if (!r.ok || !j || !j.success || !j.tokenUser) {
-      // If backend is temporarily failing, keep existing session
-      return { token, user };
+
+    // DB truth + fresh token
+    if (r.ok && j && j.success && j.tokenUser) {
+      const freshToken = j.token ? String(j.token) : token;
+      const freshUser = normalizeUser(j.tokenUser);
+
+      try { localStorage.setItem("sp_token", freshToken); } catch (_) {}
+      try { localStorage.setItem("sp_user", JSON.stringify(freshUser)); } catch (_) {}
+
+      return { token: freshToken, user: freshUser };
     }
 
-    const freshToken = j.token ? String(j.token) : token;
-    const freshUser = normalizeUser(j.tokenUser);
-
-    try { localStorage.setItem("sp_token", freshToken); } catch (_) {}
-    try { localStorage.setItem("sp_user", JSON.stringify(freshUser)); } catch (_) {}
-
-    return { token: freshToken, user: freshUser };
+    // fallback: keep current session
+    return { token, user };
   }
 
-  async function apiFetch(path, opts) {
+  async function authFetch(path, opts) {
     const sess = await refreshSession();
     if (!sess) return null;
 
     const headers = Object.assign({}, (opts && opts.headers) ? opts.headers : {});
-    headers.Authorization = "Bearer " + sess.token;
+    headers.Authorization = "Bearer " + String(sess.token || "");
 
     const r = await fetch(API_BASE + path, Object.assign({}, opts || {}, { headers }));
 
@@ -92,59 +93,63 @@
     return r;
   }
 
-  function renderJSONFallback(obj) {
-    const pre = qs("#kycJson") || qs("#json") || qs("pre");
-    if (!pre) {
-      console.log("KYC DATA:", obj);
-      return;
-    }
-    pre.textContent = JSON.stringify(obj, null, 2);
+  function renderText(text) {
+    const el = qs("#kycList") || qs("#list") || qs("#content") || qs("main") || qs("body");
+    if (!el) { console.log(text); return; }
+    el.innerHTML = "<pre style='white-space:pre-wrap'>" + String(text || "") + "</pre>";
+  }
+
+  function escapeHtml(s) {
+    return String(s || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
   }
 
   async function loadKycList() {
-    // IMPORTANT: backend-ul tău listează pending fără query param.
-    // Dacă vrei filtrare, o facem client-side.
-    const r = await apiFetch("/api/admin/kyc/list", { method: "GET" });
+    const r = await authFetch("/api/admin/kyc/list", { method: "GET" });
     if (!r) return;
 
     const j = await r.json().catch(() => null);
-    if (!r.ok || !j || !j.success) {
-      renderJSONFallback({ ok: false, status: r.status, body: j });
-      return;
-    }
 
-    // Prefer să nu stric HTML-ul tău existent.
-    // Dacă ai un container cu id="kycList", încerc să-l umplu minimal.
-    const listEl = qs("#kycList");
-    if (!listEl) {
-      renderJSONFallback(j);
+    if (!r.ok || !j || !j.success) {
+      renderText(JSON.stringify({ ok: false, status: r.status, body: j }, null, 2));
       return;
     }
 
     const rows = Array.isArray(j.pending) ? j.pending : [];
+
+    const listEl = qs("#kycList");
+    if (!listEl) {
+      renderText(JSON.stringify(j, null, 2));
+      return;
+    }
+
     if (!rows.length) {
       listEl.innerHTML = "<div style='opacity:.8'>Nu există cereri KYC în așteptare.</div>";
       return;
     }
 
     listEl.innerHTML = rows.map((k) => {
-      const name = (k.kyc_full_name || k.full_name || "").replace(/</g, "&lt;");
-      const email = (k.kyc_email || k.email || "").replace(/</g, "&lt;");
-      const id = Number(k.user_id || 0);
+      const name = escapeHtml(k.kyc_full_name || k.full_name || "");
+      const email = escapeHtml(k.kyc_email || k.email || "");
+      const userId = Number(k.user_id || 0);
+      const st = escapeHtml(k.kyc_status || "pending");
 
       return `
         <div style="border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06); border-radius:12px; padding:12px; margin:10px 0;">
           <div style="font-weight:700">${name || "(fără nume)"} <span style="opacity:.8; font-weight:400">(${email || "fără email"})</span></div>
-          <div style="opacity:.8; margin-top:6px;">user_id: ${id} • status: ${String(k.kyc_status || "pending")}</div>
+          <div style="opacity:.8; margin-top:6px;">user_id: ${userId} • kyc_status: ${st}</div>
           <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
-            <button data-approve="${id}" style="padding:8px 10px; border-radius:10px; border:1px solid rgba(16,185,129,.45); background:rgba(16,185,129,.18); color:#eafff6; cursor:pointer;">Approve</button>
-            <button data-reject="${id}" style="padding:8px 10px; border-radius:10px; border:1px solid rgba(239,68,68,.45); background:rgba(239,68,68,.18); color:#ffecec; cursor:pointer;">Reject</button>
+            <button data-approve="${userId}" style="padding:8px 10px; border-radius:10px; border:1px solid rgba(16,185,129,.45); background:rgba(16,185,129,.18); color:#eafff6; cursor:pointer;">Approve</button>
+            <button data-reject="${userId}" style="padding:8px 10px; border-radius:10px; border:1px solid rgba(239,68,68,.45); background:rgba(239,68,68,.18); color:#ffecec; cursor:pointer;">Reject</button>
           </div>
         </div>
       `;
     }).join("");
 
-    // bind actions
     listEl.querySelectorAll("button[data-approve]").forEach((btn) => {
       btn.addEventListener("click", async () => {
         const user_id = Number(btn.getAttribute("data-approve") || "0");
@@ -164,34 +169,33 @@
   }
 
   async function approve(user_id) {
-    if (!user_id) return { ok: false, error: "Missing user_id" };
-    const r = await apiFetch("/api/admin/kyc/approve", {
+    if (!user_id) return;
+
+    const r = await authFetch("/api/admin/kyc/approve", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user_id }),
+      body: JSON.stringify({ user_id })
     });
-    if (!r) return { ok: false, error: "No response" };
-    return await r.json().catch(() => ({ ok: false, status: r.status }));
+
+    if (!r) return;
+    console.log("APPROVE:", r.status, await r.json().catch(() => null));
   }
 
   async function reject(user_id, reason) {
-    if (!user_id) return { ok: false, error: "Missing user_id" };
-    const r = await apiFetch("/api/admin/kyc/reject", {
+    if (!user_id) return;
+
+    const r = await authFetch("/api/admin/kyc/reject", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user_id, reason: reason || "" }),
+      body: JSON.stringify({ user_id, reason: String(reason || "") })
     });
-    if (!r) return { ok: false, error: "No response" };
-    return await r.json().catch(() => ({ ok: false, status: r.status }));
+
+    if (!r) return;
+    console.log("REJECT:", r.status, await r.json().catch(() => null));
   }
 
-  // Expose helpers (useful in DevTools)
-  window.SuperPartyAdminKyc = {
-    refreshSession,
-    loadKycList,
-    approve,
-    reject,
-  };
+  // expune pentru DevTools
+  window.SuperPartyAdminKyc = { refreshSession, loadKycList, approve, reject };
 
   document.addEventListener("DOMContentLoaded", async () => {
     const sess = await refreshSession();
@@ -199,7 +203,6 @@
 
     const role = String(sess.user?.role || "").toLowerCase();
     if (role !== "admin") {
-      // dacă nu ești admin, nu ai ce căuta aici
       redirect("/angajat/");
       return;
     }
