@@ -33,36 +33,35 @@
 
   <script>
     (function(){
-      // IMPORTANT: la tine pagina KYC e /angajat/kyc.html
       const KYC_URL = "/angajat/kyc.html";
       const PENDING_URL = "/angajat/pending.html";
 
-      // MUST HAVE token + user
       const token = localStorage.getItem("sp_token");
       const rawUser = localStorage.getItem("sp_user");
 
       if (!token || !rawUser) {
-        try { localStorage.removeItem("sp_token"); } catch(e){}
-        try { localStorage.removeItem("sp_user"); } catch(e){}
+        try { localStorage.removeItem("sp_token"); localStorage.removeItem("sp_user"); } catch(e){}
         location.href = "/login.html";
         return;
       }
 
       let u;
-      try {
-        u = JSON.parse(rawUser);
-      } catch (e) {
-        try { localStorage.removeItem("sp_token"); } catch(e){}
-        try { localStorage.removeItem("sp_user"); } catch(e){}
+      try { u = JSON.parse(rawUser); } catch (e) {
+        try { localStorage.removeItem("sp_token"); localStorage.removeItem("sp_user"); } catch(e){}
         location.href = "/login.html";
         return;
       }
 
-      // Normalize strings
+      // Normalize
       const role = String(u.role || "angajat").toLowerCase();
-      const status = String(u.status || "kyc_required").toLowerCase(); // backend: kyc_required | pending | approved | rejected
 
-      // Debug pills
+      // IMPORTANT: folosim DOAR users.status (backend source of truth)
+      const status = String(
+        u.status ||
+        u.raw?.status ||
+        ""
+      ).toLowerCase();
+
       const debugRow = document.getElementById("debugRow");
       function pill(label, value, ok) {
         const el = document.createElement("span");
@@ -72,38 +71,27 @@
       }
 
       pill("token", token ? "prezent" : "lipsa", !!token);
-      pill("email", u.email || "(gol)", !!u.email);
+      pill("email", u.email || u.raw?.email || "(gol)", !!(u.email || u.raw?.email));
       pill("role", role, role === "angajat" || role === "admin" || role === "gm");
-      pill("status", status, status === "approved");
+      pill("users.status", status, status === "approved" || status === "pending" || status === "kyc_required" || status === "rejected");
 
       // Role redirect
       if (role === "admin") { location.href = "/admin/index.html"; return; }
       if (role === "gm") { location.href = "/gm/index.html"; return; }
 
-      // Status gate (aliniat cu backend users.status)
+      // Status flow
+      if (status === "approved") {
+        document.getElementById("headline").textContent = "Dacă vezi asta, ești OK ✅";
+        return;
+      }
+
       if (status === "kyc_required") {
-        location.href = KYC_URL + "?from=dashboard&status=" + encodeURIComponent(status);
+        location.href = KYC_URL;
         return;
       }
 
-      if (status === "pending") {
-        location.href = PENDING_URL;
-        return;
-      }
-
-      if (status === "rejected") {
-        location.href = PENDING_URL + "?reason=rejected";
-        return;
-      }
-
-      // OK: approved
-      if (status !== "approved") {
-        location.href = PENDING_URL + "?status=" + encodeURIComponent(status);
-        return;
-      }
-
-      // OK
-      document.getElementById("headline").textContent = "Dacă vezi asta, ești OK ✅";
+      // pending / rejected / unknown -> pending page
+      location.href = PENDING_URL;
     })();
   </script>
 
